@@ -1,0 +1,291 @@
+{
+  "nav": {
+    "ariaLabel": "Main navigation",
+    "founders": "Founders",
+    "finance": "Finance Dashboard",
+    "students": "Student Management",
+    "employees": "Staff Management"
+  },
+  "common": {
+    "loading": "Loading...",
+    "delete": "Delete",
+    "total": "Total",
+    "saving": "Saving…"
+  },
+  "home": {
+    "title": "School Founders",
+    "financeLink": "Finance Dashboard →",
+    "name": "Name",
+    "school": "School",
+    "addFounder": "Add founder"
+  },
+  "finance": {
+    "title": "Finance Dashboard",
+    "subtitle": "Analytical view for founders and data entry for operators.",
+    "backToFounders": "← Back to Founders",
+    "studentsLink": "Student Management →",
+    "employeesLink": "Staff Management →"
+  },
+  "founders": {
+    "listTitle": "Founders",
+    "empty": "No founders yet."
+  },
+  "report": {
+    "title": "Founders Report",
+    "subtitle": "School-by-school comparison for term {termYear}",
+    "columns": {
+      "schoolName": "School Name",
+      "studentIncomes": "Student Incomes",
+      "staffExpenses": "Staff Expenses",
+      "netProfit": "Net Profit"
+    },
+    "profit": "Profit",
+    "loss": "Loss",
+    "empty": "No data for this term."
+  },
+  "operator": {
+    "title": "Operator Logger",
+    "subtitle": "Record student revenue and employee expenses for the selected term.",
+    "logType": "Log type",
+    "tabs": {
+      "student": "Student Revenue",
+      "employee": "Employee Expense"
+    },
+    "fields": {
+      "termYear": "Term Year",
+      "operatorName": "Operator Name",
+      "school": "School",
+      "student": "Student",
+      "grade": "Grade",
+      "amount": "Amount",
+      "paymentMethod": "Payment Method",
+      "date": "Date",
+      "staff": "Staff",
+      "role": "Role",
+      "type": "Type"
+    },
+    "placeholders": {
+      "termYear": "1404-1405",
+      "operatorName": "Your name",
+      "selectSchool": "Select a school",
+      "selectStudent": "Select a student",
+      "selectStaff": "Select a staff member",
+      "autoFilledStudent": "Auto-filled from student",
+      "autoFilledStaff": "Auto-filled from staff"
+    },
+    "suggestedAmount": "Suggested after discount: {amount}",
+    "paymentMethods": {
+      "cash": "Cash",
+      "card": "Card",
+      "bankTransfer": "Bank Transfer",
+      "cheque": "Cheque"
+    },
+    "transactionTypes": {
+      "salary": "Salary",
+      "bonus": "Bonus",
+      "deduction": "Deduction"
+    },
+    "submitStudent": "Log Student Payment",
+    "submitEmployee": "Log Employee Expense"
+  },
+  "messages": {
+    "studentLogged": "Student payment logged successfully.",
+    "employeeLogged": "Employee expense logged successfully.",
+    "studentSaved": "Student saved successfully.",
+    "studentRemoved": "Student removed successfully.",
+    "studentPaymentUpdated": "Payment updated successfully.",
+    "studentPaymentRemoved": "Payment removed successfully.",
+    "employeeSaved": "Employee saved successfully.",
+    "employeeRemoved": "Employee removed successfully.",
+    "employeeExpenseUpdated": "Expense updated successfully.",
+    "employeeExpenseRemoved": "Expense removed successfully.",
+    "unexpectedError": "An unexpected error occurred"
+  },
+  "fields": {
+    "name": "Name",
+    "school": "School",
+    "id": "ID",
+    "nationalCode": "National code",
+    "paymentMethod": "Payment method",
+    "transactionType": "Transaction type",
+    "date": "Date",
+    "amount": "Amount",
+    "schoolId": "School",
+    "studentId": "Student",
+    "employeeId": "Employee",
+    "dynamicDiscountRate": "Discount rate",
+    "operator": "Operator",
+    "termYear": "Term year",
+    "amountPaid": "Amount paid",
+    "grade": "Grade",
+    "role": "Role",
+    "fullPrice": "Full price",
+    "baseSalary": "Base salary",
+    "branch": "Branch",
+    "fullName": "Full name",
+    "parentName": "Parent name",
+    "parentPhone": "Phone number"
+  },
+  "errors": {
+    "validation": {
+      "required": "{field} is required",
+      "nationalCode": "{field} must be a 10-digit string",
+      "phone": "{field} must be a valid phone number (10–11 digits starting with 0)",
+      "positiveInteger": "{field} must be a positive integer",
+      "nonNegativeInteger": "{field} must be a non-negative integer",
+      "discountRate": "{field} must be between 0 and 1",
+      "isoDate": "{field} must be an ISO date (YYYY-MM-DD)",
+      "paymentMethod": "Payment method must be one of: {values}",
+      "transactionType": "Transaction type must be one of: {values}",
+      "idRequired": "ID is required"
+    },
+    "notFound": {
+      "school": "School not found",
+      "student": "Student not found",
+      "employee": "Employee not found",
+      "studentTransaction": "Student transaction not found",
+      "employeeTransaction": "Employee transaction not found",
+      "founder": "Founder not found",
+      "schoolId": "School \"{schoolId}\" does not exist",
+      "studentId": "Student \"{studentId}\" does not exist",
+      "employeeId": "Employee \"{employeeId}\" does not exist"
+    },
+    "conflict": {
+      "schoolHasStudents": "Cannot delete school with existing students",
+      "schoolHasEmployees": "Cannot delete school with existing employees",
+      "schoolHasStudentTransactions": "Cannot delete school with existing student transactions",
+      "schoolHasEmployeeTransactions": "Cannot delete school with existing employee transactions",
+      "studentHasTransactions": "Cannot delete student with existing transactions",
+      "employeeHasTransactions": "Cannot delete employee with existing transactions"
+    },
+    "relation": {
+      "studentNotInSchool": "Student does not belong to the provided school",
+      "employeeNotInSchool": "Employee does not belong to the provided school"
+    },
+    "internal": {
+      "invalidJsonArray": "{filename} must contain a JSON array"
+    }
+  },
+  "students": {
+    "title": "Student Management",
+    "subtitle": "Add students, edit details, and record payments for the selected term.",
+    "backToFinance": "← Back to Finance Dashboard",
+    "allSchools": "All schools",
+    "addStudent": "Add Student",
+    "addStudentButton": "Create Student",
+    "showForm": "Show form",
+    "hideForm": "Hide form",
+    "empty": "No students found.",
+    "modalTitle": "Details for {name}",
+    "close": "Close",
+    "termYear": "Term {termYear}",
+    "paymentSummary": "Payment Summary",
+    "studentInfo": "Student Information",
+    "payments": "Payments",
+    "noPayments": "No payments recorded yet.",
+    "saveStudent": "Save Changes",
+    "deleteStudent": "Delete Student",
+    "confirmDelete": "Are you sure you want to delete this student?",
+    "confirmDeletePayment": "Are you sure you want to delete this payment?",
+    "addPayment": "Add New Payment",
+    "addPaymentButton": "Log Payment",
+    "editPayment": "Edit",
+    "editPaymentForm": "Edit Payment",
+    "updatePayment": "Update Payment",
+    "cancelEdit": "Cancel Edit",
+    "paidOfExpected": "{paid} of {expected}",
+    "remaining": "Remaining: {amount}",
+    "fields": {
+      "fullName": "Full name",
+      "nationalCode": "National code",
+      "studentId": "Student ID",
+      "grade": "Grade",
+      "school": "School",
+      "fullPrice": "Full price",
+      "discountRate": "Discount rate (0–1)",
+      "parentName": "Parent name",
+      "parentPhone": "Phone number",
+      "amount": "Amount",
+      "paymentMethod": "Payment method",
+      "date": "Date"
+    },
+    "columns": {
+      "fullName": "Name",
+      "studentId": "ID",
+      "grade": "Grade",
+      "school": "School",
+      "payment": "Paid / Target",
+      "status": "Status",
+      "date": "Date",
+      "amount": "Amount",
+      "method": "Method",
+      "operator": "Operator",
+      "actions": "Actions"
+    },
+    "status": {
+      "paid": "Paid",
+      "partial": "Partial",
+      "unpaid": "Unpaid"
+    }
+  },
+  "employees": {
+    "title": "Staff Management",
+    "subtitle": "Add staff, edit details, and record expenses for the selected term.",
+    "backToFinance": "← Back to Finance Dashboard",
+    "allSchools": "All schools",
+    "addEmployee": "Add Staff Member",
+    "addEmployeeButton": "Create Staff Member",
+    "showForm": "Show form",
+    "hideForm": "Hide form",
+    "empty": "No staff found.",
+    "modalTitle": "Details for {name}",
+    "close": "Close",
+    "termYear": "Term {termYear}",
+    "expenseSummary": "Expense Summary",
+    "employeeInfo": "Staff Information",
+    "expenses": "Expenses",
+    "noExpenses": "No expenses recorded yet.",
+    "saveEmployee": "Save Changes",
+    "deleteEmployee": "Delete Staff Member",
+    "confirmDelete": "Are you sure you want to delete this staff member?",
+    "confirmDeleteExpense": "Are you sure you want to delete this expense?",
+    "addExpense": "Add New Expense",
+    "addExpenseButton": "Log Expense",
+    "editExpense": "Edit",
+    "editExpenseForm": "Edit Expense",
+    "updateExpense": "Update Expense",
+    "cancelEdit": "Cancel Edit",
+    "paidOfExpected": "{paid} of {expected}",
+    "remaining": "Remaining: {amount}",
+    "fields": {
+      "fullName": "Full name",
+      "nationalCode": "National code",
+      "employeeId": "Staff ID",
+      "role": "Role",
+      "school": "School",
+      "baseSalary": "Base salary (Rial)",
+      "insuranceCost": "Insurance cost (Rial)",
+      "amount": "Amount",
+      "type": "Type",
+      "date": "Date"
+    },
+    "columns": {
+      "fullName": "Name",
+      "employeeId": "ID",
+      "role": "Role",
+      "school": "School",
+      "expense": "Paid / Target",
+      "status": "Status",
+      "date": "Date",
+      "amount": "Amount",
+      "type": "Type",
+      "operator": "Operator",
+      "actions": "Actions"
+    },
+    "status": {
+      "paid": "Paid",
+      "partial": "Partial",
+      "unpaid": "Unpaid"
+    }
+  }
+}

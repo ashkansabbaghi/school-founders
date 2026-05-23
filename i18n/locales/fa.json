@@ -1,0 +1,291 @@
+{
+  "nav": {
+    "ariaLabel": "ناوبری اصلی",
+    "founders": "بنیان‌گذاران",
+    "finance": "داشبورد مالی",
+    "students": "مدیریت دانش‌آموزان",
+    "employees": "مدیریت پرسنل"
+  },
+  "common": {
+    "loading": "در حال بارگذاری...",
+    "delete": "حذف",
+    "total": "جمع کل",
+    "saving": "در حال ذخیره..."
+  },
+  "home": {
+    "title": "بنیان‌گذاران مدارس",
+    "financeLink": "داشبورد مالی ←",
+    "name": "نام",
+    "school": "مدرسه",
+    "addFounder": "افزودن بنیان‌گذار"
+  },
+  "finance": {
+    "title": "داشبورد مالی",
+    "subtitle": "نمای تحلیلی برای بنیان‌گذاران و ثبت داده برای اپراتورها.",
+    "backToFounders": "بازگشت به بنیان‌گذاران →",
+    "studentsLink": "مدیریت دانش‌آموزان ←",
+    "employeesLink": "مدیریت پرسنل ←"
+  },
+  "founders": {
+    "listTitle": "بنیان‌گذاران",
+    "empty": "هنوز بنیان‌گذاری ثبت نشده است."
+  },
+  "report": {
+    "title": "گزارش بنیان‌گذاران",
+    "subtitle": "مقایسه مدرسه‌به‌مدرسه برای سال تحصیلی {termYear}",
+    "columns": {
+      "schoolName": "نام مدرسه",
+      "studentIncomes": "درآمد دانش‌آموزان",
+      "staffExpenses": "هزینه پرسنل",
+      "netProfit": "سود خالص"
+    },
+    "profit": "سود",
+    "loss": "زیان",
+    "empty": "داده‌ای برای این سال تحصیلی وجود ندارد."
+  },
+  "operator": {
+    "title": "ثبت‌کننده اپراتور",
+    "subtitle": "ثبت درآمد دانش‌آموز و هزینه پرسنل برای سال تحصیلی انتخاب‌شده.",
+    "logType": "نوع ثبت",
+    "tabs": {
+      "student": "درآمد دانش‌آموز",
+      "employee": "هزینه پرسنل"
+    },
+    "fields": {
+      "termYear": "سال تحصیلی",
+      "operatorName": "نام اپراتور",
+      "school": "مدرسه",
+      "student": "دانش‌آموز",
+      "grade": "پایه",
+      "amount": "مبلغ",
+      "paymentMethod": "روش پرداخت",
+      "date": "تاریخ",
+      "staff": "پرسنل",
+      "role": "سمت",
+      "type": "نوع"
+    },
+    "placeholders": {
+      "termYear": "۱۴۰۴-۱۴۰۵",
+      "operatorName": "نام شما",
+      "selectSchool": "یک مدرسه انتخاب کنید",
+      "selectStudent": "یک دانش‌آموز انتخاب کنید",
+      "selectStaff": "یک عضو پرسنل انتخاب کنید",
+      "autoFilledStudent": "از اطلاعات دانش‌آموز پر می‌شود",
+      "autoFilledStaff": "از اطلاعات پرسنل پر می‌شود"
+    },
+    "suggestedAmount": "پیشنهادی پس از تخفیف: {amount}",
+    "paymentMethods": {
+      "cash": "نقد",
+      "card": "کارت",
+      "bankTransfer": "انتقال بانکی",
+      "cheque": "چک"
+    },
+    "transactionTypes": {
+      "salary": "حقوق",
+      "bonus": "پاداش",
+      "deduction": "کسر"
+    },
+    "submitStudent": "ثبت پرداخت دانش‌آموز",
+    "submitEmployee": "ثبت هزینه پرسنل"
+  },
+  "messages": {
+    "studentLogged": "پرداخت دانش‌آموز با موفقیت ثبت شد.",
+    "employeeLogged": "هزینه پرسنل با موفقیت ثبت شد.",
+    "studentSaved": "اطلاعات دانش‌آموز با موفقیت ذخیره شد.",
+    "studentRemoved": "دانش‌آموز با موفقیت حذف شد.",
+    "studentPaymentUpdated": "پرداخت با موفقیت به‌روزرسانی شد.",
+    "studentPaymentRemoved": "پرداخت با موفقیت حذف شد.",
+    "employeeSaved": "پرسنل با موفقیت ذخیره شد.",
+    "employeeRemoved": "پرسنل با موفقیت حذف شد.",
+    "employeeExpenseUpdated": "هزینه با موفقیت به‌روزرسانی شد.",
+    "employeeExpenseRemoved": "هزینه با موفقیت حذف شد.",
+    "unexpectedError": "خطای غیرمنتظره‌ای رخ داد"
+  },
+  "fields": {
+    "name": "نام",
+    "school": "مدرسه",
+    "id": "شناسه",
+    "nationalCode": "کد ملی",
+    "paymentMethod": "روش پرداخت",
+    "transactionType": "نوع تراکنش",
+    "date": "تاریخ",
+    "amount": "مبلغ",
+    "schoolId": "مدرسه",
+    "studentId": "دانش‌آموز",
+    "employeeId": "پرسنل",
+    "dynamicDiscountRate": "نرخ تخفیف",
+    "operator": "اپراتور",
+    "termYear": "سال تحصیلی",
+    "amountPaid": "مبلغ پرداختی",
+    "grade": "پایه",
+    "role": "سمت",
+    "fullPrice": "قیمت کامل",
+    "baseSalary": "حقوق پایه",
+    "branch": "شعبه",
+    "fullName": "نام کامل",
+    "parentName": "نام والد",
+    "parentPhone": "تلفن تماس"
+  },
+  "errors": {
+    "validation": {
+      "required": "{field} الزامی است",
+      "nationalCode": "{field} باید یک رشته ۱۰ رقمی باشد",
+      "phone": "{field} باید یک شماره تلفن معتبر (۱۰ یا ۱۱ رقم با ۰ ابتدایی) باشد",
+      "positiveInteger": "{field} باید یک عدد صحیح مثبت باشد",
+      "nonNegativeInteger": "{field} باید یک عدد صحیح نامنفی باشد",
+      "discountRate": "{field} باید بین ۰ و ۱ باشد",
+      "isoDate": "{field} باید تاریخ ISO (YYYY-MM-DD) باشد",
+      "paymentMethod": "روش پرداخت باید یکی از موارد زیر باشد: {values}",
+      "transactionType": "نوع تراکنش باید یکی از موارد زیر باشد: {values}",
+      "idRequired": "شناسه الزامی است"
+    },
+    "notFound": {
+      "school": "مدرسه یافت نشد",
+      "student": "دانش‌آموز یافت نشد",
+      "employee": "پرسنل یافت نشد",
+      "studentTransaction": "تراکنش دانش‌آموز یافت نشد",
+      "employeeTransaction": "تراکنش پرسنل یافت نشد",
+      "founder": "بنیان‌گذار یافت نشد",
+      "schoolId": "مدرسه «{schoolId}» وجود ندارد",
+      "studentId": "دانش‌آموز «{studentId}» وجود ندارد",
+      "employeeId": "پرسنل «{employeeId}» وجود ندارد"
+    },
+    "conflict": {
+      "schoolHasStudents": "امکان حذف مدرسه با دانش‌آموز موجود وجود ندارد",
+      "schoolHasEmployees": "امکان حذف مدرسه با پرسنل موجود وجود ندارد",
+      "schoolHasStudentTransactions": "امکان حذف مدرسه با تراکنش دانش‌آموز موجود وجود ندارد",
+      "schoolHasEmployeeTransactions": "امکان حذف مدرسه با تراکنش پرسنل موجود وجود ندارد",
+      "studentHasTransactions": "امکان حذف دانش‌آموز با تراکنش موجود وجود ندارد",
+      "employeeHasTransactions": "امکان حذف پرسنل با تراکنش موجود وجود ندارد"
+    },
+    "relation": {
+      "studentNotInSchool": "دانش‌آموز به مدرسه انتخاب‌شده تعلق ندارد",
+      "employeeNotInSchool": "پرسنل به مدرسه انتخاب‌شده تعلق ندارد"
+    },
+    "internal": {
+      "invalidJsonArray": "{filename} باید یک آرایه JSON باشد"
+    }
+  },
+  "students": {
+    "title": "مدیریت دانش‌آموزان",
+    "subtitle": "افزودن دانش‌آموز، ویرایش اطلاعات و ثبت پرداخت‌ها برای سال تحصیلی انتخاب‌شده.",
+    "backToFinance": "بازگشت به داشبورد مالی →",
+    "allSchools": "همه مدارس",
+    "addStudent": "افزودن دانش‌آموز",
+    "addStudentButton": "ثبت دانش‌آموز",
+    "showForm": "نمایش فرم",
+    "hideForm": "پنهان کردن فرم",
+    "empty": "دانش‌آموزی یافت نشد.",
+    "modalTitle": "جزئیات {name}",
+    "close": "بستن",
+    "termYear": "سال تحصیلی {termYear}",
+    "paymentSummary": "خلاصه پرداخت",
+    "studentInfo": "اطلاعات دانش‌آموز",
+    "payments": "پرداخت‌ها",
+    "noPayments": "هنوز پرداختی ثبت نشده است.",
+    "saveStudent": "ذخیره تغییرات",
+    "deleteStudent": "حذف دانش‌آموز",
+    "confirmDelete": "آیا از حذف این دانش‌آموز مطمئن هستید؟",
+    "confirmDeletePayment": "آیا از حذف این پرداخت مطمئن هستید؟",
+    "addPayment": "افزودن پرداخت جدید",
+    "addPaymentButton": "ثبت پرداخت",
+    "editPayment": "ویرایش",
+    "editPaymentForm": "ویرایش پرداخت",
+    "updatePayment": "به‌روزرسانی پرداخت",
+    "cancelEdit": "لغو ویرایش",
+    "paidOfExpected": "{paid} از {expected}",
+    "remaining": "باقیمانده: {amount}",
+    "fields": {
+      "fullName": "نام کامل",
+      "nationalCode": "کد ملی",
+      "studentId": "شماره دانش‌آموزی",
+      "grade": "پایه",
+      "school": "مدرسه",
+      "fullPrice": "قیمت کامل (ریال)",
+      "discountRate": "نرخ تخفیف (۰ تا ۱)",
+      "parentName": "نام والد",
+      "parentPhone": "تلفن تماس",
+      "amount": "مبلغ",
+      "paymentMethod": "روش پرداخت",
+      "date": "تاریخ"
+    },
+    "columns": {
+      "fullName": "نام",
+      "studentId": "شماره",
+      "grade": "پایه",
+      "school": "مدرسه",
+      "payment": "پرداخت‌شده / هدف",
+      "status": "وضعیت",
+      "date": "تاریخ",
+      "amount": "مبلغ",
+      "method": "روش",
+      "operator": "اپراتور",
+      "actions": "عملیات"
+    },
+    "status": {
+      "paid": "تسویه شده",
+      "partial": "ناقص",
+      "unpaid": "پرداخت نشده"
+    }
+  },
+  "employees": {
+    "title": "مدیریت پرسنل",
+    "subtitle": "افزودن پرسنل، ویرایش اطلاعات و ثبت هزینه‌ها برای سال تحصیلی انتخاب‌شده.",
+    "backToFinance": "بازگشت به داشبورد مالی →",
+    "allSchools": "همه مدارس",
+    "addEmployee": "افزودن پرسنل",
+    "addEmployeeButton": "ثبت پرسنل",
+    "showForm": "نمایش فرم",
+    "hideForm": "پنهان کردن فرم",
+    "empty": "پرسنلی یافت نشد.",
+    "modalTitle": "جزئیات {name}",
+    "close": "بستن",
+    "termYear": "سال تحصیلی {termYear}",
+    "expenseSummary": "خلاصه هزینه",
+    "employeeInfo": "اطلاعات پرسنل",
+    "expenses": "هزینه‌ها",
+    "noExpenses": "هنوز هزینه‌ای ثبت نشده است.",
+    "saveEmployee": "ذخیره تغییرات",
+    "deleteEmployee": "حذف پرسنل",
+    "confirmDelete": "آیا از حذف این پرسنل مطمئن هستید؟",
+    "confirmDeleteExpense": "آیا از حذف این هزینه مطمئن هستید؟",
+    "addExpense": "افزودن هزینه جدید",
+    "addExpenseButton": "ثبت هزینه",
+    "editExpense": "ویرایش",
+    "editExpenseForm": "ویرایش هزینه",
+    "updateExpense": "به‌روزرسانی هزینه",
+    "cancelEdit": "لغو ویرایش",
+    "paidOfExpected": "{paid} از {expected}",
+    "remaining": "باقیمانده: {amount}",
+    "fields": {
+      "fullName": "نام کامل",
+      "nationalCode": "کد ملی",
+      "employeeId": "شماره پرسنلی",
+      "role": "سمت",
+      "school": "مدرسه",
+      "baseSalary": "حقوق پایه (ریال)",
+      "insuranceCost": "هزینه بیمه (ریال)",
+      "amount": "مبلغ",
+      "type": "نوع",
+      "date": "تاریخ"
+    },
+    "columns": {
+      "fullName": "نام",
+      "employeeId": "شماره",
+      "role": "سمت",
+      "school": "مدرسه",
+      "expense": "پرداخت‌شده / هدف",
+      "status": "وضعیت",
+      "date": "تاریخ",
+      "amount": "مبلغ",
+      "type": "نوع",
+      "operator": "اپراتور",
+      "actions": "عملیات"
+    },
+    "status": {
+      "paid": "تسویه شده",
+      "partial": "ناقص",
+      "unpaid": "پرداخت نشده"
+    }
+  }
+}
