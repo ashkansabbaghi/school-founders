@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
+import type { RecentLogEntry } from '#shared/types/financial'
+import { listRecentLogs } from '~/services/finance'
 
 const { t } = useI18n()
 
@@ -10,16 +12,23 @@ useHead({
 const financeStore = useFinanceStore()
 const { termYear } = storeToRefs(financeStore)
 
-const { data: recentLogs, status: recentLogsStatus, refresh: refreshRecentLogs } = useFetch(
-  '/api/finance/recent-logs',
-  {
-    query: computed(() => ({
+const recentLogs = ref<RecentLogEntry[]>([])
+const recentLogsStatus = ref<'idle' | 'loading' | 'error'>('idle')
+
+async function refreshRecentLogs() {
+  recentLogsStatus.value = 'loading'
+
+  try {
+    recentLogs.value = await listRecentLogs({
       termYear: termYear.value,
       limit: 10,
-    })),
-    default: () => [],
-  },
-)
+    })
+    recentLogsStatus.value = 'idle'
+  }
+  catch {
+    recentLogsStatus.value = 'error'
+  }
+}
 
 watch(termYear, () => {
   void refreshRecentLogs()
@@ -29,8 +38,9 @@ function onTermYearInput(event: Event) {
   financeStore.setTermYear((event.target as HTMLInputElement).value)
 }
 
-onMounted(() => {
-  void financeStore.init()
+onMounted(async () => {
+  await financeStore.init()
+  await refreshRecentLogs()
 })
 </script>
 
@@ -62,8 +72,8 @@ onMounted(() => {
     <DashboardStats />
     <FoundersReportTable />
     <RecentActivityLog
-      :logs="recentLogs ?? []"
-      :pending="recentLogsStatus === 'pending' && !(recentLogs?.length)"
+      :logs="recentLogs"
+      :pending="recentLogsStatus === 'loading' && !recentLogs.length"
     />
   </main>
 </template>

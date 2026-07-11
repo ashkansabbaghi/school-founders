@@ -16,6 +16,7 @@ export function useAppNav() {
     { key: 'finance', to: localePath('/finance'), label: t('nav.finance'), shortLabel: t('nav.financeShort') },
     { key: 'students', to: localePath('/students'), label: t('nav.students'), shortLabel: t('nav.studentsShort') },
     { key: 'employees', to: localePath('/employees'), label: t('nav.employees'), shortLabel: t('nav.employeesShort') },
+    { key: 'settings', to: localePath('/settings'), label: t('nav.settings'), shortLabel: t('nav.settingsShort') },
   ])
 
   function isActive(to: string, key: string) {

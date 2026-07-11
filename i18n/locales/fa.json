@@ -10,7 +10,9 @@
     "foundersShort": "مدارس",
     "financeShort": "مالی",
     "studentsShort": "دانش‌آموز",
-    "employeesShort": "پرسنل"
+    "employeesShort": "پرسنل",
+    "settings": "تنظیمات",
+    "settingsShort": "تنظیمات"
   },
   "common": {
     "loading": "در حال بارگذاری...",
@@ -139,7 +141,10 @@
     "employeeRemoved": "پرسنل با موفقیت حذف شد.",
     "employeeExpenseUpdated": "هزینه با موفقیت به‌روزرسانی شد.",
     "employeeExpenseRemoved": "هزینه با موفقیت حذف شد.",
-    "unexpectedError": "خطای غیرمنتظره‌ای رخ داد"
+    "unexpectedError": "خطای غیرمنتظره‌ای رخ داد",
+    "backupExported": "فایل پشتیبان با موفقیت دانلود شد.",
+    "backupImported": "داده‌ها با موفقیت بازیابی شد.",
+    "demoReset": "داده‌ها به حالت نمایشی بازنشانی شد."
   },
   "fields": {
     "name": "نام",
@@ -204,6 +209,14 @@
     },
     "internal": {
       "invalidJsonArray": "{filename} باید یک آرایه JSON باشد"
+    },
+    "backup": {
+      "invalidFormat": "فایل پشتیبان ساختار معتبری ندارد",
+      "invalidJson": "فایل JSON معتبر نیست",
+      "unsupportedSchemaVersion": "نسخه پشتیبان پشتیبانی نمی‌شود: {values}",
+      "missingCollection": "مجموعه «{filename}» در فایل پشتیبان وجود ندارد",
+      "invalidCollection": "مجموعه «{filename}» در فایل پشتیبان نامعتبر است",
+      "duplicateId": "شناسه تکراری «{id}» در فایل پشتیبان یافت شد"
     }
   },
   "students": {
@@ -214,8 +227,6 @@
     "addStudent": "افزودن دانش‌آموز",
     "addButtonLabel": "افزودن دانش‌آموز",
     "addStudentButton": "ثبت دانش‌آموز",
-    "showForm": "نمایش فرم",
-    "hideForm": "پنهان کردن فرم",
     "empty": "دانش‌آموزی یافت نشد.",
     "modalTitle": "جزئیات {name}",
     "close": "بستن",
@@ -277,8 +288,6 @@
     "addEmployee": "افزودن پرسنل",
     "addButtonLabel": "افزودن پرسنل",
     "addEmployeeButton": "ثبت پرسنل",
-    "showForm": "نمایش فرم",
-    "hideForm": "پنهان کردن فرم",
     "empty": "پرسنلی یافت نشد.",
     "modalTitle": "جزئیات {name}",
     "close": "بستن",
@@ -328,6 +337,75 @@
       "paid": "تسویه شده",
       "partial": "ناقص",
       "unpaid": "پرداخت نشده"
+    }
+  },
+  "settings": {
+    "title": "تنظیمات",
+    "subtitle": "مدیریت پروفایل محلی، پشتیبان‌گیری و ذخیره‌سازی داده.",
+    "profile": {
+      "title": "پروفایل محلی",
+      "subtitle": "نام اپراتور و سال تحصیلی پیش‌فرض در این دستگاه ذخیره می‌شوند.",
+      "installId": "شناسه نصب",
+      "installIdHint": "شناسه یکتا برای این نصب برنامه — برای پشتیبانی یا بازیابی مفید است.",
+      "copy": "کپی",
+      "copied": "کپی شد",
+      "copyFailed": "کپی شناسه نصب ممکن نشد."
+    },
+    "storage": {
+      "title": "ذخیره‌سازی محلی",
+      "subtitle": "وضعیت نگهداری داده در مرورگر و فضای مصرف‌شده.",
+      "warning": "پاک‌کردن داده‌های مرورگر یا حذف برنامه ممکن است تمام اطلاعات را از بین ببرد. پشتیبان‌گیری دوره‌ای ضروری است.",
+      "persistenceStatus": "وضعیت نگهداری پایدار",
+      "usageLabel": "فضای مصرف‌شده",
+      "usage": "{used} از {quota}",
+      "unsupported": "مرورگر از Storage API پشتیبانی نمی‌کند",
+      "persisted": "فعال — مرورگر احتمالاً داده را حذف نمی‌کند",
+      "notPersisted": "غیرفعال — داده ممکن است در صورت کمبود فضا حذف شود",
+      "requestPersist": "درخواست نگهداری پایدار",
+      "persistGranted": "نگهداری پایدار فعال شد.",
+      "persistDenied": "درخواست رد شد — مرورگر ممکن است همچنان داده را حذف کند."
+    },
+    "backup": {
+      "title": "پشتیبان‌گیری و بازیابی",
+      "subtitle": "خروجی JSON کامل از تمام داده‌ها یا جایگزینی کامل از فایل پشتیبان.",
+      "lastBackup": "آخرین پشتیبان: {date}",
+      "never": "هرگز",
+      "export": "خروجی JSON",
+      "import": "بازیابی از فایل",
+      "importConfirm": "تمام داده‌های فعلی با محتوای «{filename}» جایگزین می‌شوند. این عمل قابل بازگشت نیست.",
+      "importConfirmAction": "جایگزینی کامل",
+      "importCancel": "لغو",
+      "resetTitle": "بازنشانی به داده نمایشی",
+      "resetSubtitle": "تمام داده‌های واقعی حذف و داده‌های نمایشی ناشناس جایگزین می‌شوند.",
+      "reset": "بازنشانی",
+      "resetConfirm": "آیا مطمئن هستید؟ تمام داده‌های فعلی حذف و با داده نمایشی جایگزین می‌شوند."
+    },
+    "pwa": {
+      "title": "نصب برنامه",
+      "subtitle": "برای دسترسی آفلاین، School Fanders را به صفحه اصلی اضافه کنید.",
+      "installed": "برنامه روی این دستگاه نصب شده است.",
+      "installAvailable": "نصب در دسترس است — برنامه را به صفحه اصلی اضافه کنید.",
+      "installAction": "نصب برنامه",
+      "installDismissed": "درخواست نصب رد شد. بعداً از منوی مرورگر می‌توانید نصب کنید.",
+      "iosTitle": "آیفون / آیپد",
+      "iosStep1": "در Safari دکمه اشتراک‌گذاری را بزنید.",
+      "iosStep2": "گزینه «Add to Home Screen» را انتخاب کنید.",
+      "iosStep3": "نام را تأیید کنید و Add را بزنید.",
+      "androidTitle": "اندروید",
+      "androidStep1": "دکمه نصب برنامه را بزنید، یا منوی مرورگر را باز کنید.",
+      "androidStep2": "گزینه «Install app» یا «Add to Home screen» را انتخاب کنید.",
+      "desktopTitle": "دسکتاپ",
+      "desktopStep1": "از آیکن نصب در نوار آدرس یا منوی مرورگر استفاده کنید.",
+      "desktopStep2": "نصب را تأیید کنید تا برنامه در پنجره جداگانه باز شود."
+    }
+  },
+  "pwa": {
+    "offline": {
+      "status": "آفلاین"
+    },
+    "update": {
+      "message": "نسخه جدید در دسترس است.",
+      "reload": "بارگذاری مجدد"
     }
   }
 }

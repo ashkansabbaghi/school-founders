@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Founder } from '~/composables/useFounders'
+import type { Founder } from '#shared/types/founder'
 import { translateApiError } from '~/utils/translateApiError'
 
 const emit = defineEmits<{

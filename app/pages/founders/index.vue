@@ -39,7 +39,7 @@ async function onDelete(id: string) {
 
     <FounderList
       :founders="founders ?? []"
-      :pending="status === 'pending' && !founders?.length"
+      :pending="status === 'loading' && !founders?.length"
       @delete="onDelete"
     />
 

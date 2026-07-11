@@ -26,9 +26,7 @@ async function loadTransactions() {
   isLoadingTransactions.value = true
 
   try {
-    transactions.value = await $fetch<StudentTransaction[]>('/api/finance/student-transactions', {
-      query: { termYear: termYear.value },
-    })
+    transactions.value = await financeStore.fetchStudentTransactionsForTerm()
   }
   finally {
     isLoadingTransactions.value = false

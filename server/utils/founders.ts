@@ -1,8 +1,4 @@
-export interface Founder {
-  id: string
-  name: string
-  school?: string
-}
+import type { Founder } from '../types/founder'
 
 const COLLECTION = 'founders'
 

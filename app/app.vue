@@ -13,6 +13,7 @@ useHead({
 
 <template>
   <div class="flex min-h-screen flex-col">
+    <NuxtPwaManifest />
     <header class="sticky top-0 z-40 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
       <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <div class="flex min-w-0 flex-wrap items-center gap-4 sm:gap-6">
@@ -24,7 +25,10 @@ useHead({
           </NuxtLink>
           <AppNav />
         </div>
-        <LocaleSwitcher />
+        <div class="flex shrink-0 items-center gap-3">
+          <OfflineIndicator />
+          <LocaleSwitcher />
+        </div>
       </div>
     </header>
     <NuxtRouteAnnouncer />
@@ -32,5 +36,6 @@ useHead({
       <NuxtPage />
     </div>
     <AppBottomNav />
+    <PwaUpdatePrompt />
   </div>
 </template>

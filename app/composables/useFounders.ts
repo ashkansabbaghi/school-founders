@@ -1,36 +1,48 @@
-export interface Founder {
-  id: string
-  name: string
-  school?: string
-}
+import type { Founder } from '#shared/types/founder'
+import {
+  createFounder as createFounderRecord,
+  deleteFounder as deleteFounderRecord,
+  fetchFounders,
+  updateFounder as updateFounderRecord,
+} from '~/services/founders'
+
+type FoundersStatus = 'idle' | 'loading' | 'error'
 
 export function useFounders() {
-  const { data: founders, refresh, status } = useFetch<Founder[]>('/api/founders', {
-    default: () => [],
-  })
+  const founders = useState<Founder[]>('founders', () => [])
+  const status = useState<FoundersStatus>('founders-status', () => 'idle')
+
+  async function refresh() {
+    status.value = 'loading'
+
+    try {
+      founders.value = await fetchFounders()
+      status.value = 'idle'
+    }
+    catch {
+      status.value = 'error'
+      throw new Error('Failed to load founders')
+    }
+  }
 
   async function createFounder(payload: Pick<Founder, 'name' | 'school'>) {
-    const founder = await $fetch<Founder>('/api/founders', {
-      method: 'POST',
-      body: payload,
-    })
+    const founder = await createFounderRecord(payload)
     await refresh()
     return founder
   }
 
   async function updateFounder(id: string, payload: Pick<Founder, 'name' | 'school'>) {
-    await $fetch(`/api/founders/${id}`, {
-      method: 'PUT',
-      body: payload,
-    })
+    await updateFounderRecord(id, payload)
     await refresh()
   }
 
   async function deleteFounder(id: string) {
-    await $fetch(`/api/founders/${id}`, {
-      method: 'DELETE',
-    })
+    await deleteFounderRecord(id)
     await refresh()
+  }
+
+  if (import.meta.client && status.value === 'idle' && founders.value.length === 0) {
+    void refresh()
   }
 
   return {

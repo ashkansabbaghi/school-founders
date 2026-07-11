@@ -13,6 +13,27 @@ import type {
 } from '#shared/types/financial'
 import { getEmployeeExpenseSummary } from '#shared/utils/payroll'
 import { getStudentPaymentSummary } from '#shared/utils/tuition'
+import {
+  loadProfileSettings,
+  saveOperatorName as persistOperatorName,
+  saveTermYear as persistTermYear,
+} from '~/db/bootstrap'
+import {
+  calculateFinanceSummary,
+  deleteEmployeeTransaction as deleteEmployeeTransactionRecord,
+  deleteStudentTransaction as deleteStudentTransactionRecord,
+  fetchMasterData as fetchMasterDataFromDb,
+  listEmployeeTransactions,
+  listStudentTransactions,
+  logEmployeeExpense as logEmployeeExpenseRecord,
+  logStudentPayment as logStudentPaymentRecord,
+  removeEmployee as removeEmployeeRecord,
+  removeStudent as removeStudentRecord,
+  saveEmployee as saveEmployeeRecord,
+  saveStudent as saveStudentRecord,
+  updateEmployeeTransaction as updateEmployeeTransactionRecord,
+  updateStudentTransaction as updateStudentTransactionRecord,
+} from '~/services/finance'
 import { translateApiError } from '~/utils/translateApiError'
 
 type FetchStatus = 'idle' | 'loading' | 'error'
@@ -58,17 +79,16 @@ export const useFinanceStore = defineStore('finance', {
 
   actions: {
     async init() {
-      if (import.meta.client) {
-        const savedOperator = sessionStorage.getItem('finance:operatorName')
-        if (savedOperator) {
-          this.operatorName = savedOperator
-        }
-      }
-
       this.status = 'loading'
       this.error = null
 
       try {
+        if (import.meta.client) {
+          const profile = await loadProfileSettings()
+          this.operatorName = profile.operatorName
+          this.termYear = profile.termYear
+        }
+
         await Promise.all([this.fetchMasterData(), this.fetchSummary()])
         this.status = 'idle'
       }
@@ -80,29 +100,25 @@ export const useFinanceStore = defineStore('finance', {
 
     setTermYear(termYear: string) {
       this.termYear = termYear
+      if (import.meta.client) {
+        void persistTermYear(termYear)
+      }
       void this.fetchSummary()
     },
 
     setOperatorName(name: string) {
       this.operatorName = name
       if (import.meta.client) {
-        sessionStorage.setItem('finance:operatorName', name)
+        void persistOperatorName(name)
       }
     },
 
     async fetchSummary() {
-      this.summary = await $fetch<FinanceSummary>('/api/finance/summary', {
-        query: { termYear: this.termYear },
-      })
+      this.summary = await calculateFinanceSummary({ termYear: this.termYear })
     },
 
     async fetchMasterData() {
-      const [schools, students, employees] = await Promise.all([
-        $fetch<School[]>('/api/finance/schools'),
-        $fetch<Student[]>('/api/finance/students'),
-        $fetch<Employee[]>('/api/finance/employees'),
-      ])
-
+      const { schools, students, employees } = await fetchMasterDataFromDb()
       this.schools = schools
       this.students = students
       this.employees = employees
@@ -116,15 +132,10 @@ export const useFinanceStore = defineStore('finance', {
       this.submitMessage = null
 
       try {
-        const body: StudentLogPayload = {
+        await logStudentPaymentRecord({
           ...payload,
           termYear: this.termYear,
           operator: this.operatorName,
-        }
-
-        await $fetch('/api/finance/student-log', {
-          method: 'POST',
-          body,
         })
 
         await this.fetchSummary()
@@ -144,15 +155,10 @@ export const useFinanceStore = defineStore('finance', {
       this.submitMessage = null
 
       try {
-        const body: EmployeeLogPayload = {
+        await logEmployeeExpenseRecord({
           ...payload,
           termYear: this.termYear,
           operator: this.operatorName,
-        }
-
-        await $fetch('/api/finance/employee-log', {
-          method: 'POST',
-          body,
         })
 
         await this.fetchSummary()
@@ -178,10 +184,7 @@ export const useFinanceStore = defineStore('finance', {
       this.submitMessage = null
 
       try {
-        const student = await $fetch<Student>('/api/finance/students', {
-          method: 'POST',
-          body: payload,
-        })
+        const student = await saveStudentRecord(payload)
 
         await this.fetchMasterData()
         this.submitStatus = 'idle'
@@ -201,9 +204,7 @@ export const useFinanceStore = defineStore('finance', {
       this.submitMessage = null
 
       try {
-        await $fetch(`/api/finance/students/${id}`, {
-          method: 'DELETE',
-        })
+        await removeStudentRecord(id)
 
         await Promise.all([this.fetchMasterData(), this.fetchSummary()])
         this.submitStatus = 'idle'
@@ -217,12 +218,14 @@ export const useFinanceStore = defineStore('finance', {
     },
 
     async fetchStudentTransactions(studentId: string) {
-      return $fetch<StudentTransaction[]>('/api/finance/student-transactions', {
-        query: {
-          studentId,
-          termYear: this.termYear,
-        },
+      return listStudentTransactions({
+        studentId,
+        termYear: this.termYear,
       })
+    },
+
+    async fetchStudentTransactionsForTerm() {
+      return listStudentTransactions({ termYear: this.termYear })
     },
 
     async updateStudentTransaction(
@@ -234,15 +237,10 @@ export const useFinanceStore = defineStore('finance', {
       this.submitMessage = null
 
       try {
-        const body: StudentLogPayload = {
+        await updateStudentTransactionRecord(id, {
           ...payload,
           termYear: this.termYear,
           operator: this.operatorName,
-        }
-
-        await $fetch(`/api/finance/student-transactions/${id}`, {
-          method: 'PUT',
-          body,
         })
 
         await this.fetchSummary()
@@ -262,9 +260,7 @@ export const useFinanceStore = defineStore('finance', {
       this.submitMessage = null
 
       try {
-        await $fetch(`/api/finance/student-transactions/${id}`, {
-          method: 'DELETE',
-        })
+        await deleteStudentTransactionRecord(id)
 
         await this.fetchSummary()
         this.submitStatus = 'idle'
@@ -283,10 +279,7 @@ export const useFinanceStore = defineStore('finance', {
       this.submitMessage = null
 
       try {
-        const employee = await $fetch<Employee>('/api/finance/employees', {
-          method: 'POST',
-          body: payload,
-        })
+        const employee = await saveEmployeeRecord(payload)
 
         await this.fetchMasterData()
         this.submitStatus = 'idle'
@@ -306,9 +299,7 @@ export const useFinanceStore = defineStore('finance', {
       this.submitMessage = null
 
       try {
-        await $fetch(`/api/finance/employees/${id}`, {
-          method: 'DELETE',
-        })
+        await removeEmployeeRecord(id)
 
         await Promise.all([this.fetchMasterData(), this.fetchSummary()])
         this.submitStatus = 'idle'
@@ -322,12 +313,14 @@ export const useFinanceStore = defineStore('finance', {
     },
 
     async fetchEmployeeTransactions(employeeId: string) {
-      return $fetch<EmployeeTransaction[]>('/api/finance/employee-transactions', {
-        query: {
-          employeeId,
-          termYear: this.termYear,
-        },
+      return listEmployeeTransactions({
+        employeeId,
+        termYear: this.termYear,
       })
+    },
+
+    async fetchEmployeeTransactionsForTerm() {
+      return listEmployeeTransactions({ termYear: this.termYear })
     },
 
     async updateEmployeeTransaction(
@@ -339,15 +332,10 @@ export const useFinanceStore = defineStore('finance', {
       this.submitMessage = null
 
       try {
-        const body: EmployeeLogPayload = {
+        await updateEmployeeTransactionRecord(id, {
           ...payload,
           termYear: this.termYear,
           operator: this.operatorName,
-        }
-
-        await $fetch(`/api/finance/employee-transactions/${id}`, {
-          method: 'PUT',
-          body,
         })
 
         await this.fetchSummary()
@@ -367,9 +355,7 @@ export const useFinanceStore = defineStore('finance', {
       this.submitMessage = null
 
       try {
-        await $fetch(`/api/finance/employee-transactions/${id}`, {
-          method: 'DELETE',
-        })
+        await deleteEmployeeTransactionRecord(id)
 
         await this.fetchSummary()
         this.submitStatus = 'idle'

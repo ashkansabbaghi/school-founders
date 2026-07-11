@@ -10,7 +10,9 @@
     "foundersShort": "Schools",
     "financeShort": "Finance",
     "studentsShort": "Students",
-    "employeesShort": "Staff"
+    "employeesShort": "Staff",
+    "settings": "Settings",
+    "settingsShort": "Settings"
   },
   "common": {
     "loading": "Loading...",
@@ -139,7 +141,10 @@
     "employeeRemoved": "Employee removed successfully.",
     "employeeExpenseUpdated": "Expense updated successfully.",
     "employeeExpenseRemoved": "Expense removed successfully.",
-    "unexpectedError": "An unexpected error occurred"
+    "unexpectedError": "An unexpected error occurred",
+    "backupExported": "Backup file downloaded successfully.",
+    "backupImported": "Data restored successfully.",
+    "demoReset": "Data reset to demo state."
   },
   "fields": {
     "name": "Name",
@@ -204,6 +209,14 @@
     },
     "internal": {
       "invalidJsonArray": "{filename} must contain a JSON array"
+    },
+    "backup": {
+      "invalidFormat": "Backup file has an invalid structure",
+      "invalidJson": "File is not valid JSON",
+      "unsupportedSchemaVersion": "Unsupported backup version: {values}",
+      "missingCollection": "Collection \"{filename}\" is missing from the backup",
+      "invalidCollection": "Collection \"{filename}\" in the backup is invalid",
+      "duplicateId": "Duplicate ID \"{id}\" found in the backup"
     }
   },
   "students": {
@@ -214,8 +227,6 @@
     "addStudent": "Add Student",
     "addButtonLabel": "Add student",
     "addStudentButton": "Create Student",
-    "showForm": "Show form",
-    "hideForm": "Hide form",
     "empty": "No students found.",
     "modalTitle": "Details for {name}",
     "close": "Close",
@@ -277,8 +288,6 @@
     "addEmployee": "Add Staff Member",
     "addButtonLabel": "Add staff member",
     "addEmployeeButton": "Create Staff Member",
-    "showForm": "Show form",
-    "hideForm": "Hide form",
     "empty": "No staff found.",
     "modalTitle": "Details for {name}",
     "close": "Close",
@@ -328,6 +337,75 @@
       "paid": "Paid",
       "partial": "Partial",
       "unpaid": "Unpaid"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage local profile, backups, and data storage.",
+    "profile": {
+      "title": "Local Profile",
+      "subtitle": "Operator name and default term year are stored on this device.",
+      "installId": "Install ID",
+      "installIdHint": "Unique ID for this app install — useful for support or recovery.",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyFailed": "Could not copy install ID."
+    },
+    "storage": {
+      "title": "Local Storage",
+      "subtitle": "Browser data retention status and space usage.",
+      "warning": "Clearing browser data or uninstalling the app may delete all information. Regular backups are essential.",
+      "persistenceStatus": "Persistent storage",
+      "usageLabel": "Space used",
+      "usage": "{used} of {quota}",
+      "unsupported": "Browser does not support the Storage API",
+      "persisted": "Enabled — browser is less likely to evict data",
+      "notPersisted": "Disabled — data may be cleared when storage is low",
+      "requestPersist": "Request persistent storage",
+      "persistGranted": "Persistent storage enabled.",
+      "persistDenied": "Request denied — browser may still evict data."
+    },
+    "backup": {
+      "title": "Backup & Restore",
+      "subtitle": "Full JSON export of all data, or complete replacement from a backup file.",
+      "lastBackup": "Last backup: {date}",
+      "never": "Never",
+      "export": "Export JSON",
+      "import": "Restore from file",
+      "importConfirm": "All current data will be replaced with \"{filename}\". This cannot be undone.",
+      "importConfirmAction": "Replace all data",
+      "importCancel": "Cancel",
+      "resetTitle": "Reset to demo data",
+      "resetSubtitle": "Remove all real data and replace with anonymous demo data.",
+      "reset": "Reset",
+      "resetConfirm": "Are you sure? All current data will be deleted and replaced with demo data."
+    },
+    "pwa": {
+      "title": "Install App",
+      "subtitle": "Add School Fanders to your home screen for offline access.",
+      "installed": "App is installed on this device.",
+      "installAvailable": "Install is available — add the app to your home screen.",
+      "installAction": "Install app",
+      "installDismissed": "Install prompt dismissed. Use your browser menu to install later.",
+      "iosTitle": "iPhone / iPad",
+      "iosStep1": "Tap the Share button in Safari.",
+      "iosStep2": "Choose \"Add to Home Screen\".",
+      "iosStep3": "Confirm the name and tap Add.",
+      "androidTitle": "Android",
+      "androidStep1": "Tap Install app above, or open the browser menu.",
+      "androidStep2": "Choose \"Install app\" or \"Add to Home screen\".",
+      "desktopTitle": "Desktop",
+      "desktopStep1": "Use the install icon in the address bar, or the browser menu.",
+      "desktopStep2": "Confirm installation to open the app in its own window."
+    }
+  },
+  "pwa": {
+    "offline": {
+      "status": "Offline"
+    },
+    "update": {
+      "message": "A new version is available.",
+      "reload": "Reload"
     }
   }
 }
