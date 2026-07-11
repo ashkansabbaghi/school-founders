@@ -20,12 +20,19 @@ const icons: Record<string, string> = {
         v-for="item in items"
         :key="item.key"
         :to="item.to"
-        class="flex min-w-0 flex-1 flex-col items-center gap-0.5 px-1 py-2 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500/50"
+        class="relative flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg px-1 py-2 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500/50"
         :class="isActive(item.to, item.key)
-          ? 'text-violet-400'
-          : 'text-zinc-500 active:text-zinc-300'"
+          ? 'bg-violet-500/15 text-violet-300'
+          : 'text-zinc-500 active:bg-zinc-800/40 active:text-zinc-300'"
         :aria-current="isActive(item.to, item.key) ? 'page' : undefined"
       >
+        <span
+          class="absolute inset-x-2 top-0 h-0.5 rounded-full transition-opacity duration-200"
+          :class="isActive(item.to, item.key)
+            ? 'bg-violet-400 opacity-100'
+            : 'opacity-0'"
+          aria-hidden="true"
+        />
         <svg
           class="h-6 w-6 shrink-0"
           :class="isActive(item.to, item.key) ? 'stroke-[2.25]' : 'stroke-[1.75]'"
@@ -37,8 +44,8 @@ const icons: Record<string, string> = {
           <path stroke-linecap="round" stroke-linejoin="round" :d="icons[item.key]" />
         </svg>
         <span
-          class="w-full truncate text-center text-[10px] font-medium leading-tight"
-          :class="isActive(item.to, item.key) ? 'text-violet-300' : ''"
+          class="w-full truncate text-center text-[10px] leading-tight"
+          :class="isActive(item.to, item.key) ? 'font-semibold text-violet-200' : 'font-medium'"
         >
           {{ item.shortLabel }}
         </span>

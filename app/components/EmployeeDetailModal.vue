@@ -275,10 +275,10 @@ onUnmounted(() => {
       role="dialog"
       aria-modal="true"
       :aria-label="$t('employees.modalTitle', { name: employee.fullName })"
-      class="ui-modal-panel my-8 max-w-3xl"
+      class="ui-modal-panel max-w-3xl sm:my-8"
     >
-      <header class="flex items-start justify-between border-b border-zinc-800 px-6 py-4">
-        <div>
+      <header class="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-zinc-800 bg-zinc-900/95 px-4 py-4 backdrop-blur sm:static sm:rounded-t-xl sm:px-6">
+        <div class="min-w-0">
           <h2 class="text-lg font-semibold text-zinc-100">
             {{ employee.fullName }}
           </h2>
@@ -288,7 +288,7 @@ onUnmounted(() => {
         </div>
         <button
           type="button"
-          class="rounded-lg p-2 text-zinc-400 transition-colors duration-200 hover:bg-zinc-800 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+          class="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg p-2 text-zinc-400 transition-colors duration-200 hover:bg-zinc-800 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
           :aria-label="$t('employees.close')"
           @click="emit('close')"
         >
@@ -296,7 +296,7 @@ onUnmounted(() => {
         </button>
       </header>
 
-      <div class="scrollbar-thin max-h-[calc(100vh-8rem)] overflow-y-auto px-6 py-5">
+      <div class="scrollbar-thin px-4 py-5 sm:max-h-[calc(100vh-8rem)] sm:overflow-y-auto sm:px-6">
         <div
           v-if="submitMessage"
           class="ui-alert-success mb-4"
@@ -442,11 +442,27 @@ onUnmounted(() => {
 
           <div
             v-if="isLoadingTransactions"
-            class="space-y-3 py-4"
             aria-busy="true"
             :aria-label="$t('common.loading')"
           >
-            <div v-for="n in 3" :key="n" class="ui-skeleton h-10 w-full rounded-lg" />
+            <ul class="mb-6 space-y-3 md:hidden">
+              <li
+                v-for="n in 3"
+                :key="n"
+                class="ui-card space-y-2 p-4"
+              >
+                <div class="ui-skeleton h-6 w-32" />
+                <div class="ui-skeleton h-4 w-24" />
+                <div class="ui-skeleton h-4 w-40" />
+                <div class="flex gap-2 pt-1">
+                  <div class="ui-skeleton h-11 flex-1 rounded-lg" />
+                  <div class="ui-skeleton h-11 flex-1 rounded-lg" />
+                </div>
+              </li>
+            </ul>
+            <div class="mb-6 hidden space-y-3 md:block">
+              <div v-for="n in 3" :key="n" class="ui-skeleton h-10 w-full rounded-lg" />
+            </div>
           </div>
           <div
             v-else-if="transactions.length === 0"
@@ -454,66 +470,109 @@ onUnmounted(() => {
           >
             {{ $t('employees.noExpenses') }}
           </div>
-          <div v-else class="scrollbar-thin mb-6 overflow-x-auto rounded-lg border border-zinc-800">
-            <table class="ui-table">
-              <thead class="ui-table-head">
-                <tr>
-                  <th class="ui-table-th">
-                    {{ $t('employees.columns.date') }}
-                  </th>
-                  <th class="ui-table-th">
-                    {{ $t('employees.columns.amount') }}
-                  </th>
-                  <th class="ui-table-th">
-                    {{ $t('employees.columns.type') }}
-                  </th>
-                  <th class="ui-table-th">
-                    {{ $t('employees.columns.operator') }}
-                  </th>
-                  <th class="px-4 py-2 text-end text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                    {{ $t('employees.columns.actions') }}
-                  </th>
-                </tr>
-              </thead>
-              <TransitionGroup
-                tag="tbody"
-                name="list-item"
-                appear
-                class="divide-y divide-zinc-800"
+          <template v-else>
+            <TransitionGroup
+              tag="ul"
+              name="list-item"
+              appear
+              class="mb-6 space-y-3 md:hidden"
+            >
+              <li
+                v-for="transaction in transactions"
+                :key="transaction.id"
+                class="ui-card p-4"
               >
-                <tr v-for="transaction in transactions" :key="transaction.id" class="ui-table-row">
-                  <td class="px-4 py-2 text-zinc-100">
-                    {{ transaction.date }}
-                  </td>
-                  <td class="px-4 py-2 text-zinc-100">
-                    {{ numberFormatter.format(transaction.amountPaid) }}
-                  </td>
-                  <td class="px-4 py-2 text-zinc-400">
-                    {{ $t(`operator.transactionTypes.${transaction.transactionType}`) }}
-                  </td>
-                  <td class="px-4 py-2 text-zinc-400">
-                    {{ transaction.operator }}
-                  </td>
-                  <td class="px-4 py-2 text-end">
-                    <button
-                      type="button"
-                      class="me-2 text-violet-400 transition-colors duration-200 hover:text-violet-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
-                      @click="startEditExpense(transaction)"
-                    >
-                      {{ $t('employees.editExpense') }}
-                    </button>
-                    <button
-                      type="button"
-                      class="text-rose-400 transition-colors duration-200 hover:text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/50"
-                      @click="deleteExpense(transaction)"
-                    >
-                      {{ $t('common.delete') }}
-                    </button>
-                  </td>
-                </tr>
-              </TransitionGroup>
-            </table>
-          </div>
+                <div class="text-lg font-semibold text-zinc-100">
+                  {{ numberFormatter.format(transaction.amountPaid) }}
+                </div>
+                <div class="mt-1 text-sm text-zinc-400">
+                  {{ transaction.date }}
+                </div>
+                <div class="mt-0.5 text-sm text-zinc-300">
+                  {{ $t(`operator.transactionTypes.${transaction.transactionType}`) }}
+                </div>
+                <div class="mt-0.5 text-xs text-zinc-500">
+                  {{ transaction.operator }}
+                </div>
+                <div class="mt-3 flex gap-2">
+                  <button
+                    type="button"
+                    class="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg border border-violet-500/30 bg-violet-500/10 px-3 text-sm font-medium text-violet-400 transition-colors duration-200 hover:bg-violet-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+                    @click="startEditExpense(transaction)"
+                  >
+                    {{ $t('employees.editExpense') }}
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 text-sm font-medium text-rose-400 transition-colors duration-200 hover:bg-rose-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/50"
+                    @click="deleteExpense(transaction)"
+                  >
+                    {{ $t('common.delete') }}
+                  </button>
+                </div>
+              </li>
+            </TransitionGroup>
+            <div class="ui-table-scroll mb-6 hidden rounded-lg border border-zinc-800 md:block">
+              <table class="ui-table">
+                <thead class="ui-table-head">
+                  <tr>
+                    <th class="ui-table-th">
+                      {{ $t('employees.columns.date') }}
+                    </th>
+                    <th class="ui-table-th">
+                      {{ $t('employees.columns.amount') }}
+                    </th>
+                    <th class="ui-table-th">
+                      {{ $t('employees.columns.type') }}
+                    </th>
+                    <th class="ui-table-th">
+                      {{ $t('employees.columns.operator') }}
+                    </th>
+                    <th class="px-4 py-2 text-end text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                      {{ $t('employees.columns.actions') }}
+                    </th>
+                  </tr>
+                </thead>
+                <TransitionGroup
+                  tag="tbody"
+                  name="list-item"
+                  appear
+                  class="divide-y divide-zinc-800"
+                >
+                  <tr v-for="transaction in transactions" :key="transaction.id" class="ui-table-row">
+                    <td class="px-4 py-2 text-zinc-100">
+                      {{ transaction.date }}
+                    </td>
+                    <td class="px-4 py-2 text-zinc-100">
+                      {{ numberFormatter.format(transaction.amountPaid) }}
+                    </td>
+                    <td class="px-4 py-2 text-zinc-400">
+                      {{ $t(`operator.transactionTypes.${transaction.transactionType}`) }}
+                    </td>
+                    <td class="px-4 py-2 text-zinc-400">
+                      {{ transaction.operator }}
+                    </td>
+                    <td class="px-4 py-2 text-end">
+                      <button
+                        type="button"
+                        class="me-1 inline-flex items-center rounded-md px-2 py-1 text-violet-400 transition-colors duration-200 hover:text-violet-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+                        @click="startEditExpense(transaction)"
+                      >
+                        {{ $t('employees.editExpense') }}
+                      </button>
+                      <button
+                        type="button"
+                        class="inline-flex items-center rounded-md px-2 py-1 text-rose-400 transition-colors duration-200 hover:text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/50"
+                        @click="deleteExpense(transaction)"
+                      >
+                        {{ $t('common.delete') }}
+                      </button>
+                    </td>
+                  </tr>
+                </TransitionGroup>
+              </table>
+            </div>
+          </template>
 
           <form class="grid gap-4 rounded-lg border border-zinc-800 bg-zinc-800/40 p-4 sm:grid-cols-2" @submit.prevent="submitExpense">
             <p class="ui-label sm:col-span-2">

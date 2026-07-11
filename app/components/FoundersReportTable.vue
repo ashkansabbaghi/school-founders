@@ -62,7 +62,7 @@ function profitLabel(netProfit: number): string {
 
 <template>
   <section class="ui-card overflow-hidden">
-    <header class="border-b border-zinc-800 px-6 py-4">
+    <header class="border-b border-zinc-800 px-4 py-4 sm:px-6">
       <h2 class="text-lg font-semibold text-zinc-100">
         {{ $t('report.title') }}
       </h2>
@@ -71,7 +71,149 @@ function profitLabel(netProfit: number): string {
       </p>
     </header>
 
-    <div class="scrollbar-thin overflow-x-auto">
+    <div class="md:hidden">
+      <ul
+        v-if="isLoading"
+        class="divide-y divide-zinc-800"
+        aria-busy="true"
+        :aria-label="$t('common.loading')"
+      >
+        <li
+          v-for="n in 3"
+          :key="n"
+          class="space-y-3 p-4"
+        >
+          <div class="ui-skeleton h-5 w-40" />
+          <div class="ui-skeleton h-3 w-24" />
+          <div class="space-y-2">
+            <div class="ui-skeleton h-4 w-full" />
+            <div class="ui-skeleton h-2 w-full rounded-full" />
+          </div>
+          <div class="space-y-2">
+            <div class="ui-skeleton h-4 w-full" />
+            <div class="ui-skeleton h-2 w-full rounded-full" />
+          </div>
+        </li>
+      </ul>
+
+      <template v-else-if="schoolRows.length">
+        <ul class="divide-y divide-zinc-800">
+          <li
+            v-for="row in schoolRows as SchoolProfitBreakdown[]"
+            :key="row.schoolId"
+            class="space-y-3 p-4"
+          >
+            <div>
+              <div class="font-medium text-zinc-100">
+                {{ row.schoolName }}
+              </div>
+              <div class="text-sm text-zinc-400">
+                {{ row.branch }}
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-zinc-400">{{ $t('report.columns.studentIncomes') }}</span>
+                <span class="font-medium text-zinc-100">{{ formatCurrency(row.revenue) }}</span>
+              </div>
+              <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                <div
+                  class="h-full rounded-full bg-emerald-500 shadow-glow transition-all"
+                  :style="{ width: barWidth(row.revenue, maxRevenue) }"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-zinc-400">{{ $t('report.columns.staffExpenses') }}</span>
+                <span class="font-medium text-zinc-100">{{ formatCurrency(row.employeeExpenses) }}</span>
+              </div>
+              <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                <div
+                  class="h-full rounded-full bg-rose-500 shadow-[0_0_20px_-5px_rgba(244,63,94,0.25)] transition-all"
+                  :style="{ width: barWidth(row.employeeExpenses, maxExpenses) }"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-zinc-400">{{ $t('report.columns.netProfit') }}</span>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                    :class="profitBadgeClass(row.netProfit)"
+                  >
+                    {{ profitLabel(row.netProfit) }}
+                  </span>
+                  <span
+                    class="font-semibold"
+                    :class="profitTextClass(row.netProfit)"
+                  >
+                    {{ formatCurrency(row.netProfit) }}
+                  </span>
+                </div>
+              </div>
+              <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                <div
+                  class="h-full rounded-full transition-all"
+                  :class="profitBarClass(row.netProfit)"
+                  :style="{ width: barWidth(row.netProfit, maxNetProfit) }"
+                />
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <div
+          v-if="summary"
+          class="border-t border-zinc-800 bg-zinc-800/40 p-4"
+        >
+          <div class="mb-3 text-sm font-semibold text-zinc-100">
+            {{ $t('common.total') }}
+          </div>
+
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-zinc-400">{{ $t('report.columns.studentIncomes') }}</span>
+              <span class="font-semibold text-zinc-100">{{ formatCurrency(summary.totalRevenue) }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-zinc-400">{{ $t('report.columns.staffExpenses') }}</span>
+              <span class="font-semibold text-zinc-100">{{ formatCurrency(totalEmployeeExpenses) }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-zinc-400">{{ $t('report.columns.netProfit') }}</span>
+              <div class="flex items-center gap-2">
+                <span
+                  class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                  :class="profitBadgeClass(summary.totalNetProfit)"
+                >
+                  {{ profitLabel(summary.totalNetProfit) }}
+                </span>
+                <span
+                  class="font-semibold"
+                  :class="profitTextClass(summary.totalNetProfit)"
+                >
+                  {{ formatCurrency(summary.totalNetProfit) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <div
+        v-else
+        class="ui-empty-state"
+      >
+        {{ $t('report.empty') }}
+      </div>
+    </div>
+
+    <div class="ui-table-scroll hidden md:block">
       <table class="ui-table">
         <thead class="ui-table-head">
           <tr>

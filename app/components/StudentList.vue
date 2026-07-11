@@ -49,112 +49,167 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
 </script>
 
 <template>
-  <section class="ui-card overflow-hidden">
+  <section>
     <div
       v-if="isLoading"
-      class="scrollbar-thin overflow-x-auto"
       aria-busy="true"
       :aria-label="$t('common.loading')"
     >
-      <table class="ui-table">
-        <thead class="ui-table-head">
-          <tr>
-            <th class="ui-table-th">
-              {{ $t('students.columns.fullName') }}
-            </th>
-            <th class="ui-table-th">
-              {{ $t('students.columns.studentId') }}
-            </th>
-            <th class="ui-table-th">
-              {{ $t('students.columns.grade') }}
-            </th>
-            <th class="ui-table-th">
-              {{ $t('students.columns.school') }}
-            </th>
-            <th class="ui-table-th">
-              {{ $t('students.columns.payment') }}
-            </th>
-            <th class="ui-table-th">
-              {{ $t('students.columns.status') }}
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-zinc-800">
-          <tr v-for="n in 5" :key="n">
-            <td v-for="col in 6" :key="col" class="px-4 py-3">
-              <div class="ui-skeleton h-4" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <ul class="space-y-3 md:hidden">
+        <li
+          v-for="n in 5"
+          :key="n"
+          class="ui-card space-y-2 p-4"
+        >
+          <div class="ui-skeleton h-5 w-40" />
+          <div class="ui-skeleton h-4 w-56" />
+          <div class="ui-skeleton h-4 w-32" />
+        </li>
+      </ul>
+      <div class="ui-card hidden overflow-hidden md:block">
+        <div class="ui-table-scroll">
+          <table class="ui-table">
+            <thead class="ui-table-head">
+              <tr>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.fullName') }}
+                </th>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.studentId') }}
+                </th>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.grade') }}
+                </th>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.school') }}
+                </th>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.payment') }}
+                </th>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.status') }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-800">
+              <tr v-for="n in 5" :key="n">
+                <td v-for="col in 6" :key="col" class="px-4 py-3">
+                  <div class="ui-skeleton h-4" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     <div
       v-else-if="rows.length === 0"
-      class="ui-empty-state"
+      class="ui-card"
     >
-      {{ $t('students.empty') }}
+      <div class="ui-empty-state">
+        {{ $t('students.empty') }}
+      </div>
     </div>
-    <div v-else class="scrollbar-thin overflow-x-auto">
-      <table class="ui-table">
-        <thead class="ui-table-head">
-          <tr>
-            <th class="ui-table-th">
-              {{ $t('students.columns.fullName') }}
-            </th>
-            <th class="ui-table-th">
-              {{ $t('students.columns.studentId') }}
-            </th>
-            <th class="ui-table-th">
-              {{ $t('students.columns.grade') }}
-            </th>
-            <th class="ui-table-th">
-              {{ $t('students.columns.school') }}
-            </th>
-            <th class="ui-table-th">
-              {{ $t('students.columns.payment') }}
-            </th>
-            <th class="ui-table-th">
-              {{ $t('students.columns.status') }}
-            </th>
-          </tr>
-        </thead>
-        <TransitionGroup
-          tag="tbody"
-          name="list-item"
-          appear
-          class="divide-y divide-zinc-800"
+    <template v-else>
+      <TransitionGroup
+        tag="ul"
+        name="list-item"
+        appear
+        class="space-y-3 md:hidden"
+      >
+        <li
+          v-for="row in rows"
+          :key="row.student.id"
         >
-          <tr
-            v-for="row in rows"
-            :key="row.student.id"
-            class="ui-table-row cursor-pointer focus-visible:bg-zinc-800/50 focus-visible:outline-none"
-            tabindex="0"
+          <button
+            type="button"
+            class="ui-card-hover flex w-full items-start justify-between gap-3 p-4 text-start transition-colors duration-200 active:bg-zinc-800/50 focus-visible:bg-zinc-800/50 focus-visible:outline-none"
             @click="emit('select', row.student)"
-            @keydown.enter="emit('select', row.student)"
           >
-            <td class="px-4 py-3 font-medium text-zinc-100">
-              {{ row.student.fullName }}
-            </td>
-            <td class="px-4 py-3 text-zinc-300">
-              {{ row.student.studentId }}
-            </td>
-            <td class="px-4 py-3 text-zinc-300">
-              {{ row.student.grade }}
-            </td>
-            <td class="px-4 py-3 text-zinc-400">
-              {{ row.schoolLabel }}
-            </td>
-            <td class="px-4 py-3 text-zinc-300">
-              {{ numberFormatter.format(row.summary.paid) }} / {{ numberFormatter.format(row.summary.expected) }}
-            </td>
-            <td class="px-4 py-3">
-              <span :class="statusClasses(row.summary.status)">
-                {{ $t(`students.status.${row.summary.status}`) }}
-              </span>
-            </td>
-          </tr>
-        </TransitionGroup>
-      </table>
-    </div>
+            <div class="min-w-0 flex-1">
+              <div class="truncate text-base font-medium text-zinc-100">
+                {{ row.student.fullName }}
+              </div>
+              <div class="mt-0.5 truncate text-sm text-zinc-400">
+                {{ row.schoolLabel }}
+              </div>
+              <div class="mt-1.5 text-sm text-zinc-300">
+                {{ $t('students.remaining', { amount: numberFormatter.format(row.summary.remaining) }) }}
+              </div>
+            </div>
+            <span
+              :class="statusClasses(row.summary.status)"
+              class="shrink-0"
+            >
+              {{ $t(`students.status.${row.summary.status}`) }}
+            </span>
+          </button>
+        </li>
+      </TransitionGroup>
+      <div class="ui-card hidden overflow-hidden md:block">
+        <div class="ui-table-scroll">
+          <table class="ui-table">
+            <thead class="ui-table-head">
+              <tr>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.fullName') }}
+                </th>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.studentId') }}
+                </th>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.grade') }}
+                </th>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.school') }}
+                </th>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.payment') }}
+                </th>
+                <th class="ui-table-th">
+                  {{ $t('students.columns.status') }}
+                </th>
+              </tr>
+            </thead>
+            <TransitionGroup
+              tag="tbody"
+              name="list-item"
+              appear
+              class="divide-y divide-zinc-800"
+            >
+              <tr
+                v-for="row in rows"
+                :key="row.student.id"
+                class="ui-table-row cursor-pointer focus-visible:bg-zinc-800/50 focus-visible:outline-none"
+                tabindex="0"
+                @click="emit('select', row.student)"
+                @keydown.enter="emit('select', row.student)"
+              >
+                <td class="px-4 py-3 font-medium text-zinc-100">
+                  {{ row.student.fullName }}
+                </td>
+                <td class="px-4 py-3 text-zinc-300">
+                  {{ row.student.studentId }}
+                </td>
+                <td class="px-4 py-3 text-zinc-300">
+                  {{ row.student.grade }}
+                </td>
+                <td class="px-4 py-3 text-zinc-400">
+                  {{ row.schoolLabel }}
+                </td>
+                <td class="px-4 py-3 text-zinc-300">
+                  {{ numberFormatter.format(row.summary.paid) }} / {{ numberFormatter.format(row.summary.expected) }}
+                </td>
+                <td class="px-4 py-3">
+                  <span :class="statusClasses(row.summary.status)">
+                    {{ $t(`students.status.${row.summary.status}`) }}
+                  </span>
+                </td>
+              </tr>
+            </TransitionGroup>
+          </table>
+        </div>
+      </div>
+    </template>
   </section>
 </template>

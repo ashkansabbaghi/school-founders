@@ -7,7 +7,7 @@
     "students": "Student Management",
     "employees": "Staff Management",
     "dashboardShort": "Home",
-    "foundersShort": "Founders",
+    "foundersShort": "Schools",
     "financeShort": "Finance",
     "studentsShort": "Students",
     "employeesShort": "Staff"
@@ -67,6 +67,7 @@
     "pageTitle": "School Founders",
     "subtitle": "Add and manage founders.",
     "listTitle": "Founders",
+    "addButtonLabel": "Add founder",
     "empty": "No founders yet."
   },
   "report": {
@@ -211,6 +212,7 @@
     "backToFinance": "← Back to Finance Dashboard",
     "allSchools": "All schools",
     "addStudent": "Add Student",
+    "addButtonLabel": "Add student",
     "addStudentButton": "Create Student",
     "showForm": "Show form",
     "hideForm": "Hide form",
@@ -273,6 +275,7 @@
     "backToFinance": "← Back to Finance Dashboard",
     "allSchools": "All schools",
     "addEmployee": "Add Staff Member",
+    "addButtonLabel": "Add staff member",
     "addEmployeeButton": "Create Staff Member",
     "showForm": "Show form",
     "hideForm": "Hide form",

@@ -6,8 +6,8 @@
     "finance": "داشبورد مالی",
     "students": "مدیریت دانش‌آموزان",
     "employees": "مدیریت پرسنل",
-    "dashboardShort": "داشبورد",
-    "foundersShort": "بنیان‌گذاران",
+    "dashboardShort": "خانه",
+    "foundersShort": "مدارس",
     "financeShort": "مالی",
     "studentsShort": "دانش‌آموز",
     "employeesShort": "پرسنل"
@@ -67,6 +67,7 @@
     "pageTitle": "بنیان‌گذاران مدارس",
     "subtitle": "افزودن و مدیریت بنیان‌گذاران.",
     "listTitle": "بنیان‌گذاران",
+    "addButtonLabel": "افزودن بنیان‌گذار",
     "empty": "هنوز بنیان‌گذاری ثبت نشده است."
   },
   "report": {
@@ -211,6 +212,7 @@
     "backToFinance": "بازگشت به داشبورد مالی →",
     "allSchools": "همه مدارس",
     "addStudent": "افزودن دانش‌آموز",
+    "addButtonLabel": "افزودن دانش‌آموز",
     "addStudentButton": "ثبت دانش‌آموز",
     "showForm": "نمایش فرم",
     "hideForm": "پنهان کردن فرم",
@@ -273,6 +275,7 @@
     "backToFinance": "بازگشت به داشبورد مالی →",
     "allSchools": "همه مدارس",
     "addEmployee": "افزودن پرسنل",
+    "addButtonLabel": "افزودن پرسنل",
     "addEmployeeButton": "ثبت پرسنل",
     "showForm": "نمایش فرم",
     "hideForm": "پنهان کردن فرم",

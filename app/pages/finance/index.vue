@@ -13,7 +13,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="mx-auto max-w-6xl space-y-8 p-6">
+  <main class="mx-auto max-w-6xl space-y-8 p-4 sm:p-6">
     <header class="ui-page-header">
       <h1 class="ui-page-title">
         {{ $t('finance.title') }}

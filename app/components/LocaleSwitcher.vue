@@ -15,7 +15,7 @@ const availableLocales = computed(() =>
       v-for="loc in availableLocales"
       :key="loc.code"
       type="button"
-      class="rounded-md px-3 py-1.5 text-sm font-medium text-zinc-400 transition-colors duration-200 hover:bg-zinc-800/60 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+      class="min-h-10 rounded-md px-3.5 py-2 text-sm font-medium text-zinc-400 transition-colors duration-200 hover:bg-zinc-800/60 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50 sm:min-h-0 sm:px-3 sm:py-1.5"
       @click="setLocale(loc.code)"
     >
       {{ typeof loc === 'object' ? loc.name : loc }}

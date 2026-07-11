@@ -10,11 +10,12 @@ export function useFounders() {
   })
 
   async function createFounder(payload: Pick<Founder, 'name' | 'school'>) {
-    await $fetch('/api/founders', {
+    const founder = await $fetch<Founder>('/api/founders', {
       method: 'POST',
       body: payload,
     })
     await refresh()
+    return founder
   }
 
   async function updateFounder(id: string, payload: Pick<Founder, 'name' | 'school'>) {

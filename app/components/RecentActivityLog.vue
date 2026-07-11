@@ -51,7 +51,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
 
 <template>
   <section class="ui-card overflow-hidden">
-    <header class="border-b border-zinc-800 px-6 py-4">
+    <header class="border-b border-zinc-800 px-4 py-4 sm:px-6">
       <h2 class="text-lg font-semibold text-zinc-100">
         {{ $t('dashboard.recentLogs.title') }}
       </h2>
@@ -60,7 +60,78 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
       </p>
     </header>
 
-    <div class="scrollbar-thin overflow-x-auto">
+    <div class="md:hidden">
+      <ul
+        v-if="pending"
+        class="divide-y divide-zinc-800"
+        aria-busy="true"
+        :aria-label="$t('common.loading')"
+      >
+        <li
+          v-for="n in 5"
+          :key="n"
+          class="space-y-2 p-4"
+        >
+          <div class="flex items-center justify-between gap-3">
+            <div class="ui-skeleton h-5 w-16 rounded-full" />
+            <div class="ui-skeleton h-6 w-24" />
+          </div>
+          <div class="ui-skeleton h-4 w-40" />
+          <div class="ui-skeleton h-3 w-32" />
+          <div class="ui-skeleton h-3 w-48" />
+        </li>
+      </ul>
+
+      <ul
+        v-else-if="props.logs.length"
+        class="divide-y divide-zinc-800"
+      >
+        <li
+          v-for="log in props.logs"
+          :key="`${log.kind}-${log.id}`"
+          class="p-4"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <span
+              class="inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold"
+              :class="kindBadgeClass(log.kind)"
+            >
+              {{ kindLabel(log.kind) }}
+            </span>
+            <span class="text-lg font-semibold text-zinc-100">
+              {{ formatCurrency(log.amountPaid) }}
+            </span>
+          </div>
+
+          <div class="mt-2">
+            <div class="font-medium text-zinc-100">
+              {{ log.personName }}
+            </div>
+            <div class="text-sm text-zinc-400">
+              {{ log.schoolName }}
+              <span v-if="log.schoolBranch"> — {{ log.schoolBranch }}</span>
+            </div>
+          </div>
+
+          <div class="mt-1.5 text-sm text-zinc-300">
+            {{ detailLabel(log) }}
+          </div>
+
+          <div class="mt-2 text-xs text-zinc-500">
+            {{ formatDate(log.date) }} · {{ log.operator }}
+          </div>
+        </li>
+      </ul>
+
+      <div
+        v-else
+        class="ui-empty-state"
+      >
+        {{ $t('dashboard.recentLogs.empty') }}
+      </div>
+    </div>
+
+    <div class="ui-table-scroll hidden md:block">
       <table class="ui-table">
         <thead class="ui-table-head">
           <tr>
