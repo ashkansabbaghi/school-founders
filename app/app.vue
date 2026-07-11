@@ -1,23 +1,36 @@
 <script setup lang="ts">
 const { locale, localeProperties } = useI18n()
+const localePath = useLocalePath()
 
 useHead({
   htmlAttrs: {
     lang: () => locale.value,
     dir: () => localeProperties.value.dir ?? 'ltr',
+    class: 'dark',
   },
 })
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 text-gray-900">
-    <header class="border-b border-gray-200 bg-white">
-      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
-        <AppNav />
+  <div class="flex min-h-screen flex-col">
+    <header class="sticky top-0 z-40 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <div class="flex min-w-0 flex-wrap items-center gap-4 sm:gap-6">
+          <NuxtLink
+            :to="localePath('/')"
+            class="shrink-0 text-lg font-semibold tracking-tight text-zinc-100 transition-colors duration-200 hover:text-violet-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+          >
+            School Fanders
+          </NuxtLink>
+          <AppNav />
+        </div>
         <LocaleSwitcher />
       </div>
     </header>
     <NuxtRouteAnnouncer />
-    <NuxtPage />
+    <div class="flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
+      <NuxtPage />
+    </div>
+    <AppBottomNav />
   </div>
 </template>

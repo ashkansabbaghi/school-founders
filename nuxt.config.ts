@@ -5,6 +5,22 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  app: {
+    head: {
+      viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
+    },
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in',
+    },
+  },
+
+  css: [fileURLToPath(new URL('./assets/css/main.css', import.meta.url))],
+
+  tailwindcss: {
+    cssPath: false,
+  },
+
   modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', '@nuxtjs/i18n'],
 
   i18n: {

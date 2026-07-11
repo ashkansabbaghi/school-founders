@@ -1,10 +1,16 @@
 {
   "nav": {
     "ariaLabel": "ناوبری اصلی",
+    "dashboard": "داشبورد",
     "founders": "بنیان‌گذاران",
     "finance": "داشبورد مالی",
     "students": "مدیریت دانش‌آموزان",
-    "employees": "مدیریت پرسنل"
+    "employees": "مدیریت پرسنل",
+    "dashboardShort": "داشبورد",
+    "foundersShort": "بنیان‌گذاران",
+    "financeShort": "مالی",
+    "studentsShort": "دانش‌آموز",
+    "employeesShort": "پرسنل"
   },
   "common": {
     "loading": "در حال بارگذاری...",
@@ -13,11 +19,42 @@
     "saving": "در حال ذخیره..."
   },
   "home": {
-    "title": "بنیان‌گذاران مدارس",
+    "title": "داشبورد",
+    "subtitle": "نمای کلی گزارش‌های مهم و آخرین ثبت‌های اپراتور.",
     "financeLink": "داشبورد مالی ←",
     "name": "نام",
     "school": "مدرسه",
     "addFounder": "افزودن بنیان‌گذار"
+  },
+  "dashboard": {
+    "stats": {
+      "title": "گزارش‌های مهم",
+      "subtitle": "خلاصه وضعیت برای سال تحصیلی {termYear}",
+      "revenue": "کل درآمد",
+      "expenses": "هزینه پرسنل",
+      "netProfit": "سود خالص",
+      "schools": "تعداد مدارس",
+      "students": "تعداد دانش‌آموزان",
+      "employees": "تعداد پرسنل"
+    },
+    "recentLogs": {
+      "title": "۱۰ ثبت اخیر",
+      "subtitle": "آخرین تغییراتی که توسط اپراتورها ثبت شده‌اند.",
+      "empty": "هنوز ثبتی برای این سال تحصیلی وجود ندارد.",
+      "columns": {
+        "type": "نوع",
+        "person": "نام",
+        "school": "مدرسه",
+        "amount": "مبلغ",
+        "detail": "جزئیات",
+        "date": "تاریخ",
+        "operator": "اپراتور"
+      },
+      "kinds": {
+        "student": "درآمد دانش‌آموز",
+        "employee": "هزینه پرسنل"
+      }
+    }
   },
   "finance": {
     "title": "داشبورد مالی",
@@ -27,6 +64,8 @@
     "employeesLink": "مدیریت پرسنل ←"
   },
   "founders": {
+    "pageTitle": "بنیان‌گذاران مدارس",
+    "subtitle": "افزودن و مدیریت بنیان‌گذاران.",
     "listTitle": "بنیان‌گذاران",
     "empty": "هنوز بنیان‌گذاری ثبت نشده است."
   },

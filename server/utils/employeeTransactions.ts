@@ -58,6 +58,8 @@ export async function saveEmployeeTransaction(input: {
     })
   }
 
+  const existing = input.id?.trim() ? await getEmployeeTransaction(input.id.trim()) : null
+
   const transaction: EmployeeTransaction = {
     id: input.id?.trim() || crypto.randomUUID(),
     employeeId,
@@ -67,6 +69,7 @@ export async function saveEmployeeTransaction(input: {
     date: assertIsoDate(input.date),
     termYear: assertNonEmptyString(input.termYear, 'termYear'),
     operator: assertNonEmptyString(input.operator, 'operator'),
+    loggedAt: existing?.loggedAt ?? new Date().toISOString(),
   }
 
   return upsertById(FILE, transaction)

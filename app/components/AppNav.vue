@@ -1,34 +1,17 @@
 <script setup lang="ts">
-const { t } = useI18n()
-const localePath = useLocalePath()
-const route = useRoute()
-
-const items = computed(() => [
-  { key: 'founders', to: localePath('/'), label: t('nav.founders') },
-  { key: 'finance', to: localePath('/finance'), label: t('nav.finance') },
-  { key: 'students', to: localePath('/students'), label: t('nav.students') },
-  { key: 'employees', to: localePath('/employees'), label: t('nav.employees') },
-])
-
-function isActive(to: string, key: string) {
-  if (key === 'founders') {
-    return route.path === to
-  }
-
-  return route.path === to || route.path.startsWith(`${to}/`)
-}
+const { items, isActive } = useAppNav()
 </script>
 
 <template>
-  <nav class="flex flex-wrap items-center gap-1" :aria-label="$t('nav.ariaLabel')">
+  <nav class="hidden flex-wrap items-center gap-1 md:flex" :aria-label="$t('nav.ariaLabel')">
     <NuxtLink
       v-for="item in items"
       :key="item.key"
       :to="item.to"
-      class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+      class="rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
       :class="isActive(item.to, item.key)
-        ? 'bg-indigo-50 text-indigo-700'
-        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'"
+        ? 'bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/30'
+        : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200'"
     >
       {{ item.label }}
     </NuxtLink>

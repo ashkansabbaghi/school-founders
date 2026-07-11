@@ -1,10 +1,16 @@
 {
   "nav": {
     "ariaLabel": "Main navigation",
+    "dashboard": "Dashboard",
     "founders": "Founders",
     "finance": "Finance Dashboard",
     "students": "Student Management",
-    "employees": "Staff Management"
+    "employees": "Staff Management",
+    "dashboardShort": "Home",
+    "foundersShort": "Founders",
+    "financeShort": "Finance",
+    "studentsShort": "Students",
+    "employeesShort": "Staff"
   },
   "common": {
     "loading": "Loading...",
@@ -13,11 +19,42 @@
     "saving": "Saving…"
   },
   "home": {
-    "title": "School Founders",
+    "title": "Dashboard",
+    "subtitle": "Overview of key reports and the latest operator logs.",
     "financeLink": "Finance Dashboard →",
     "name": "Name",
     "school": "School",
     "addFounder": "Add founder"
+  },
+  "dashboard": {
+    "stats": {
+      "title": "Key Reports",
+      "subtitle": "Summary for term {termYear}",
+      "revenue": "Total Revenue",
+      "expenses": "Staff Expenses",
+      "netProfit": "Net Profit",
+      "schools": "Schools",
+      "students": "Students",
+      "employees": "Staff"
+    },
+    "recentLogs": {
+      "title": "10 Recent Logs",
+      "subtitle": "The latest changes recorded by operators.",
+      "empty": "No logs for this term yet.",
+      "columns": {
+        "type": "Type",
+        "person": "Name",
+        "school": "School",
+        "amount": "Amount",
+        "detail": "Detail",
+        "date": "Date",
+        "operator": "Operator"
+      },
+      "kinds": {
+        "student": "Student Income",
+        "employee": "Staff Expense"
+      }
+    }
   },
   "finance": {
     "title": "Finance Dashboard",
@@ -27,6 +64,8 @@
     "employeesLink": "Staff Management →"
   },
   "founders": {
+    "pageTitle": "School Founders",
+    "subtitle": "Add and manage founders.",
     "listTitle": "Founders",
     "empty": "No founders yet."
   },

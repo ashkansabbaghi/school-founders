@@ -41,12 +41,18 @@ const totalEmployeeExpenses = computed(() =>
 
 function profitBadgeClass(netProfit: number): string {
   return netProfit >= 0
-    ? 'bg-emerald-100 text-emerald-800'
-    : 'bg-rose-100 text-rose-800'
+    ? 'bg-emerald-500/15 text-emerald-400'
+    : 'bg-rose-500/15 text-rose-400'
 }
 
 function profitBarClass(netProfit: number): string {
-  return netProfit >= 0 ? 'bg-emerald-500' : 'bg-rose-500'
+  return netProfit >= 0
+    ? 'bg-emerald-500 shadow-glow'
+    : 'bg-rose-500 shadow-[0_0_20px_-5px_rgba(244,63,94,0.25)]'
+}
+
+function profitTextClass(netProfit: number): string {
+  return netProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'
 }
 
 function profitLabel(netProfit: number): string {
@@ -55,73 +61,85 @@ function profitLabel(netProfit: number): string {
 </script>
 
 <template>
-  <section class="rounded-xl border border-gray-200 bg-white shadow-sm">
-    <header class="border-b border-gray-200 px-6 py-4">
-      <h2 class="text-lg font-semibold text-gray-900">
+  <section class="ui-card overflow-hidden">
+    <header class="border-b border-zinc-800 px-6 py-4">
+      <h2 class="text-lg font-semibold text-zinc-100">
         {{ $t('report.title') }}
       </h2>
-      <p class="mt-1 text-sm text-gray-500">
+      <p class="mt-1 text-sm text-zinc-400">
         {{ $t('report.subtitle', { termYear }) }}
       </p>
     </header>
 
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+    <div class="scrollbar-thin overflow-x-auto">
+      <table class="ui-table">
+        <thead class="ui-table-head">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <th scope="col" class="ui-table-th">
               {{ $t('report.columns.schoolName') }}
             </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <th scope="col" class="ui-table-th">
               {{ $t('report.columns.studentIncomes') }}
             </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <th scope="col" class="ui-table-th">
               {{ $t('report.columns.staffExpenses') }}
             </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <th scope="col" class="ui-table-th">
               {{ $t('report.columns.netProfit') }}
             </th>
           </tr>
         </thead>
 
-        <tbody v-if="isLoading" class="divide-y divide-gray-100 bg-white">
+        <tbody
+          v-if="isLoading"
+          class="divide-y divide-zinc-800"
+          aria-busy="true"
+          :aria-label="$t('common.loading')"
+        >
           <tr v-for="n in 3" :key="n">
             <td v-for="col in 4" :key="col" class="px-6 py-4">
-              <div class="h-4 animate-pulse rounded bg-gray-200" />
+              <div class="ui-skeleton h-4" />
             </td>
           </tr>
         </tbody>
 
-        <tbody v-else-if="schoolRows.length" class="divide-y divide-gray-100 bg-white">
-          <tr v-for="row in schoolRows as SchoolProfitBreakdown[]" :key="row.schoolId" class="hover:bg-gray-50">
+        <tbody
+          v-else-if="schoolRows.length"
+          class="divide-y divide-zinc-800"
+        >
+          <tr
+            v-for="row in schoolRows as SchoolProfitBreakdown[]"
+            :key="row.schoolId"
+            class="ui-table-row"
+          >
             <td class="px-6 py-4">
-              <div class="font-medium text-gray-900">
+              <div class="font-medium text-zinc-100">
                 {{ row.schoolName }}
               </div>
-              <div class="text-sm text-gray-500">
+              <div class="text-sm text-zinc-400">
                 {{ row.branch }}
               </div>
             </td>
 
             <td class="px-6 py-4">
-              <div class="mb-1 text-sm font-medium text-gray-900">
+              <div class="mb-1 text-sm font-medium text-zinc-100">
                 {{ formatCurrency(row.revenue) }}
               </div>
-              <div class="h-2 w-full max-w-xs overflow-hidden rounded-full bg-gray-100">
+              <div class="h-2 w-full max-w-xs overflow-hidden rounded-full bg-zinc-800">
                 <div
-                  class="h-full rounded-full bg-emerald-500 transition-all"
+                  class="h-full rounded-full bg-emerald-500 shadow-glow transition-all"
                   :style="{ width: barWidth(row.revenue, maxRevenue) }"
                 />
               </div>
             </td>
 
             <td class="px-6 py-4">
-              <div class="mb-1 text-sm font-medium text-gray-900">
+              <div class="mb-1 text-sm font-medium text-zinc-100">
                 {{ formatCurrency(row.employeeExpenses) }}
               </div>
-              <div class="h-2 w-full max-w-xs overflow-hidden rounded-full bg-gray-100">
+              <div class="h-2 w-full max-w-xs overflow-hidden rounded-full bg-zinc-800">
                 <div
-                  class="h-full rounded-full bg-rose-500 transition-all"
+                  class="h-full rounded-full bg-rose-500 shadow-[0_0_20px_-5px_rgba(244,63,94,0.25)] transition-all"
                   :style="{ width: barWidth(row.employeeExpenses, maxExpenses) }"
                 />
               </div>
@@ -135,11 +153,14 @@ function profitLabel(netProfit: number): string {
                 >
                   {{ profitLabel(row.netProfit) }}
                 </span>
-                <span class="text-sm font-semibold" :class="row.netProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+                <span
+                  class="text-sm font-semibold"
+                  :class="profitTextClass(row.netProfit)"
+                >
                   {{ formatCurrency(row.netProfit) }}
                 </span>
               </div>
-              <div class="h-2 w-full max-w-xs overflow-hidden rounded-full bg-gray-100">
+              <div class="h-2 w-full max-w-xs overflow-hidden rounded-full bg-zinc-800">
                 <div
                   class="h-full rounded-full transition-all"
                   :class="profitBarClass(row.netProfit)"
@@ -150,23 +171,26 @@ function profitLabel(netProfit: number): string {
           </tr>
         </tbody>
 
-        <tbody v-else class="bg-white">
+        <tbody v-else>
           <tr>
-            <td colspan="4" class="px-6 py-12 text-center text-sm text-gray-500">
+            <td colspan="4" class="px-6 py-12 text-center text-sm text-zinc-500">
               {{ $t('report.empty') }}
             </td>
           </tr>
         </tbody>
 
-        <tfoot v-if="summary && schoolRows.length" class="border-t border-gray-200 bg-gray-50">
+        <tfoot
+          v-if="summary && schoolRows.length"
+          class="border-t border-zinc-800 bg-zinc-800/40"
+        >
           <tr>
-            <td class="px-6 py-4 text-sm font-semibold text-gray-900">
+            <td class="px-6 py-4 text-sm font-semibold text-zinc-100">
               {{ $t('common.total') }}
             </td>
-            <td class="px-6 py-4 text-sm font-semibold text-gray-900">
+            <td class="px-6 py-4 text-sm font-semibold text-zinc-100">
               {{ formatCurrency(summary.totalRevenue) }}
             </td>
-            <td class="px-6 py-4 text-sm font-semibold text-gray-900">
+            <td class="px-6 py-4 text-sm font-semibold text-zinc-100">
               {{ formatCurrency(totalEmployeeExpenses) }}
             </td>
             <td class="px-6 py-4">
@@ -177,8 +201,8 @@ function profitLabel(netProfit: number): string {
                 {{ profitLabel(summary.totalNetProfit) }}
               </span>
               <span
-                class="ml-2 text-sm font-semibold"
-                :class="summary.totalNetProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'"
+                class="ms-2 text-sm font-semibold"
+                :class="profitTextClass(summary.totalNetProfit)"
               >
                 {{ formatCurrency(summary.totalNetProfit) }}
               </span>

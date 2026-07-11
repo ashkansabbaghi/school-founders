@@ -1,60 +1,69 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+
 const { t } = useI18n()
 
 useHead({
   title: () => t('home.title'),
 })
 
-const { founders, status, createFounder, deleteFounder } = useFounders()
+const financeStore = useFinanceStore()
+const { termYear } = storeToRefs(financeStore)
 
-const name = ref('')
-const school = ref('')
+const { data: recentLogs, status: recentLogsStatus, refresh: refreshRecentLogs } = useFetch(
+  '/api/finance/recent-logs',
+  {
+    query: computed(() => ({
+      termYear: termYear.value,
+      limit: 10,
+    })),
+    default: () => [],
+  },
+)
 
-async function onSubmit() {
-  if (!name.value.trim()) {
-    return
-  }
+watch(termYear, () => {
+  void refreshRecentLogs()
+})
 
-  await createFounder({
-    name: name.value,
-    school: school.value || undefined,
-  })
-
-  name.value = ''
-  school.value = ''
+function onTermYearInput(event: Event) {
+  financeStore.setTermYear((event.target as HTMLInputElement).value)
 }
 
-async function onDelete(id: string) {
-  await deleteFounder(id)
-}
+onMounted(() => {
+  void financeStore.init()
+})
 </script>
 
 <template>
-  <main class="mx-auto max-w-2xl space-y-8 p-6">
-    <header>
-      <h1 class="text-2xl font-bold text-gray-900">
-        {{ $t('home.title') }}
-      </h1>
+  <main class="mx-auto max-w-6xl space-y-8 p-6">
+    <header class="ui-page-header">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 class="ui-page-title">
+            {{ $t('home.title') }}
+          </h1>
+          <p class="ui-page-subtitle">
+            {{ $t('home.subtitle') }}
+          </p>
+        </div>
+        <label class="block w-full max-w-xs space-y-1">
+          <span class="ui-label">{{ $t('operator.fields.termYear') }}</span>
+          <input
+            :value="termYear"
+            type="text"
+            class="ui-input"
+            :placeholder="$t('operator.placeholders.termYear')"
+            @input="onTermYearInput"
+          >
+        </label>
+      </div>
     </header>
 
-    <form @submit.prevent="onSubmit">
-      <label>
-        {{ $t('home.name') }}
-        <input v-model="name" type="text" required>
-      </label>
-      <label>
-        {{ $t('home.school') }}
-        <input v-model="school" type="text">
-      </label>
-      <button type="submit">
-        {{ $t('home.addFounder') }}
-      </button>
-    </form>
-
-    <FounderList
-      :founders="founders ?? []"
-      :pending="status === 'pending'"
-      @delete="onDelete"
+    <DashboardStats />
+    <FoundersReportTable />
+    <RecentActivityLog
+      :logs="recentLogs ?? []"
+      :pending="recentLogsStatus === 'pending' && !(recentLogs?.length)"
     />
   </main>
 </template>

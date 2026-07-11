@@ -51,6 +51,8 @@ export async function saveStudentTransaction(input: {
     })
   }
 
+  const existing = input.id?.trim() ? await getStudentTransaction(input.id.trim()) : null
+
   const transaction: StudentTransaction = {
     id: input.id?.trim() || crypto.randomUUID(),
     studentId,
@@ -60,6 +62,7 @@ export async function saveStudentTransaction(input: {
     date: assertIsoDate(input.date),
     termYear: assertNonEmptyString(input.termYear, 'termYear'),
     operator: assertNonEmptyString(input.operator, 'operator'),
+    loggedAt: existing?.loggedAt ?? new Date().toISOString(),
   }
 
   return upsertById(FILE, transaction)

@@ -88,6 +88,9 @@ const canSubmitEmployee = computed(() =>
   ),
 )
 
+const tabActiveClass = 'bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/30'
+const tabInactiveClass = 'text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200'
+
 watch(studentSchoolId, () => {
   studentId.value = ''
 })
@@ -168,34 +171,34 @@ async function submitEmployee() {
 </script>
 
 <template>
-  <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+  <section class="ui-card p-6">
     <header class="mb-6">
-      <h2 class="text-lg font-semibold text-gray-900">
+      <h2 class="text-lg font-semibold text-zinc-100">
         {{ $t('operator.title') }}
       </h2>
-      <p class="mt-1 text-sm text-gray-500">
+      <p class="mt-1 text-sm text-zinc-400">
         {{ $t('operator.subtitle') }}
       </p>
     </header>
 
     <div class="mb-6 grid gap-4 sm:grid-cols-2">
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.termYear') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.termYear') }}</span>
         <input
           :value="termYear"
           type="text"
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="ui-input"
           :placeholder="$t('operator.placeholders.termYear')"
           @input="onTermYearInput"
         >
       </label>
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.operatorName') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.operatorName') }}</span>
         <input
           :value="operatorName"
           type="text"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="ui-input"
           :placeholder="$t('operator.placeholders.operatorName')"
           @input="onOperatorInput"
         >
@@ -205,14 +208,14 @@ async function submitEmployee() {
     <div
       role="tablist"
       :aria-label="$t('operator.logType')"
-      class="mb-6 inline-flex rounded-lg bg-gray-100 p-1"
+      class="mb-6 inline-flex rounded-lg bg-zinc-800/60 p-1"
     >
       <button
         type="button"
         role="tab"
         :aria-selected="activeTab === 'student'"
-        class="rounded-md px-4 py-2 text-sm font-medium transition-colors"
-        :class="activeTab === 'student' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'"
+        class="rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200"
+        :class="activeTab === 'student' ? tabActiveClass : tabInactiveClass"
         @click="activeTab = 'student'"
       >
         {{ $t('operator.tabs.student') }}
@@ -221,8 +224,8 @@ async function submitEmployee() {
         type="button"
         role="tab"
         :aria-selected="activeTab === 'employee'"
-        class="rounded-md px-4 py-2 text-sm font-medium transition-colors"
-        :class="activeTab === 'employee' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'"
+        class="rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200"
+        :class="activeTab === 'employee' ? tabActiveClass : tabInactiveClass"
         @click="activeTab = 'employee'"
       >
         {{ $t('operator.tabs.employee') }}
@@ -231,14 +234,14 @@ async function submitEmployee() {
 
     <div
       v-if="submitMessage"
-      class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+      class="ui-alert-success mb-4"
       role="status"
     >
       {{ submitMessage }}
     </div>
     <div
       v-if="error"
-      class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+      class="ui-alert-error mb-4"
       role="alert"
     >
       {{ error }}
@@ -251,11 +254,11 @@ async function submitEmployee() {
       @submit.prevent="submitStudent"
     >
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.school') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.school') }}</span>
         <select
           v-model="studentSchoolId"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="ui-input"
         >
           <option value="" disabled>
             {{ $t('operator.placeholders.selectSchool') }}
@@ -267,12 +270,12 @@ async function submitEmployee() {
       </label>
 
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.student') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.student') }}</span>
         <select
           v-model="studentId"
           required
           :disabled="!studentSchoolId"
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400"
+          class="ui-input disabled:cursor-not-allowed disabled:opacity-50"
         >
           <option value="" disabled>
             {{ $t('operator.placeholders.selectStudent') }}
@@ -284,37 +287,37 @@ async function submitEmployee() {
       </label>
 
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.grade') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.grade') }}</span>
         <input
           :value="selectedStudent?.grade ?? ''"
           type="text"
           disabled
-          class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"
+          class="ui-input disabled:cursor-not-allowed disabled:opacity-50"
           :placeholder="$t('operator.placeholders.autoFilledStudent')"
         >
       </label>
 
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.amount') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.amount') }}</span>
         <input
           v-model.number="studentAmount"
           type="number"
           min="1"
           step="1"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="ui-input"
         >
-        <p v-if="suggestedStudentAmount !== null" class="text-xs text-gray-500">
+        <p v-if="suggestedStudentAmount !== null" class="text-xs text-zinc-500">
           {{ $t('operator.suggestedAmount', { amount: numberFormatter.format(suggestedStudentAmount) }) }}
         </p>
       </label>
 
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.paymentMethod') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.paymentMethod') }}</span>
         <select
           v-model="paymentMethod"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="ui-input"
         >
           <option v-for="method in paymentMethods" :key="method.value" :value="method.value">
             {{ method.label }}
@@ -323,19 +326,19 @@ async function submitEmployee() {
       </label>
 
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.date') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.date') }}</span>
         <input
           v-model="studentDate"
           type="date"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="ui-input"
         >
       </label>
 
       <button
         type="submit"
         :disabled="!canSubmitStudent"
-        class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
+        class="ui-btn-primary"
       >
         {{ isSubmitting ? $t('common.saving') : $t('operator.submitStudent') }}
       </button>
@@ -348,11 +351,11 @@ async function submitEmployee() {
       @submit.prevent="submitEmployee"
     >
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.school') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.school') }}</span>
         <select
           v-model="employeeSchoolId"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="ui-input"
         >
           <option value="" disabled>
             {{ $t('operator.placeholders.selectSchool') }}
@@ -364,12 +367,12 @@ async function submitEmployee() {
       </label>
 
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.staff') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.staff') }}</span>
         <select
           v-model="employeeId"
           required
           :disabled="!employeeSchoolId"
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400"
+          class="ui-input disabled:cursor-not-allowed disabled:opacity-50"
         >
           <option value="" disabled>
             {{ $t('operator.placeholders.selectStaff') }}
@@ -381,22 +384,22 @@ async function submitEmployee() {
       </label>
 
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.role') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.role') }}</span>
         <input
           :value="selectedEmployee?.role ?? ''"
           type="text"
           disabled
-          class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"
+          class="ui-input disabled:cursor-not-allowed disabled:opacity-50"
           :placeholder="$t('operator.placeholders.autoFilledStaff')"
         >
       </label>
 
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.type') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.type') }}</span>
         <select
           v-model="transactionType"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="ui-input"
         >
           <option v-for="type in transactionTypes" :key="type.value" :value="type.value">
             {{ type.label }}
@@ -405,31 +408,31 @@ async function submitEmployee() {
       </label>
 
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.amount') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.amount') }}</span>
         <input
           v-model.number="employeeAmount"
           type="number"
           min="1"
           step="1"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="ui-input"
         >
       </label>
 
       <label class="block space-y-1">
-        <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.date') }}</span>
+        <span class="ui-label">{{ $t('operator.fields.date') }}</span>
         <input
           v-model="employeeDate"
           type="date"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="ui-input"
         >
       </label>
 
       <button
         type="submit"
         :disabled="!canSubmitEmployee"
-        class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
+        class="ui-btn-primary"
       >
         {{ isSubmitting ? $t('common.saving') : $t('operator.submitEmployee') }}
       </button>

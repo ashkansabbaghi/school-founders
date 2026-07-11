@@ -58,6 +58,7 @@ export interface StudentTransaction {
   date: string
   termYear: string
   operator: string
+  loggedAt?: string
 }
 
 export interface EmployeeTransaction {
@@ -69,6 +70,24 @@ export interface EmployeeTransaction {
   date: string
   termYear: string
   operator: string
+  loggedAt?: string
+}
+
+export type RecentLogKind = 'student' | 'employee'
+
+export interface RecentLogEntry {
+  id: string
+  kind: RecentLogKind
+  date: string
+  termYear: string
+  operator: string
+  amountPaid: number
+  schoolId: string
+  schoolName: string
+  schoolBranch: string
+  personName: string
+  detail: string
+  loggedAt: string
 }
 
 export interface FixedCost {

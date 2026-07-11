@@ -64,11 +64,11 @@ const progressPercent = computed(() => {
 const statusClasses = computed(() => {
   switch (paymentSummary.value.status) {
     case 'paid':
-      return 'bg-emerald-100 text-emerald-800'
+      return 'ui-badge-paid'
     case 'partial':
-      return 'bg-amber-100 text-amber-800'
+      return 'ui-badge-warning'
     default:
-      return 'bg-rose-100 text-rose-800'
+      return 'ui-badge-danger'
   }
 })
 
@@ -271,27 +271,27 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 sm:items-center"
+    class="ui-modal-overlay"
     @click.self="emit('close')"
   >
     <div
       role="dialog"
       aria-modal="true"
       :aria-label="$t('students.modalTitle', { name: student.fullName })"
-      class="my-8 w-full max-w-3xl rounded-xl border border-gray-200 bg-white shadow-xl"
+      class="ui-modal-panel my-8 max-w-3xl"
     >
-      <header class="flex items-start justify-between border-b border-gray-200 px-6 py-4">
+      <header class="flex items-start justify-between border-b border-zinc-800 px-6 py-4">
         <div>
-          <h2 class="text-lg font-semibold text-gray-900">
+          <h2 class="text-lg font-semibold text-zinc-100">
             {{ student.fullName }}
           </h2>
-          <p class="mt-1 text-sm text-gray-500">
+          <p class="mt-1 text-sm text-zinc-400">
             {{ student.studentId }} — {{ $t('students.termYear', { termYear }) }}
           </p>
         </div>
         <button
           type="button"
-          class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          class="rounded-lg p-2 text-zinc-400 transition-colors duration-200 hover:bg-zinc-800 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
           :aria-label="$t('students.close')"
           @click="emit('close')"
         >
@@ -299,101 +299,98 @@ onUnmounted(() => {
         </button>
       </header>
 
-      <div class="max-h-[calc(100vh-8rem)] overflow-y-auto px-6 py-5">
+      <div class="scrollbar-thin max-h-[calc(100vh-8rem)] overflow-y-auto px-6 py-5">
         <div
           v-if="submitMessage"
-          class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+          class="ui-alert-success mb-4"
           role="status"
         >
           {{ submitMessage }}
         </div>
         <div
           v-if="error"
-          class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+          class="ui-alert-error mb-4"
           role="alert"
         >
           {{ error }}
         </div>
 
         <section class="mb-8">
-          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
+          <h3 class="ui-section-header mb-4">
             {{ $t('students.paymentSummary') }}
           </h3>
-          <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <div class="rounded-lg border border-zinc-800 bg-zinc-800/40 p-4">
             <div class="mb-3 flex flex-wrap items-center gap-3">
-              <span
-                class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium"
-                :class="statusClasses"
-              >
+              <span :class="statusClasses">
                 {{ $t(`students.status.${paymentSummary.status}`) }}
               </span>
-              <span class="text-sm text-gray-600">
+              <span class="text-sm text-zinc-400">
                 {{ $t('students.paidOfExpected', {
                   paid: numberFormatter.format(paymentSummary.paid),
                   expected: numberFormatter.format(paymentSummary.expected),
                 }) }}
               </span>
             </div>
-            <div class="h-2 overflow-hidden rounded-full bg-gray-200">
+            <div class="h-2 overflow-hidden rounded-full bg-zinc-800">
               <div
-                class="h-full rounded-full bg-indigo-600 transition-all"
+                class="h-full rounded-full bg-violet-600 shadow-glow transition-all"
                 :style="{ width: `${progressPercent}%` }"
               />
             </div>
-            <p class="mt-2 text-sm text-gray-600">
+            <p class="mt-2 text-sm text-zinc-400">
               {{ $t('students.remaining', { amount: numberFormatter.format(paymentSummary.remaining) }) }}
             </p>
           </div>
         </section>
 
         <section class="mb-8">
-          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
+          <h3 class="ui-section-header mb-4">
             {{ $t('students.studentInfo') }}
           </h3>
           <form class="grid gap-4 sm:grid-cols-2" @submit.prevent="saveStudentViaStore">
             <label class="block space-y-1 sm:col-span-2">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.fullName') }}</span>
+              <span class="ui-label">{{ $t('students.fields.fullName') }}</span>
               <input
                 v-model="form.fullName"
                 type="text"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.nationalCode') }}</span>
+              <span class="ui-label">{{ $t('students.fields.nationalCode') }}</span>
               <input
                 v-model="form.nationalCode"
                 type="text"
                 required
                 maxlength="10"
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.studentId') }}</span>
+              <span class="ui-label">{{ $t('students.fields.studentId') }}</span>
               <input
                 v-model="form.studentId"
                 type="text"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.grade') }}</span>
+              <span class="ui-label">{{ $t('students.fields.grade') }}</span>
               <input
                 v-model="form.grade"
                 type="text"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.school') }}</span>
+              <span class="ui-label">{{ $t('students.fields.school') }}</span>
               <select
                 v-model="form.schoolId"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
                 <option v-for="school in schools" :key="school.id" :value="school.id">
                   {{ school.name }} — {{ school.branch }}
@@ -401,18 +398,18 @@ onUnmounted(() => {
               </select>
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.fullPrice') }}</span>
+              <span class="ui-label">{{ $t('students.fields.fullPrice') }}</span>
               <input
                 v-model.number="form.fullPrice"
                 type="number"
                 min="1"
                 step="1"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.discountRate') }}</span>
+              <span class="ui-label">{{ $t('students.fields.discountRate') }}</span>
               <input
                 v-model.number="form.dynamicDiscountRate"
                 type="number"
@@ -420,38 +417,38 @@ onUnmounted(() => {
                 max="1"
                 step="0.01"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.parentName') }}</span>
+              <span class="ui-label">{{ $t('students.fields.parentName') }}</span>
               <input
                 v-model="form.parentName"
                 type="text"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.parentPhone') }}</span>
+              <span class="ui-label">{{ $t('students.fields.parentPhone') }}</span>
               <input
                 v-model="form.parentPhone"
                 type="tel"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
             </label>
             <div class="flex flex-wrap gap-3 sm:col-span-2">
               <button
                 type="submit"
                 :disabled="!canSaveStudent"
-                class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
+                class="ui-btn-primary"
               >
                 {{ isSubmitting ? $t('common.saving') : $t('students.saveStudent') }}
               </button>
               <button
                 type="button"
-                class="rounded-lg border border-rose-300 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50"
+                class="ui-btn-danger"
                 @click="removeStudent"
               >
                 {{ $t('students.deleteStudent') }}
@@ -461,96 +458,106 @@ onUnmounted(() => {
         </section>
 
         <section>
-          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
+          <h3 class="ui-section-header mb-4">
             {{ $t('students.payments') }}
           </h3>
 
-          <div v-if="isLoadingTransactions" class="py-4 text-sm text-gray-500">
-            {{ $t('common.loading') }}
+          <div
+            v-if="isLoadingTransactions"
+            class="space-y-3 py-4"
+            aria-busy="true"
+            :aria-label="$t('common.loading')"
+          >
+            <div v-for="n in 3" :key="n" class="ui-skeleton h-10 w-full rounded-lg" />
           </div>
           <div
             v-else-if="transactions.length === 0"
-            class="mb-4 rounded-lg border border-dashed border-gray-300 px-4 py-6 text-center text-sm text-gray-500"
+            class="ui-empty-state mb-4 py-8"
           >
             {{ $t('students.noPayments') }}
           </div>
-          <div v-else class="mb-6 overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-              <thead class="bg-gray-50">
+          <div v-else class="scrollbar-thin mb-6 overflow-x-auto rounded-lg border border-zinc-800">
+            <table class="ui-table">
+              <thead class="ui-table-head">
                 <tr>
-                  <th class="px-4 py-2 text-start font-medium text-gray-600">
+                  <th class="ui-table-th">
                     {{ $t('students.columns.date') }}
                   </th>
-                  <th class="px-4 py-2 text-start font-medium text-gray-600">
+                  <th class="ui-table-th">
                     {{ $t('students.columns.amount') }}
                   </th>
-                  <th class="px-4 py-2 text-start font-medium text-gray-600">
+                  <th class="ui-table-th">
                     {{ $t('students.columns.method') }}
                   </th>
-                  <th class="px-4 py-2 text-start font-medium text-gray-600">
+                  <th class="ui-table-th">
                     {{ $t('students.columns.operator') }}
                   </th>
-                  <th class="px-4 py-2 text-end font-medium text-gray-600">
+                  <th class="px-4 py-2 text-end text-xs font-semibold uppercase tracking-wide text-zinc-400">
                     {{ $t('students.columns.actions') }}
                   </th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-200 bg-white">
-                <tr v-for="transaction in transactions" :key="transaction.id">
-                  <td class="px-4 py-2 text-gray-900">
+              <TransitionGroup
+                tag="tbody"
+                name="list-item"
+                appear
+                class="divide-y divide-zinc-800"
+              >
+                <tr v-for="transaction in transactions" :key="transaction.id" class="ui-table-row">
+                  <td class="px-4 py-2 text-zinc-100">
                     {{ transaction.date }}
                   </td>
-                  <td class="px-4 py-2 text-gray-900">
+                  <td class="px-4 py-2 text-zinc-100">
                     {{ numberFormatter.format(transaction.amountPaid) }}
                   </td>
-                  <td class="px-4 py-2 text-gray-600">
+                  <td class="px-4 py-2 text-zinc-400">
                     {{ $t(`operator.paymentMethods.${transaction.paymentMethod}`) }}
                   </td>
-                  <td class="px-4 py-2 text-gray-600">
+                  <td class="px-4 py-2 text-zinc-400">
                     {{ transaction.operator }}
                   </td>
                   <td class="px-4 py-2 text-end">
                     <button
                       type="button"
-                      class="me-2 text-indigo-600 hover:text-indigo-800"
+                      class="me-2 text-violet-400 transition-colors duration-200 hover:text-violet-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
                       @click="startEditPayment(transaction)"
                     >
                       {{ $t('students.editPayment') }}
                     </button>
                     <button
                       type="button"
-                      class="text-rose-600 hover:text-rose-800"
+                      class="text-rose-400 transition-colors duration-200 hover:text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/50"
                       @click="deletePayment(transaction)"
                     >
                       {{ $t('common.delete') }}
                     </button>
                   </td>
                 </tr>
-              </tbody>
+              </TransitionGroup>
             </table>
           </div>
 
-          <form class="grid gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 sm:grid-cols-2" @submit.prevent="submitPayment">
-            <p class="text-sm font-medium text-gray-700 sm:col-span-2">
+          <form class="grid gap-4 rounded-lg border border-zinc-800 bg-zinc-800/40 p-4 sm:grid-cols-2" @submit.prevent="submitPayment">
+            <p class="ui-label sm:col-span-2">
               {{ editingTransactionId ? $t('students.editPaymentForm') : $t('students.addPayment') }}
             </p>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.amount') }}</span>
+              <span class="ui-label">{{ $t('students.fields.amount') }}</span>
               <input
                 v-model.number="paymentAmount"
                 type="number"
                 min="1"
                 step="1"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.paymentMethod') }}</span>
+              <span class="ui-label">{{ $t('students.fields.paymentMethod') }}</span>
               <select
                 v-model="paymentMethod"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
                 <option v-for="method in paymentMethods" :key="method.value" :value="method.value">
                   {{ method.label }}
@@ -558,35 +565,35 @@ onUnmounted(() => {
               </select>
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.date') }}</span>
+              <span class="ui-label">{{ $t('students.fields.date') }}</span>
               <input
                 v-model="paymentDate"
                 type="date"
                 required
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="ui-input"
               >
             </label>
             <label class="block space-y-1">
-              <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.operatorName') }}</span>
+              <span class="ui-label">{{ $t('operator.fields.operatorName') }}</span>
               <input
                 :value="operatorName"
                 type="text"
                 disabled
-                class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-500"
+                class="ui-input cursor-not-allowed opacity-60"
               >
             </label>
             <div class="flex flex-wrap gap-3 sm:col-span-2">
               <button
                 type="submit"
                 :disabled="!canSubmitPayment"
-                class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
+                class="ui-btn-primary"
               >
                 {{ isSubmitting ? $t('common.saving') : (editingTransactionId ? $t('students.updatePayment') : $t('students.addPaymentButton')) }}
               </button>
               <button
                 v-if="editingTransactionId"
                 type="button"
-                class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white"
+                class="ui-btn-secondary"
                 @click="resetPaymentForm"
               >
                 {{ $t('students.cancelEdit') }}
@@ -594,7 +601,7 @@ onUnmounted(() => {
             </div>
             <p
               v-if="paymentError"
-              class="text-sm text-rose-600 sm:col-span-2"
+              class="text-sm text-rose-400 sm:col-span-2"
               role="alert"
             >
               {{ paymentError }}

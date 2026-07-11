@@ -156,42 +156,42 @@ onMounted(async () => {
 
 <template>
   <main class="mx-auto max-w-6xl space-y-8 p-6">
-    <header>
-      <h1 class="text-2xl font-bold text-gray-900">
+    <header class="ui-page-header">
+      <h1 class="ui-page-title">
         {{ $t('students.title') }}
       </h1>
-      <p class="mt-1 text-sm text-gray-500">
+      <p class="ui-page-subtitle">
         {{ $t('students.subtitle') }}
       </p>
     </header>
 
-    <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <section class="ui-card p-6">
       <div class="grid gap-4 sm:grid-cols-3">
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.termYear') }}</span>
+          <span class="ui-label">{{ $t('operator.fields.termYear') }}</span>
           <input
             :value="termYear"
             type="text"
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
             :placeholder="$t('operator.placeholders.termYear')"
             @input="onTermYearInput"
           >
         </label>
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('operator.fields.operatorName') }}</span>
+          <span class="ui-label">{{ $t('operator.fields.operatorName') }}</span>
           <input
             :value="operatorName"
             type="text"
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
             :placeholder="$t('operator.placeholders.operatorName')"
             @input="onOperatorInput"
           >
         </label>
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.school') }}</span>
+          <span class="ui-label">{{ $t('students.fields.school') }}</span>
           <select
             v-model="selectedSchoolId"
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
           >
             <option value="">
               {{ $t('students.allSchools') }}
@@ -204,14 +204,14 @@ onMounted(async () => {
       </div>
     </section>
 
-    <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <section class="ui-card p-6">
       <div class="mb-4 flex items-center justify-between gap-4">
-        <h2 class="text-lg font-semibold text-gray-900">
+        <h2 class="text-lg font-semibold text-zinc-100">
           {{ $t('students.addStudent') }}
         </h2>
         <button
           type="button"
-          class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          class="ui-btn-secondary"
           @click="showAddForm = !showAddForm"
         >
           {{ showAddForm ? $t('students.hideForm') : $t('students.showForm') }}
@@ -220,14 +220,14 @@ onMounted(async () => {
 
       <div
         v-if="submitMessage"
-        class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+        class="ui-alert-success mb-4"
         role="status"
       >
         {{ submitMessage }}
       </div>
       <div
         v-if="error"
-        class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+        class="ui-alert-error mb-4"
         role="alert"
       >
         {{ error }}
@@ -239,48 +239,48 @@ onMounted(async () => {
         @submit.prevent="submitAddStudent"
       >
         <label class="block space-y-1 sm:col-span-2">
-          <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.fullName') }}</span>
+          <span class="ui-label">{{ $t('students.fields.fullName') }}</span>
           <input
             v-model="addForm.fullName"
             type="text"
             required
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
           >
         </label>
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.nationalCode') }}</span>
+          <span class="ui-label">{{ $t('students.fields.nationalCode') }}</span>
           <input
             v-model="addForm.nationalCode"
             type="text"
             required
             maxlength="10"
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
           >
         </label>
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.studentId') }}</span>
+          <span class="ui-label">{{ $t('students.fields.studentId') }}</span>
           <input
             v-model="addForm.studentId"
             type="text"
             required
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
           >
         </label>
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.grade') }}</span>
+          <span class="ui-label">{{ $t('students.fields.grade') }}</span>
           <input
             v-model="addForm.grade"
             type="text"
             required
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
           >
         </label>
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.school') }}</span>
+          <span class="ui-label">{{ $t('students.fields.school') }}</span>
           <select
             v-model="addForm.schoolId"
             required
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
           >
             <option value="" disabled>
               {{ $t('operator.placeholders.selectSchool') }}
@@ -291,18 +291,18 @@ onMounted(async () => {
           </select>
         </label>
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.fullPrice') }}</span>
+          <span class="ui-label">{{ $t('students.fields.fullPrice') }}</span>
           <input
             v-model.number="addForm.fullPrice"
             type="number"
             min="1"
             step="1"
             required
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
           >
         </label>
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.discountRate') }}</span>
+          <span class="ui-label">{{ $t('students.fields.discountRate') }}</span>
           <input
             v-model.number="addForm.dynamicDiscountRate"
             type="number"
@@ -310,32 +310,32 @@ onMounted(async () => {
             max="1"
             step="0.01"
             required
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
           >
         </label>
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.parentName') }}</span>
+          <span class="ui-label">{{ $t('students.fields.parentName') }}</span>
           <input
             v-model="addForm.parentName"
             type="text"
             required
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
           >
         </label>
         <label class="block space-y-1">
-          <span class="text-sm font-medium text-gray-700">{{ $t('students.fields.parentPhone') }}</span>
+          <span class="ui-label">{{ $t('students.fields.parentPhone') }}</span>
           <input
             v-model="addForm.parentPhone"
             type="tel"
             required
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="ui-input"
           >
         </label>
         <div class="sm:col-span-2">
           <button
             type="submit"
             :disabled="!canAddStudent"
-            class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
+            class="ui-btn-primary"
           >
             {{ isSubmitting ? $t('common.saving') : $t('students.addStudentButton') }}
           </button>
