@@ -31,6 +31,6 @@ useHead({
 
     <FoundersReportTable />
     <FixedCostsPanel />
-    <OperatorLogger />
+    <LazyOperatorLogger />
   </main>
 </template>

@@ -20,7 +20,7 @@ function onOperatorInput(event: Event) {
 
 <template>
   <div
-    class="flex max-w-[min(100vw-8rem,20rem)] items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-2 py-1 sm:max-w-none sm:gap-2 sm:px-2.5"
+    class="flex w-full items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-2 py-1 md:w-auto md:gap-2 md:px-2.5"
     role="group"
     :aria-label="t('contextBar.ariaLabel')"
     :title="t('contextBar.tooltip')"

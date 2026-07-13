@@ -33,6 +33,9 @@
     "ariaLabel": "Global context",
     "tooltip": "These settings apply across all pages."
   },
+  "locale": {
+    "switchTo": "Switch to {language}"
+  },
   "onboarding": {
     "title": "Initial setup",
     "stepIndicator": "Step {current} of {total}",

@@ -131,13 +131,13 @@ onMounted(async () => {
       @select="openEmployee"
     />
 
-    <EmployeeAddModal
+    <LazyEmployeeAddModal
       v-if="showAddModal"
       :default-school-id="selectedSchoolId || undefined"
       @close="closeAddModal"
     />
 
-    <EmployeeDetailModal
+    <LazyEmployeeDetailModal
       v-if="selectedEmployee"
       :employee="selectedEmployee"
       @close="closeModal"

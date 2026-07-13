@@ -33,6 +33,9 @@
     "ariaLabel": "تنظیمات سراسری",
     "tooltip": "این تنظیمات روی همه صفحات اعمال می‌شود."
   },
+  "locale": {
+    "switchTo": "تغییر به {language}"
+  },
   "onboarding": {
     "title": "راه‌اندازی اولیه",
     "stepIndicator": "مرحله {current} از {total}",
