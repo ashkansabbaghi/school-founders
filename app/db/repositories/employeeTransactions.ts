@@ -18,27 +18,48 @@ export async function listEmployeeTransactions(filters?: {
   transactionType?: string
   termYear?: string
 }): Promise<EmployeeTransaction[]> {
-  let transactions = await db.employeeTransactions.toArray()
+  const { schoolId, employeeId, transactionType, termYear } = filters ?? {}
 
-  if (filters?.schoolId) {
-    transactions = transactions.filter(transaction => transaction.schoolId === filters.schoolId)
+  if (!employeeId && !schoolId && !termYear && !transactionType) {
+    return db.employeeTransactions.toArray()
   }
 
-  if (filters?.employeeId) {
-    transactions = transactions.filter(transaction => transaction.employeeId === filters.employeeId)
+  if (employeeId) {
+    let collection = db.employeeTransactions.where('employeeId').equals(employeeId)
+    if (schoolId) {
+      collection = collection.filter(transaction => transaction.schoolId === schoolId)
+    }
+    if (termYear) {
+      collection = collection.filter(transaction => transaction.termYear === termYear)
+    }
+    if (transactionType) {
+      collection = collection.filter(transaction => transaction.transactionType === transactionType)
+    }
+    return collection.toArray()
   }
 
-  if (filters?.transactionType) {
-    transactions = transactions.filter(
-      transaction => transaction.transactionType === filters.transactionType,
-    )
+  if (schoolId) {
+    let collection = db.employeeTransactions.where('schoolId').equals(schoolId)
+    if (termYear) {
+      collection = collection.filter(transaction => transaction.termYear === termYear)
+    }
+    if (transactionType) {
+      collection = collection.filter(transaction => transaction.transactionType === transactionType)
+    }
+    return collection.toArray()
   }
 
-  if (filters?.termYear) {
-    transactions = transactions.filter(transaction => transaction.termYear === filters.termYear)
+  if (termYear) {
+    let collection = db.employeeTransactions.where('termYear').equals(termYear)
+    if (transactionType) {
+      collection = collection.filter(transaction => transaction.transactionType === transactionType)
+    }
+    return collection.toArray()
   }
 
-  return transactions
+  return db.employeeTransactions
+    .filter(transaction => transaction.transactionType === transactionType)
+    .toArray()
 }
 
 export async function getEmployeeTransaction(id: string): Promise<EmployeeTransaction | null> {

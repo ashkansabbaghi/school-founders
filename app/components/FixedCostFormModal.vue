@@ -1,33 +1,47 @@
 <script setup lang="ts">
-import type { Founder } from '#shared/types/founder'
+import { storeToRefs } from 'pinia'
+import type { FixedCost } from '#shared/types/financial'
 import { translateApiError } from '~/utils/translateApiError'
+
+const props = defineProps<{
+  fixedCost?: FixedCost | null
+}>()
 
 const emit = defineEmits<{
   close: []
-  created: [founder: Founder]
+  saved: [cost: FixedCost]
 }>()
 
 const { t } = useI18n()
-const { createFounder } = useFounders()
 const financeStore = useFinanceStore()
+const { schools, termYear } = storeToRefs(financeStore)
+const { createFixedCost, updateFixedCost } = useFixedCosts()
 
-const schoolOptions = computed(() => financeStore.schools)
+const isEditing = computed(() => Boolean(props.fixedCost))
 
 const form = reactive({
-  name: '',
-  school: '',
+  schoolId: '',
+  label: '',
+  amount: '' as number | '',
 })
 
 const isSubmitting = ref(false)
 const error = ref('')
 
 const canSubmit = computed(() =>
-  Boolean(form.name.trim() && !isSubmitting.value),
+  Boolean(
+    form.schoolId
+    && form.label.trim()
+    && form.amount !== ''
+    && Number(form.amount) > 0
+    && !isSubmitting.value,
+  ),
 )
 
 function resetForm() {
-  form.name = ''
-  form.school = ''
+  form.schoolId = props.fixedCost?.schoolId ?? schools.value[0]?.id ?? ''
+  form.label = props.fixedCost?.label ?? ''
+  form.amount = props.fixedCost?.amount ?? ''
   error.value = ''
 }
 
@@ -40,13 +54,18 @@ async function submit() {
   isSubmitting.value = true
 
   try {
-    const founder = await createFounder({
-      name: form.name.trim(),
-      school: form.school.trim() || undefined,
-    })
+    const payload = {
+      schoolId: form.schoolId,
+      label: form.label.trim(),
+      amount: Number(form.amount),
+    }
+
+    const cost = isEditing.value && props.fixedCost
+      ? await updateFixedCost(props.fixedCost.id, payload)
+      : await createFixedCost(payload)
 
     resetForm()
-    emit('created', founder)
+    emit('saved', cost)
     emit('close')
   }
   catch (err) {
@@ -63,10 +82,9 @@ function onKeydown(event: KeyboardEvent) {
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
   resetForm()
   document.addEventListener('keydown', onKeydown)
-  await financeStore.ensureReady()
 })
 
 onUnmounted(() => {
@@ -82,12 +100,12 @@ onUnmounted(() => {
     <div
       role="dialog"
       aria-modal="true"
-      :aria-label="$t('home.addFounder')"
+      :aria-label="isEditing ? $t('fixedCosts.editTitle') : $t('fixedCosts.addTitle')"
       class="ui-modal-panel max-w-xl sm:my-8"
     >
       <header class="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-zinc-800 bg-zinc-900/95 px-4 py-4 backdrop-blur sm:static sm:rounded-t-xl sm:px-6">
         <h2 class="text-lg font-semibold text-zinc-100">
-          {{ $t('home.addFounder') }}
+          {{ isEditing ? $t('fixedCosts.editTitle') : $t('fixedCosts.addTitle') }}
         </h2>
         <button
           type="button"
@@ -112,48 +130,67 @@ onUnmounted(() => {
           class="grid gap-4 sm:grid-cols-2"
           @submit.prevent="submit"
         >
-          <label class="block space-y-1">
-            <span class="ui-label">{{ $t('home.name') }}</span>
-            <input
-              v-model="form.name"
-              type="text"
+          <label class="block space-y-1 sm:col-span-2">
+            <span class="ui-label">{{ $t('fixedCosts.fields.school') }}</span>
+            <select
+              v-model="form.schoolId"
               required
               class="ui-input"
             >
-          </label>
-          <label class="block space-y-1 sm:col-span-2">
-            <span class="ui-label">{{ $t('home.school') }}</span>
-            <select
-              v-if="schoolOptions.length"
-              v-model="form.school"
-              class="ui-input"
-            >
-              <option value="">
-                {{ $t('schools.selectOptional') }}
+              <option
+                v-if="!schools.length"
+                disabled
+                value=""
+              >
+                {{ $t('operator.placeholders.selectSchool') }}
               </option>
               <option
-                v-for="school in schoolOptions"
+                v-for="school in schools"
                 :key="school.id"
-                :value="school.name"
+                :value="school.id"
               >
                 {{ school.name }} — {{ school.branch }}
               </option>
             </select>
+          </label>
+
+          <label class="block space-y-1">
+            <span class="ui-label">{{ $t('fixedCosts.fields.label') }}</span>
             <input
-              v-else
-              v-model="form.school"
+              v-model="form.label"
               type="text"
+              required
               class="ui-input"
-              :placeholder="$t('schools.namePlaceholder')"
+              :placeholder="$t('fixedCosts.labelPlaceholder')"
             >
           </label>
+
+          <label class="block space-y-1">
+            <span class="ui-label">{{ $t('fixedCosts.fields.amount') }}</span>
+            <input
+              v-model.number="form.amount"
+              type="number"
+              min="1"
+              step="1"
+              required
+              class="ui-input"
+            >
+          </label>
+
+          <div class="block space-y-1 sm:col-span-2">
+            <span class="ui-label">{{ $t('fixedCosts.fields.termYear') }}</span>
+            <p class="text-sm text-zinc-400">
+              {{ termYear }}
+            </p>
+          </div>
+
           <div class="sm:col-span-2">
             <button
               type="submit"
               :disabled="!canSubmit"
               class="ui-btn-primary"
             >
-              {{ isSubmitting ? $t('common.saving') : $t('home.addFounder') }}
+              {{ isSubmitting ? $t('common.saving') : (isEditing ? $t('common.save') : $t('fixedCosts.addTitle')) }}
             </button>
           </div>
         </form>

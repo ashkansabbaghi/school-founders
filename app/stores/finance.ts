@@ -44,6 +44,26 @@ function getTranslator() {
   return nuxtApp.$i18n.t.bind(nuxtApp.$i18n)
 }
 
+const SUMMARY_DEBOUNCE_MS = 300
+
+let initPromise: Promise<void> | null = null
+let summaryFetchTimer: ReturnType<typeof setTimeout> | null = null
+
+function cancelDebouncedSummaryFetch() {
+  if (summaryFetchTimer) {
+    clearTimeout(summaryFetchTimer)
+    summaryFetchTimer = null
+  }
+}
+
+function scheduleDebouncedSummaryFetch(fetchSummary: () => Promise<void>) {
+  cancelDebouncedSummaryFetch()
+  summaryFetchTimer = setTimeout(() => {
+    summaryFetchTimer = null
+    void fetchSummary()
+  }, SUMMARY_DEBOUNCE_MS)
+}
+
 export const useFinanceStore = defineStore('finance', {
   state: () => ({
     termYear: '1404-1405',
@@ -56,6 +76,9 @@ export const useFinanceStore = defineStore('finance', {
     submitStatus: 'idle' as SubmitStatus,
     error: null as string | null,
     submitMessage: null as string | null,
+    profileHydrated: false,
+    initialized: false,
+    onboardingComplete: null as boolean | null,
   }),
 
   getters: {
@@ -78,32 +101,80 @@ export const useFinanceStore = defineStore('finance', {
   },
 
   actions: {
+    async hydrateProfile() {
+      if (this.profileHydrated || !import.meta.client) {
+        return
+      }
+
+      const profile = await loadProfileSettings()
+      this.operatorName = profile.operatorName
+      this.termYear = profile.termYear
+      this.profileHydrated = true
+    },
+
+    async ensureReady() {
+      if (this.onboardingComplete === false) {
+        return
+      }
+
+      if (this.initialized) {
+        return
+      }
+
+      if (!initPromise) {
+        initPromise = this.performInit()
+      }
+
+      await initPromise
+    },
+
+    setOnboardingComplete(complete: boolean) {
+      this.onboardingComplete = complete
+    },
+
     async init() {
+      return this.ensureReady()
+    },
+
+    async reload() {
+      cancelDebouncedSummaryFetch()
+      this.initialized = false
+      initPromise = null
+      return this.ensureReady()
+    },
+
+    async performInit() {
       this.status = 'loading'
       this.error = null
 
       try {
-        if (import.meta.client) {
-          const profile = await loadProfileSettings()
-          this.operatorName = profile.operatorName
-          this.termYear = profile.termYear
-        }
+        await this.hydrateProfile()
 
         await Promise.all([this.fetchMasterData(), this.fetchSummary()])
         this.status = 'idle'
+        this.initialized = true
       }
       catch (error) {
         this.status = 'error'
         this.error = translateApiError(error, getTranslator())
+        initPromise = null
+        throw error
       }
     },
 
-    setTermYear(termYear: string) {
+    setTermYear(termYear: string, options?: { immediate?: boolean }) {
       this.termYear = termYear
       if (import.meta.client) {
         void persistTermYear(termYear)
       }
-      void this.fetchSummary()
+
+      if (options?.immediate) {
+        cancelDebouncedSummaryFetch()
+        void this.fetchSummary()
+        return
+      }
+
+      scheduleDebouncedSummaryFetch(() => this.fetchSummary())
     },
 
     setOperatorName(name: string) {

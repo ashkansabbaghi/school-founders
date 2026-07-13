@@ -1,14 +1,15 @@
-import { writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { DEMO_IDS, getDemoData } from '../../app/db/demoData'
-import { clearIndexedDb } from './helpers'
+import { clearIndexedDb, completeOnboardingWizard } from './helpers'
 
 test.beforeEach(async ({ page }) => {
   await clearIndexedDb(page)
 })
 
 test('creates a founder while offline and keeps it after reload', async ({ page, context }) => {
+  await completeOnboardingWizard(page)
   await page.goto('/founders')
   await expect(page.getByText('مؤسس اول')).toBeVisible()
 
@@ -27,6 +28,7 @@ test('creates a founder while offline and keeps it after reload', async ({ page,
 })
 
 test('imports a backup file from settings', async ({ page }) => {
+  await completeOnboardingWizard(page)
   await page.goto('/founders')
   await expect(page.getByText('مؤسس اول')).toBeVisible()
 
@@ -54,6 +56,7 @@ test('imports a backup file from settings', async ({ page }) => {
   }
 
   const backupPath = join(test.info().outputDir, 'import-backup.json')
+  mkdirSync(test.info().outputDir, { recursive: true })
   writeFileSync(backupPath, JSON.stringify(backup, null, 2))
 
   await page.goto('/settings')
@@ -69,6 +72,7 @@ test('imports a backup file from settings', async ({ page }) => {
 })
 
 test('exports backup from settings without errors', async ({ page }) => {
+  await completeOnboardingWizard(page)
   await page.goto('/settings')
 
   const downloadPromise = page.waitForEvent('download')

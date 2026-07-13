@@ -1,3 +1,5 @@
 export * from './backup'
 export * from './finance'
+export * from './fixedCosts'
 export * from './founders'
+export * from './schools'

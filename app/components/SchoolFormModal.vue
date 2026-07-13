@@ -1,33 +1,36 @@
 <script setup lang="ts">
-import type { Founder } from '#shared/types/founder'
+import type { School } from '#shared/types/financial'
 import { translateApiError } from '~/utils/translateApiError'
+
+const props = defineProps<{
+  school?: School | null
+}>()
 
 const emit = defineEmits<{
   close: []
-  created: [founder: Founder]
+  saved: [school: School]
 }>()
 
 const { t } = useI18n()
-const { createFounder } = useFounders()
-const financeStore = useFinanceStore()
+const { createSchool, updateSchool } = useSchools()
 
-const schoolOptions = computed(() => financeStore.schools)
+const isEditing = computed(() => Boolean(props.school))
 
 const form = reactive({
   name: '',
-  school: '',
+  branch: '',
 })
 
 const isSubmitting = ref(false)
 const error = ref('')
 
 const canSubmit = computed(() =>
-  Boolean(form.name.trim() && !isSubmitting.value),
+  Boolean(form.name.trim() && form.branch.trim() && !isSubmitting.value),
 )
 
 function resetForm() {
-  form.name = ''
-  form.school = ''
+  form.name = props.school?.name ?? ''
+  form.branch = props.school?.branch ?? ''
   error.value = ''
 }
 
@@ -40,13 +43,17 @@ async function submit() {
   isSubmitting.value = true
 
   try {
-    const founder = await createFounder({
+    const payload = {
       name: form.name.trim(),
-      school: form.school.trim() || undefined,
-    })
+      branch: form.branch.trim(),
+    }
+
+    const school = isEditing.value && props.school
+      ? await updateSchool(props.school.id, payload)
+      : await createSchool(payload)
 
     resetForm()
-    emit('created', founder)
+    emit('saved', school)
     emit('close')
   }
   catch (err) {
@@ -63,10 +70,9 @@ function onKeydown(event: KeyboardEvent) {
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
   resetForm()
   document.addEventListener('keydown', onKeydown)
-  await financeStore.ensureReady()
 })
 
 onUnmounted(() => {
@@ -82,12 +88,12 @@ onUnmounted(() => {
     <div
       role="dialog"
       aria-modal="true"
-      :aria-label="$t('home.addFounder')"
+      :aria-label="isEditing ? $t('schools.editTitle') : $t('schools.addTitle')"
       class="ui-modal-panel max-w-xl sm:my-8"
     >
       <header class="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-zinc-800 bg-zinc-900/95 px-4 py-4 backdrop-blur sm:static sm:rounded-t-xl sm:px-6">
         <h2 class="text-lg font-semibold text-zinc-100">
-          {{ $t('home.addFounder') }}
+          {{ isEditing ? $t('schools.editTitle') : $t('schools.addTitle') }}
         </h2>
         <button
           type="button"
@@ -113,7 +119,7 @@ onUnmounted(() => {
           @submit.prevent="submit"
         >
           <label class="block space-y-1">
-            <span class="ui-label">{{ $t('home.name') }}</span>
+            <span class="ui-label">{{ $t('fields.name') }}</span>
             <input
               v-model="form.name"
               type="text"
@@ -121,30 +127,13 @@ onUnmounted(() => {
               class="ui-input"
             >
           </label>
-          <label class="block space-y-1 sm:col-span-2">
-            <span class="ui-label">{{ $t('home.school') }}</span>
-            <select
-              v-if="schoolOptions.length"
-              v-model="form.school"
-              class="ui-input"
-            >
-              <option value="">
-                {{ $t('schools.selectOptional') }}
-              </option>
-              <option
-                v-for="school in schoolOptions"
-                :key="school.id"
-                :value="school.name"
-              >
-                {{ school.name }} — {{ school.branch }}
-              </option>
-            </select>
+          <label class="block space-y-1">
+            <span class="ui-label">{{ $t('fields.branch') }}</span>
             <input
-              v-else
-              v-model="form.school"
+              v-model="form.branch"
               type="text"
+              required
               class="ui-input"
-              :placeholder="$t('schools.namePlaceholder')"
             >
           </label>
           <div class="sm:col-span-2">
@@ -153,7 +142,7 @@ onUnmounted(() => {
               :disabled="!canSubmit"
               class="ui-btn-primary"
             >
-              {{ isSubmitting ? $t('common.saving') : $t('home.addFounder') }}
+              {{ isSubmitting ? $t('common.saving') : (isEditing ? $t('common.save') : $t('schools.addTitle')) }}
             </button>
           </div>
         </form>

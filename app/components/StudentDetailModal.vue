@@ -659,6 +659,13 @@ onUnmounted(() => {
               </button>
             </div>
             <p
+              v-if="!operatorName.trim()"
+              class="text-sm text-amber-400 sm:col-span-2"
+              role="status"
+            >
+              {{ $t('operator.errors.operatorNameRequired') }}
+            </p>
+            <p
               v-if="paymentError"
               class="text-sm text-rose-400 sm:col-span-2"
               role="alert"

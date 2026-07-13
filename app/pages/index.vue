@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia'
 import type { RecentLogEntry } from '#shared/types/financial'
 import { listRecentLogs } from '~/services/finance'
+import { translateApiError } from '~/utils/translateApiError'
 
 const { t } = useI18n()
 
@@ -10,13 +11,15 @@ useHead({
 })
 
 const financeStore = useFinanceStore()
-const { termYear } = storeToRefs(financeStore)
+const { termYear, status, error } = storeToRefs(financeStore)
 
 const recentLogs = ref<RecentLogEntry[]>([])
 const recentLogsStatus = ref<'idle' | 'loading' | 'error'>('idle')
+const recentLogsError = ref<string | null>(null)
 
 async function refreshRecentLogs() {
   recentLogsStatus.value = 'loading'
+  recentLogsError.value = null
 
   try {
     recentLogs.value = await listRecentLogs({
@@ -25,8 +28,9 @@ async function refreshRecentLogs() {
     })
     recentLogsStatus.value = 'idle'
   }
-  catch {
+  catch (loadError) {
     recentLogsStatus.value = 'error'
+    recentLogsError.value = translateApiError(loadError, t)
   }
 }
 
@@ -34,12 +38,8 @@ watch(termYear, () => {
   void refreshRecentLogs()
 })
 
-function onTermYearInput(event: Event) {
-  financeStore.setTermYear((event.target as HTMLInputElement).value)
-}
-
 onMounted(async () => {
-  await financeStore.init()
+  await financeStore.ensureReady()
   await refreshRecentLogs()
 })
 </script>
@@ -47,27 +47,32 @@ onMounted(async () => {
 <template>
   <main class="mx-auto max-w-6xl space-y-8 p-4 sm:p-6">
     <header class="ui-page-header">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 class="ui-page-title">
-            {{ $t('home.title') }}
-          </h1>
-          <p class="ui-page-subtitle">
-            {{ $t('home.subtitle') }}
-          </p>
-        </div>
-        <label class="block w-full max-w-xs space-y-1">
-          <span class="ui-label">{{ $t('operator.fields.termYear') }}</span>
-          <input
-            :value="termYear"
-            type="text"
-            class="ui-input"
-            :placeholder="$t('operator.placeholders.termYear')"
-            @input="onTermYearInput"
-          >
-        </label>
+      <div>
+        <h1 class="ui-page-title">
+          {{ $t('home.title') }}
+        </h1>
+        <p class="ui-page-subtitle">
+          {{ $t('home.subtitle') }}
+        </p>
       </div>
     </header>
+
+    <div
+      v-if="status === 'error' && error"
+      class="ui-alert-error"
+      role="alert"
+    >
+      {{ error }}
+    </div>
+    <div
+      v-if="recentLogsError"
+      class="ui-alert-error"
+      role="alert"
+    >
+      {{ recentLogsError }}
+    </div>
+
+    <FirstPaymentCta />
 
     <DashboardStats />
     <FoundersReportTable />

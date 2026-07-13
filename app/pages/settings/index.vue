@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
 import { META_KEYS } from '#shared/types/meta'
 import { loadProfileSettings, resetToDemoData } from '~/db/bootstrap'
 import { getMetaValue } from '~/db/repositories/meta'
@@ -15,7 +14,6 @@ import { translateApiError } from '~/utils/translateApiError'
 
 const { t } = useI18n()
 const financeStore = useFinanceStore()
-const { operatorName, termYear } = storeToRefs(financeStore)
 const { refresh: refreshFounders } = useFounders()
 const { $pwa } = useNuxtApp()
 
@@ -72,7 +70,7 @@ async function refreshAll() {
   clearFeedback()
 
   try {
-    await financeStore.init()
+    await financeStore.reload()
     await refreshProfileMeta()
     await refreshStorageInfo()
     status.value = 'idle'
@@ -81,14 +79,6 @@ async function refreshAll() {
     status.value = 'idle'
     showError(error)
   }
-}
-
-function onOperatorNameInput(event: Event) {
-  financeStore.setOperatorName((event.target as HTMLInputElement).value)
-}
-
-function onTermYearInput(event: Event) {
-  financeStore.setTermYear((event.target as HTMLInputElement).value)
 }
 
 async function copyInstallId() {
@@ -182,8 +172,8 @@ async function handleResetToDemo() {
     const profile = await resetToDemoData()
     installId.value = profile.installId
     financeStore.setOperatorName(profile.operatorName)
-    financeStore.setTermYear(profile.termYear)
-    await financeStore.init()
+    financeStore.setTermYear(profile.termYear, { immediate: true })
+    await financeStore.reload()
     await refreshFounders()
     showSuccess('messages.demoReset')
     status.value = 'idle'
@@ -348,53 +338,27 @@ onMounted(() => {
         </p>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-2">
-        <label class="block space-y-1 sm:col-span-2">
-          <span class="ui-label">{{ $t('operator.fields.operatorName') }}</span>
+      <div class="space-y-1">
+        <span class="ui-label">{{ $t('settings.profile.installId') }}</span>
+        <div class="flex gap-2">
           <input
-            :value="operatorName"
+            :value="installId"
             type="text"
-            class="ui-input"
-            :placeholder="$t('operator.placeholders.operatorName')"
-            :disabled="status === 'loading'"
-            @input="onOperatorNameInput"
+            class="ui-input font-mono text-xs"
+            readonly
           >
-        </label>
-
-        <label class="block space-y-1">
-          <span class="ui-label">{{ $t('operator.fields.termYear') }}</span>
-          <input
-            :value="termYear"
-            type="text"
-            class="ui-input"
-            :placeholder="$t('operator.placeholders.termYear')"
-            :disabled="status === 'loading'"
-            @input="onTermYearInput"
+          <button
+            type="button"
+            class="ui-btn-secondary shrink-0"
+            :disabled="!installId"
+            @click="copyInstallId"
           >
-        </label>
-
-        <div class="space-y-1">
-          <span class="ui-label">{{ $t('settings.profile.installId') }}</span>
-          <div class="flex gap-2">
-            <input
-              :value="installId"
-              type="text"
-              class="ui-input font-mono text-xs"
-              readonly
-            >
-            <button
-              type="button"
-              class="ui-btn-secondary shrink-0"
-              :disabled="!installId"
-              @click="copyInstallId"
-            >
-              {{ copyState === 'copied' ? $t('settings.profile.copied') : $t('settings.profile.copy') }}
-            </button>
-          </div>
-          <p class="text-xs text-zinc-500">
-            {{ $t('settings.profile.installIdHint') }}
-          </p>
+            {{ copyState === 'copied' ? $t('settings.profile.copied') : $t('settings.profile.copy') }}
+          </button>
         </div>
+        <p class="text-xs text-zinc-500">
+          {{ $t('settings.profile.installIdHint') }}
+        </p>
       </div>
     </section>
 

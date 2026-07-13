@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "generate:pages": "nuxt generate && node scripts/post-generate.mjs",
     "preview": "nuxt preview",
-    "preview:e2e": "nuxt generate && node scripts/post-generate.mjs && npx serve .output/public -l 4173",
+    "preview:e2e": "NUXT_APP_BASE_URL=/ nuxt generate && node scripts/post-generate.mjs && npx serve .output/public -l 4173",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",

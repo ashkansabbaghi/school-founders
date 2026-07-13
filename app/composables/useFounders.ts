@@ -5,23 +5,31 @@ import {
   fetchFounders,
   updateFounder as updateFounderRecord,
 } from '~/services/founders'
+import { translateApiError } from '~/utils/translateApiError'
 
 type FoundersStatus = 'idle' | 'loading' | 'error'
+
+function getTranslator() {
+  const nuxtApp = useNuxtApp()
+  return nuxtApp.$i18n.t.bind(nuxtApp.$i18n)
+}
 
 export function useFounders() {
   const founders = useState<Founder[]>('founders', () => [])
   const status = useState<FoundersStatus>('founders-status', () => 'idle')
+  const error = useState<string | null>('founders-error', () => null)
 
   async function refresh() {
     status.value = 'loading'
+    error.value = null
 
     try {
       founders.value = await fetchFounders()
       status.value = 'idle'
     }
-    catch {
+    catch (loadError) {
       status.value = 'error'
-      throw new Error('Failed to load founders')
+      error.value = translateApiError(loadError, getTranslator())
     }
   }
 
@@ -37,8 +45,16 @@ export function useFounders() {
   }
 
   async function deleteFounder(id: string) {
-    await deleteFounderRecord(id)
-    await refresh()
+    error.value = null
+
+    try {
+      await deleteFounderRecord(id)
+      await refresh()
+    }
+    catch (deleteError) {
+      error.value = translateApiError(deleteError, getTranslator())
+      throw deleteError
+    }
   }
 
   if (import.meta.client && status.value === 'idle' && founders.value.length === 0) {
@@ -48,6 +64,7 @@ export function useFounders() {
   return {
     founders,
     status,
+    error,
     refresh,
     createFounder,
     updateFounder,

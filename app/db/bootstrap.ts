@@ -15,6 +15,12 @@ export interface ProfileSettings {
   termYear: string
 }
 
+export interface CompleteOnboardingOptions {
+  operatorName: string
+  termYear: string
+  startWithDemo: boolean
+}
+
 async function migrateLegacyOperatorName(): Promise<string | null> {
   if (!import.meta.client) {
     return null
@@ -34,6 +40,20 @@ async function migrateLegacyOperatorName(): Promise<string | null> {
 
   sessionStorage.removeItem(LEGACY_OPERATOR_STORAGE_KEY)
   return legacyOperator
+}
+
+export async function isOnboardingComplete(): Promise<boolean> {
+  const initialized = await getMetaValue(META_KEYS.initialized)
+  return initialized === 'true'
+}
+
+export async function shouldShowFirstPaymentCta(): Promise<boolean> {
+  const value = await getMetaValue(META_KEYS.showFirstPaymentCta)
+  return value === 'true'
+}
+
+export async function dismissFirstPaymentCta(): Promise<void> {
+  await setMetaValue(META_KEYS.showFirstPaymentCta, 'false')
 }
 
 export async function seedDemoData(): Promise<void> {
@@ -90,21 +110,16 @@ async function clearBusinessData(): Promise<void> {
   )
 }
 
-async function createInstallProfile(): Promise<ProfileSettings> {
-  const installId = crypto.randomUUID()
+async function ensureInstallId(): Promise<string> {
+  const existing = await getMetaValue(META_KEYS.installId)
 
-  await setMetaValues({
-    [META_KEYS.installId]: installId,
-    [META_KEYS.operatorName]: DEMO_OPERATOR,
-    [META_KEYS.termYear]: DEMO_TERM_YEAR,
-    [META_KEYS.initialized]: 'true',
-  })
-
-  return {
-    installId,
-    operatorName: DEMO_OPERATOR,
-    termYear: DEMO_TERM_YEAR,
+  if (existing) {
+    return existing
   }
+
+  const installId = crypto.randomUUID()
+  await setMetaValue(META_KEYS.installId, installId)
+  return installId
 }
 
 export async function loadProfileSettings(): Promise<ProfileSettings> {
@@ -122,7 +137,7 @@ export async function loadProfileSettings(): Promise<ProfileSettings> {
 
   return {
     installId,
-    operatorName: operatorName ?? DEMO_OPERATOR,
+    operatorName: operatorName ?? '',
     termYear: termYear ?? DEMO_TERM_YEAR,
   }
 }
@@ -136,14 +151,43 @@ export async function saveTermYear(termYear: string): Promise<void> {
 }
 
 export async function ensureInitialized(): Promise<ProfileSettings> {
-  const initialized = await getMetaValue(META_KEYS.initialized)
+  await ensureInstallId()
 
-  if (initialized === 'true') {
+  if (await isOnboardingComplete()) {
     return loadProfileSettings()
   }
 
-  await seedDemoData()
-  return createInstallProfile()
+  return loadProfileSettings()
+}
+
+export async function completeOnboarding(
+  options: CompleteOnboardingOptions,
+): Promise<ProfileSettings> {
+  const installId = await ensureInstallId()
+  const operatorName = options.operatorName.trim()
+  const termYear = options.termYear.trim() || DEMO_TERM_YEAR
+
+  if (!operatorName) {
+    throw new Error('Operator name is required to complete onboarding.')
+  }
+
+  if (options.startWithDemo) {
+    await seedDemoData()
+  }
+
+  await setMetaValues({
+    [META_KEYS.installId]: installId,
+    [META_KEYS.operatorName]: operatorName,
+    [META_KEYS.termYear]: termYear,
+    [META_KEYS.initialized]: 'true',
+    [META_KEYS.showFirstPaymentCta]: options.startWithDemo ? 'false' : 'true',
+  })
+
+  return {
+    installId,
+    operatorName,
+    termYear,
+  }
 }
 
 export async function resetToDemoData(): Promise<ProfileSettings> {
@@ -158,6 +202,7 @@ export async function resetToDemoData(): Promise<ProfileSettings> {
     [META_KEYS.operatorName]: DEMO_OPERATOR,
     [META_KEYS.termYear]: DEMO_TERM_YEAR,
     [META_KEYS.initialized]: 'true',
+    [META_KEYS.showFirstPaymentCta]: 'false',
   })
 
   return {

@@ -5,12 +5,21 @@ useHead({
   title: () => t('founders.pageTitle'),
 })
 
-const { founders, status, deleteFounder } = useFounders()
+const { founders, status, error, deleteFounder } = useFounders()
 
 const showAddModal = ref(false)
 
 async function onDelete(id: string) {
-  await deleteFounder(id)
+  if (!confirm(t('founders.confirmDelete'))) {
+    return
+  }
+
+  try {
+    await deleteFounder(id)
+  }
+  catch {
+    // Error message handled by composable
+  }
 }
 </script>
 
@@ -36,6 +45,14 @@ async function onDelete(id: string) {
         </button>
       </div>
     </header>
+
+    <div
+      v-if="error"
+      class="ui-alert-error"
+      role="alert"
+    >
+      {{ error }}
+    </div>
 
     <FounderList
       :founders="founders ?? []"

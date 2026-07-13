@@ -1,14 +1,12 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+
 const { t } = useI18n()
+const financeStore = useFinanceStore()
+const { status, error } = storeToRefs(financeStore)
 
 useHead({
   title: () => t('finance.title'),
-})
-
-const financeStore = useFinanceStore()
-
-onMounted(() => {
-  void financeStore.init()
 })
 </script>
 
@@ -23,7 +21,16 @@ onMounted(() => {
       </p>
     </header>
 
+    <div
+      v-if="status === 'error' && error"
+      class="ui-alert-error"
+      role="alert"
+    >
+      {{ error }}
+    </div>
+
     <FoundersReportTable />
+    <FixedCostsPanel />
     <OperatorLogger />
   </main>
 </template>

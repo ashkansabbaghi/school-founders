@@ -17,21 +17,32 @@ export async function listStudentTransactions(filters?: {
   studentId?: string
   termYear?: string
 }): Promise<StudentTransaction[]> {
-  let transactions = await db.studentTransactions.toArray()
+  const { schoolId, studentId, termYear } = filters ?? {}
 
-  if (filters?.schoolId) {
-    transactions = transactions.filter(transaction => transaction.schoolId === filters.schoolId)
+  if (!studentId && !schoolId && !termYear) {
+    return db.studentTransactions.toArray()
   }
 
-  if (filters?.studentId) {
-    transactions = transactions.filter(transaction => transaction.studentId === filters.studentId)
+  if (studentId) {
+    let collection = db.studentTransactions.where('studentId').equals(studentId)
+    if (schoolId) {
+      collection = collection.filter(transaction => transaction.schoolId === schoolId)
+    }
+    if (termYear) {
+      collection = collection.filter(transaction => transaction.termYear === termYear)
+    }
+    return collection.toArray()
   }
 
-  if (filters?.termYear) {
-    transactions = transactions.filter(transaction => transaction.termYear === filters.termYear)
+  if (schoolId) {
+    let collection = db.studentTransactions.where('schoolId').equals(schoolId)
+    if (termYear) {
+      collection = collection.filter(transaction => transaction.termYear === termYear)
+    }
+    return collection.toArray()
   }
 
-  return transactions
+  return db.studentTransactions.where('termYear').equals(termYear!).toArray()
 }
 
 export async function getStudentTransaction(id: string): Promise<StudentTransaction | null> {

@@ -6,7 +6,7 @@ import { getExpectedTuition } from '#shared/utils/tuition'
 
 const { t, locale } = useI18n()
 const financeStore = useFinanceStore()
-const { schools, termYear, operatorName, isSubmitting, error, submitMessage } = storeToRefs(financeStore)
+const { schools, operatorName, isSubmitting, error, submitMessage } = storeToRefs(financeStore)
 
 const activeTab = ref<'student' | 'employee'>('student')
 
@@ -115,14 +115,6 @@ function todayIso(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
-function onTermYearInput(event: Event) {
-  financeStore.setTermYear((event.target as HTMLInputElement).value)
-}
-
-function onOperatorInput(event: Event) {
-  financeStore.setOperatorName((event.target as HTMLInputElement).value)
-}
-
 async function submitStudent() {
   if (!canSubmitStudent.value) {
     return
@@ -180,30 +172,6 @@ async function submitEmployee() {
         {{ $t('operator.subtitle') }}
       </p>
     </header>
-
-    <div class="mb-6 grid gap-4 sm:grid-cols-2">
-      <label class="block space-y-1">
-        <span class="ui-label">{{ $t('operator.fields.termYear') }}</span>
-        <input
-          :value="termYear"
-          type="text"
-          class="ui-input"
-          :placeholder="$t('operator.placeholders.termYear')"
-          @input="onTermYearInput"
-        >
-      </label>
-      <label class="block space-y-1">
-        <span class="ui-label">{{ $t('operator.fields.operatorName') }}</span>
-        <input
-          :value="operatorName"
-          type="text"
-          required
-          class="ui-input"
-          :placeholder="$t('operator.placeholders.operatorName')"
-          @input="onOperatorInput"
-        >
-      </label>
-    </div>
 
     <div
       role="tablist"
@@ -342,6 +310,13 @@ async function submitEmployee() {
       >
         {{ isSubmitting ? $t('common.saving') : $t('operator.submitStudent') }}
       </button>
+      <p
+        v-if="!operatorName.trim()"
+        class="text-sm text-amber-400"
+        role="status"
+      >
+        {{ $t('operator.errors.operatorNameRequired') }}
+      </p>
     </form>
 
     <form
@@ -436,6 +411,13 @@ async function submitEmployee() {
       >
         {{ isSubmitting ? $t('common.saving') : $t('operator.submitEmployee') }}
       </button>
+      <p
+        v-if="!operatorName.trim()"
+        class="text-sm text-amber-400"
+        role="status"
+      >
+        {{ $t('operator.errors.operatorNameRequired') }}
+      </p>
     </form>
   </section>
 </template>

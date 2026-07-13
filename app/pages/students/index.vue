@@ -4,7 +4,7 @@ import type { Student, StudentTransaction } from '#shared/types/financial'
 
 const { t } = useI18n()
 const financeStore = useFinanceStore()
-const { schools, students, termYear, operatorName, error, submitMessage } = storeToRefs(financeStore)
+const { schools, students, termYear, error, submitMessage } = storeToRefs(financeStore)
 
 useHead({
   title: () => t('students.title'),
@@ -31,15 +31,6 @@ async function loadTransactions() {
   finally {
     isLoadingTransactions.value = false
   }
-}
-
-function onTermYearInput(event: Event) {
-  financeStore.setTermYear((event.target as HTMLInputElement).value)
-  void loadTransactions()
-}
-
-function onOperatorInput(event: Event) {
-  financeStore.setOperatorName((event.target as HTMLInputElement).value)
 }
 
 function openAddModal() {
@@ -73,13 +64,7 @@ watch(termYear, () => {
 })
 
 onMounted(async () => {
-  if (financeStore.students.length === 0) {
-    await financeStore.init()
-  }
-  else {
-    await financeStore.fetchMasterData()
-  }
-
+  await financeStore.ensureReady()
   await loadTransactions()
 })
 </script>
@@ -123,42 +108,20 @@ onMounted(async () => {
     </div>
 
     <section class="ui-card p-4 sm:p-6">
-      <div class="grid gap-4 sm:grid-cols-3">
-        <label class="block space-y-1">
-          <span class="ui-label">{{ $t('operator.fields.termYear') }}</span>
-          <input
-            :value="termYear"
-            type="text"
-            class="ui-input"
-            :placeholder="$t('operator.placeholders.termYear')"
-            @input="onTermYearInput"
-          >
-        </label>
-        <label class="block space-y-1">
-          <span class="ui-label">{{ $t('operator.fields.operatorName') }}</span>
-          <input
-            :value="operatorName"
-            type="text"
-            class="ui-input"
-            :placeholder="$t('operator.placeholders.operatorName')"
-            @input="onOperatorInput"
-          >
-        </label>
-        <label class="block space-y-1">
-          <span class="ui-label">{{ $t('students.fields.school') }}</span>
-          <select
-            v-model="selectedSchoolId"
-            class="ui-input"
-          >
-            <option value="">
-              {{ $t('students.allSchools') }}
-            </option>
-            <option v-for="school in schools" :key="school.id" :value="school.id">
-              {{ school.name }} — {{ school.branch }}
-            </option>
-          </select>
-        </label>
-      </div>
+      <label class="block max-w-md space-y-1">
+        <span class="ui-label">{{ $t('students.fields.school') }}</span>
+        <select
+          v-model="selectedSchoolId"
+          class="ui-input"
+        >
+          <option value="">
+            {{ $t('students.allSchools') }}
+          </option>
+          <option v-for="school in schools" :key="school.id" :value="school.id">
+            {{ school.name }} — {{ school.branch }}
+          </option>
+        </select>
+      </label>
     </section>
 
     <StudentList

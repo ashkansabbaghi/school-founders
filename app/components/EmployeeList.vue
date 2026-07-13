@@ -20,13 +20,26 @@ const numberFormatter = computed(() =>
   new Intl.NumberFormat(locale.value === 'fa' ? 'fa-IR' : 'en-US'),
 )
 
+const transactionsByEmployeeId = computed(() => {
+  const map = new Map<string, EmployeeTransaction[]>()
+  for (const transaction of props.transactions) {
+    const existing = map.get(transaction.employeeId)
+    if (existing) {
+      existing.push(transaction)
+    } else {
+      map.set(transaction.employeeId, [transaction])
+    }
+  }
+  return map
+})
+
+const schoolById = computed(() => new Map(schools.value.map(school => [school.id, school])))
+
 const rows = computed(() =>
   props.employees.map((employee) => {
-    const employeeTransactions = props.transactions.filter(
-      transaction => transaction.employeeId === employee.id,
-    )
+    const employeeTransactions = transactionsByEmployeeId.value.get(employee.id) ?? []
     const summary = financeStore.employeeExpenseSummary(employee, employeeTransactions)
-    const school = schools.value.find(item => item.id === employee.schoolId)
+    const school = schoolById.value.get(employee.schoolId)
 
     return {
       employee,

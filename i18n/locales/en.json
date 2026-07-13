@@ -2,23 +2,80 @@
   "nav": {
     "ariaLabel": "Main navigation",
     "dashboard": "Dashboard",
+    "schools": "School Management",
     "founders": "Founders",
     "finance": "Finance Dashboard",
     "students": "Student Management",
     "employees": "Staff Management",
     "dashboardShort": "Home",
-    "foundersShort": "Schools",
+    "schoolsShort": "Schools",
+    "foundersShort": "Founders",
     "financeShort": "Finance",
     "studentsShort": "Students",
     "employeesShort": "Staff",
     "settings": "Settings",
-    "settingsShort": "Settings"
+    "settingsShort": "Settings",
+    "more": "More",
+    "moreShort": "More",
+    "drawerTitle": "More",
+    "drawerAriaLabel": "Additional pages",
+    "closeDrawer": "Close menu"
   },
   "common": {
     "loading": "Loading...",
     "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
     "total": "Total",
     "saving": "Saving…"
+  },
+  "contextBar": {
+    "ariaLabel": "Global context",
+    "tooltip": "These settings apply across all pages."
+  },
+  "onboarding": {
+    "title": "Initial setup",
+    "stepIndicator": "Step {current} of {total}",
+    "steps": {
+      "1": {
+        "title": "Welcome to School Fanders",
+        "subtitle": "Offline school finance management — your data stays on this device only.",
+        "points": {
+          "offline": "Works without internet — log payments and expenses anytime.",
+          "local": "Data stays on your device and is never sent to a server.",
+          "backup": "Export a JSON backup from Settings and restore it on another device."
+        }
+      },
+      "2": {
+        "title": "Operator settings",
+        "subtitle": "These apply to every financial log you record.",
+        "operatorHint": "Your name appears on reports and transaction logs.",
+        "termYearHint": "Example: 1404-1405 — you can change this later from the bar at the top."
+      },
+      "3": {
+        "title": "Starting data",
+        "subtitle": "Start with sample data or from scratch.",
+        "demo": {
+          "title": "Start with demo data",
+          "description": "Sample school, students, staff, and transactions to explore the app."
+        },
+        "empty": {
+          "title": "Start empty",
+          "description": "No preloaded data — best when you have real records to enter."
+        }
+      }
+    },
+    "actions": {
+      "next": "Continue",
+      "back": "Back",
+      "start": "Get started"
+    },
+    "firstPaymentCta": {
+      "title": "Record your first payment",
+      "subtitle": "Use the finance dashboard to log student income or staff expenses.",
+      "action": "Go to Finance",
+      "dismiss": "Dismiss"
+    }
   },
   "home": {
     "title": "Dashboard",
@@ -66,11 +123,41 @@
     "employeesLink": "Staff Management →"
   },
   "founders": {
-    "pageTitle": "School Founders",
-    "subtitle": "Add and manage founders.",
+    "pageTitle": "Founders",
+    "subtitle": "Add and manage school contacts and stakeholders.",
     "listTitle": "Founders",
     "addButtonLabel": "Add founder",
-    "empty": "No founders yet."
+    "empty": "No founders yet.",
+    "confirmDelete": "Are you sure you want to delete this founder?"
+  },
+  "schools": {
+    "pageTitle": "School Management",
+    "subtitle": "Add and edit schools and branches.",
+    "listTitle": "Schools",
+    "addTitle": "Add school",
+    "editTitle": "Edit school",
+    "addButtonLabel": "Add school",
+    "empty": "No schools yet.",
+    "confirmDelete": "Are you sure you want to delete this school?",
+    "selectOptional": "No school (optional)",
+    "namePlaceholder": "School name"
+  },
+  "fixedCosts": {
+    "title": "Fixed Costs",
+    "subtitle": "Rent, utilities, and other recurring expenses included in profit calculations.",
+    "listTitle": "Costs for this term",
+    "addTitle": "Add Fixed Cost",
+    "editTitle": "Edit Fixed Cost",
+    "addButtonLabel": "Add fixed cost",
+    "empty": "No fixed costs for this term yet.",
+    "confirmDelete": "Are you sure you want to delete this fixed cost?",
+    "labelPlaceholder": "e.g. Rent, Utilities",
+    "fields": {
+      "school": "School",
+      "label": "Label",
+      "amount": "Amount (Rial)",
+      "termYear": "Term year"
+    }
   },
   "report": {
     "title": "Founders Report",
@@ -128,7 +215,10 @@
       "deduction": "Deduction"
     },
     "submitStudent": "Log Student Payment",
-    "submitEmployee": "Log Employee Expense"
+    "submitEmployee": "Log Employee Expense",
+    "errors": {
+      "operatorNameRequired": "Enter your operator name in the header above to submit entries."
+    }
   },
   "messages": {
     "studentLogged": "Student payment logged successfully.",
@@ -167,6 +257,7 @@
     "fullPrice": "Full price",
     "baseSalary": "Base salary",
     "branch": "Branch",
+    "label": "Label",
     "fullName": "Full name",
     "parentName": "Parent name",
     "parentPhone": "Phone number"
@@ -191,6 +282,7 @@
       "studentTransaction": "Student transaction not found",
       "employeeTransaction": "Employee transaction not found",
       "founder": "Founder not found",
+      "fixedCost": "Fixed cost not found",
       "schoolId": "School \"{schoolId}\" does not exist",
       "studentId": "Student \"{studentId}\" does not exist",
       "employeeId": "Employee \"{employeeId}\" does not exist"
@@ -344,7 +436,7 @@
     "subtitle": "Manage local profile, backups, and data storage.",
     "profile": {
       "title": "Local Profile",
-      "subtitle": "Operator name and default term year are stored on this device.",
+      "subtitle": "This device's install ID. Operator name and term year can be set from the bar at the top of the page.",
       "installId": "Install ID",
       "installIdHint": "Unique ID for this app install — useful for support or recovery.",
       "copy": "Copy",

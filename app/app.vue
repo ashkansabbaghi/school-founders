@@ -1,6 +1,9 @@
 <script setup lang="ts">
 const { locale, localeProperties } = useI18n()
 const localePath = useLocalePath()
+const financeStore = useFinanceStore()
+
+const showOnboarding = computed(() => financeStore.onboardingComplete === false)
 
 useHead({
   htmlAttrs: {
@@ -25,7 +28,8 @@ useHead({
           </NuxtLink>
           <AppNav />
         </div>
-        <div class="flex shrink-0 items-center gap-3">
+        <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+          <ContextBar />
           <OfflineIndicator />
           <LocaleSwitcher />
         </div>
@@ -37,5 +41,6 @@ useHead({
     </div>
     <AppBottomNav />
     <PwaUpdatePrompt />
+    <OnboardingWizard v-if="showOnboarding" />
   </div>
 </template>
