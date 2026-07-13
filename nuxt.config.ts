@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url'
 
-const baseURL = process.env.NUXT_APP_BASE_URL || '/'
+const baseURL = process.env.NUXT_APP_BASE_URL || '/school-fanders/'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
