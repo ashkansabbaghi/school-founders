@@ -14,13 +14,8 @@ const emit = defineEmits<{
   select: [student: Student]
 }>()
 
-const { locale } = useI18n()
 const financeStore = useFinanceStore()
 const { schools } = storeToRefs(financeStore)
-
-const numberFormatter = computed(() =>
-  new Intl.NumberFormat(locale.value === 'fa' ? 'fa-IR' : 'en-US'),
-)
 
 const transactionsByStudentId = computed(() => {
   const map = new Map<string, StudentTransaction[]>()
@@ -153,8 +148,12 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
               <div class="mt-0.5 truncate text-sm ui-text-muted">
                 {{ row.schoolLabel }}
               </div>
-              <div class="mt-1.5 text-sm ui-text-secondary">
-                {{ $t('students.remaining', { amount: numberFormatter.format(row.summary.remaining) }) }}
+              <div class="mt-1.5">
+                <ListPaymentProgress
+                  :paid="row.summary.paid"
+                  :expected="row.summary.expected"
+                  :status="row.summary.status"
+                />
               </div>
             </div>
             <span
@@ -223,8 +222,12 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
                 <td class="px-4 py-3 ui-text-muted">
                   {{ row.schoolLabel }}
                 </td>
-                <td class="px-4 py-3 ui-text-secondary">
-                  {{ numberFormatter.format(row.summary.paid) }} / {{ numberFormatter.format(row.summary.expected) }}
+                <td class="px-4 py-3">
+                  <ListPaymentProgress
+                    :paid="row.summary.paid"
+                    :expected="row.summary.expected"
+                    :status="row.summary.status"
+                  />
                 </td>
                 <td class="px-4 py-3">
                   <span :class="statusClasses(row.summary.status)">
