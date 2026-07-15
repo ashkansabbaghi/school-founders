@@ -8,6 +8,7 @@ import {
 const props = withDefaults(defineProps<{
   modelValue: number | ''
   id?: string
+  placeholder?: string
   required?: boolean
   disabled?: boolean
   min?: number
@@ -104,6 +105,7 @@ function onInput(event: Event) {
       :value="displayValue"
       type="text"
       inputmode="numeric"
+      :placeholder="placeholder"
       :required="required"
       :disabled="disabled"
       class="ui-input disabled:cursor-not-allowed disabled:opacity-50"

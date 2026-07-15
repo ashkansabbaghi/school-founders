@@ -23,7 +23,7 @@ const form = reactive({
   grade: '',
   schoolId: '',
   fullPrice: '' as number | '',
-  dynamicDiscountRate: 0.1,
+  dynamicDiscountRatePercent: '' as number | '',
   parentName: '',
   parentPhone: '',
 })
@@ -54,7 +54,7 @@ function resetForm() {
   form.grade = ''
   form.schoolId = defaultSchoolIdValue()
   form.fullPrice = ''
-  form.dynamicDiscountRate = 0.1
+  form.dynamicDiscountRatePercent = ''
   form.parentName = ''
   form.parentPhone = ''
 }
@@ -74,7 +74,7 @@ async function submit() {
       grade: form.grade.trim(),
       schoolId: form.schoolId,
       fullPrice: Number(form.fullPrice),
-      dynamicDiscountRate: form.dynamicDiscountRate,
+      dynamicDiscountRate: (Number(form.dynamicDiscountRatePercent) || 0) / 100,
       parentName: form.parentName.trim(),
       parentPhone: form.parentPhone.trim(),
     })
@@ -157,6 +157,7 @@ onUnmounted(() => {
               type="text"
               required
               class="ui-input"
+              :placeholder="$t('students.placeholders.fullName')"
             >
           </label>
           <label class="block space-y-1">
@@ -167,6 +168,7 @@ onUnmounted(() => {
               required
               maxlength="10"
               class="ui-input"
+              :placeholder="$t('students.placeholders.nationalCode')"
             >
           </label>
           <label class="block space-y-1">
@@ -176,6 +178,7 @@ onUnmounted(() => {
               type="text"
               required
               class="ui-input"
+              :placeholder="$t('students.placeholders.studentId')"
             >
           </label>
           <label class="block space-y-1">
@@ -213,18 +216,19 @@ onUnmounted(() => {
             <CurrencyField
               v-model="form.fullPrice"
               required
+              :placeholder="$t('students.placeholders.fullPrice')"
             />
           </label>
           <label class="block space-y-1">
-            <span class="ui-label">{{ $t('students.fields.discountRate') }}</span>
+            <span class="ui-label">{{ $t('students.fields.discountRatePercent') }}</span>
             <input
-              v-model.number="form.dynamicDiscountRate"
+              v-model.number="form.dynamicDiscountRatePercent"
               type="number"
               min="0"
-              max="1"
-              step="0.01"
-              required
+              max="100"
+              step="1"
               class="ui-input"
+              :placeholder="$t('students.placeholders.discountRatePercent')"
             >
           </label>
           <label class="block space-y-1">
@@ -234,6 +238,7 @@ onUnmounted(() => {
               type="text"
               required
               class="ui-input"
+              :placeholder="$t('students.placeholders.parentName')"
             >
           </label>
           <label class="block space-y-1">
@@ -243,6 +248,7 @@ onUnmounted(() => {
               type="tel"
               required
               class="ui-input"
+              :placeholder="$t('students.placeholders.parentPhone')"
             >
           </label>
           <div class="sm:col-span-2">

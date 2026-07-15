@@ -149,6 +149,7 @@ onUnmounted(() => {
               type="text"
               required
               class="ui-input"
+              :placeholder="$t('employees.placeholders.fullName')"
             >
           </label>
           <label class="block space-y-1">
@@ -159,6 +160,7 @@ onUnmounted(() => {
               required
               maxlength="10"
               class="ui-input"
+              :placeholder="$t('employees.placeholders.nationalCode')"
             >
           </label>
           <label class="block space-y-1">
@@ -168,6 +170,7 @@ onUnmounted(() => {
               type="text"
               required
               class="ui-input"
+              :placeholder="$t('employees.placeholders.employeeId')"
             >
           </label>
           <label class="block space-y-1">
@@ -177,6 +180,7 @@ onUnmounted(() => {
               type="text"
               required
               class="ui-input"
+              :placeholder="$t('employees.placeholders.role')"
             >
           </label>
           <label class="block space-y-1">
@@ -199,6 +203,7 @@ onUnmounted(() => {
             <CurrencyField
               v-model="form.baseSalary"
               required
+              :placeholder="$t('employees.placeholders.baseSalary')"
             />
           </label>
           <label class="block space-y-1">
@@ -207,6 +212,7 @@ onUnmounted(() => {
               v-model="form.insuranceCost"
               :min="0"
               required
+              :placeholder="$t('employees.placeholders.insuranceCost')"
             />
           </label>
           <div class="sm:col-span-2">

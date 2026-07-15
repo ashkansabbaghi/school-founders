@@ -407,11 +407,21 @@
       "school": "مدرسه",
       "fullPrice": "قیمت کامل (ریال)",
       "discountRate": "نرخ تخفیف (۰ تا ۱)",
+      "discountRatePercent": "نرخ تخفیف (%)",
       "parentName": "نام والد",
       "parentPhone": "تلفن تماس",
       "amount": "مبلغ",
       "paymentMethod": "روش پرداخت",
       "date": "تاریخ"
+    },
+    "placeholders": {
+      "fullName": "سارا رنجبر",
+      "nationalCode": "0012345678",
+      "studentId": "ST-1404-001",
+      "fullPrice": "۴۵,۰۰۰,۰۰۰",
+      "discountRatePercent": "۱۰ درصد",
+      "parentName": "پروین",
+      "parentPhone": "09121234567"
     },
     "columns": {
       "fullName": "نام",
@@ -474,6 +484,14 @@
       "amount": "مبلغ",
       "type": "نوع",
       "date": "تاریخ"
+    },
+    "placeholders": {
+      "fullName": "سارا احمدی",
+      "nationalCode": "0098765432",
+      "employeeId": "EM-1404-015",
+      "role": "معلم",
+      "baseSalary": "۲۸,۰۰۰,۰۰۰",
+      "insuranceCost": "۴,۲۰۰,۰۰۰"
     },
     "columns": {
       "fullName": "نام",

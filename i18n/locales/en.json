@@ -407,11 +407,21 @@
       "school": "School",
       "fullPrice": "Full price",
       "discountRate": "Discount rate (0–1)",
+      "discountRatePercent": "Discount rate (%)",
       "parentName": "Parent name",
       "parentPhone": "Phone number",
       "amount": "Amount",
       "paymentMethod": "Payment method",
       "date": "Date"
+    },
+    "placeholders": {
+      "fullName": "Sara Rengber",
+      "nationalCode": "0012345678",
+      "studentId": "ST-1404-001",
+      "fullPrice": "45,000,000",
+      "discountRatePercent": "10 %",
+      "parentName": "parvin",
+      "parentPhone": "09121234567"
     },
     "columns": {
       "fullName": "Name",
@@ -474,6 +484,14 @@
       "amount": "Amount",
       "type": "Type",
       "date": "Date"
+    },
+    "placeholders": {
+      "fullName": "Sara Ahmadi",
+      "nationalCode": "0098765432",
+      "employeeId": "EM-1404-015",
+      "role": "Teacher",
+      "baseSalary": "28,000,000",
+      "insuranceCost": "4,200,000"
     },
     "columns": {
       "fullName": "Name",

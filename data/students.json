@@ -7,7 +7,7 @@
     "studentId": "ST-1404-001",
     "grade": "7",
     "fullPrice": 45000000,
-    "dynamicDiscountRate": 0.10,
+    "dynamicDiscountRate": 0.0,
     "parentName": "محمد رضایی",
     "parentPhone": "09121234567"
   }
