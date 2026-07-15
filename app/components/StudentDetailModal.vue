@@ -17,7 +17,7 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 const financeStore = useFinanceStore()
-const { schools, termYear, isSubmitting, error, submitMessage } = storeToRefs(financeStore)
+const { schools, termYear, isSubmitting } = storeToRefs(financeStore)
 
 const transactions = ref<StudentTransaction[]>([])
 const transactionSearchQuery = ref('')
@@ -39,7 +39,6 @@ const form = reactive({
 const paymentAmount = ref<number | ''>('')
 const paymentMethod = ref<PaymentMethod>('bankTransfer')
 const paymentDate = ref('')
-const paymentError = ref<string | null>(null)
 
 const numberFormatter = computed(() =>
   new Intl.NumberFormat(locale.value === 'fa' ? 'fa-IR' : 'en-US'),
@@ -73,6 +72,8 @@ const isTransactionSearchEmpty = computed(() =>
   && transactions.value.length > 0
   && filteredTransactions.value.length === 0,
 )
+
+const { paginatedItems, meta, goNext, goPrevious } = usePagination(filteredTransactions)
 
 const progressPercent = computed(() => {
   if (paymentSummary.value.expected <= 0) {
@@ -142,7 +143,6 @@ function resetPaymentForm() {
   paymentAmount.value = ''
   paymentMethod.value = 'bankTransfer'
   paymentDate.value = todayIso()
-  paymentError.value = null
 }
 
 async function loadTransactions() {
@@ -208,7 +208,6 @@ function startEditPayment(transaction: StudentTransaction) {
   paymentAmount.value = transaction.amountPaid
   paymentMethod.value = transaction.paymentMethod
   paymentDate.value = transaction.date
-  paymentError.value = null
 }
 
 async function submitPayment() {
@@ -216,7 +215,6 @@ async function submitPayment() {
     return
   }
 
-  paymentError.value = null
   financeStore.clearSubmitFeedback()
 
   const payload = {
@@ -238,8 +236,8 @@ async function submitPayment() {
     resetPaymentForm()
     await loadTransactions()
   }
-  catch (err) {
-    paymentError.value = financeStore.error
+  catch {
+    // Error handled by store
   }
 }
 
@@ -320,21 +318,6 @@ onUnmounted(() => {
       </header>
 
       <div class="scrollbar-thin px-4 py-5 sm:max-h-[calc(100vh-8rem)] sm:overflow-y-auto sm:px-6">
-        <div
-          v-if="submitMessage"
-          class="ui-alert-success mb-4"
-          role="status"
-        >
-          {{ submitMessage }}
-        </div>
-        <div
-          v-if="error"
-          class="ui-alert-error mb-4"
-          role="alert"
-        >
-          {{ error }}
-        </div>
-
         <section class="mb-8">
           <h3 class="ui-section-header mb-4">
             {{ $t('students.paymentSummary') }}
@@ -528,7 +511,7 @@ onUnmounted(() => {
               class="mb-6 space-y-3 md:hidden"
             >
               <li
-                v-for="transaction in filteredTransactions"
+                v-for="transaction in paginatedItems"
                 :key="transaction.id"
                 class="ui-card p-4"
               >
@@ -592,7 +575,7 @@ onUnmounted(() => {
                   appear
                   class="ui-divide-y"
                 >
-                  <tr v-for="transaction in filteredTransactions" :key="transaction.id" class="ui-table-row">
+                  <tr v-for="transaction in paginatedItems" :key="transaction.id" class="ui-table-row">
                     <td class="px-4 py-2">
                       <ListSearchHighlight
                         :text="formatTransactionDate(transaction.date)"
@@ -631,6 +614,12 @@ onUnmounted(() => {
                 </TransitionGroup>
               </table>
             </div>
+            <ListPagination
+              v-if="meta.showPagination"
+              :meta="meta"
+              @previous="goPrevious"
+              @next="goNext"
+            />
           </template>
 
           <form class="grid gap-4 ui-inset-panel sm:grid-cols-2" @submit.prevent="submitPayment">
@@ -680,13 +669,6 @@ onUnmounted(() => {
                 {{ $t('students.cancelEdit') }}
               </button>
             </div>
-            <p
-              v-if="paymentError"
-              class="text-sm text-rose-400 sm:col-span-2"
-              role="alert"
-            >
-              {{ paymentError }}
-            </p>
           </form>
         </section>
       </div>

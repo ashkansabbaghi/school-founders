@@ -1,22 +1,15 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-
 type FinanceTab = 'report' | 'fixedCosts' | 'studentPayments' | 'employeeExpenses'
 
 const VALID_TABS: FinanceTab[] = ['report', 'fixedCosts', 'studentPayments', 'employeeExpenses']
 
 const route = useRoute()
 const financeStore = useFinanceStore()
-const { error, submitMessage } = storeToRefs(financeStore)
 
 const activeTab = ref<FinanceTab>('report')
 
 const tabActiveClass = 'bg-violet-500/15 text-violet-700 ring-1 ring-violet-500/30 dark:text-violet-300'
 const tabInactiveClass = 'text-zinc-500 hover:bg-zinc-200/70 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200'
-
-const isFormTab = computed(() =>
-  activeTab.value === 'studentPayments' || activeTab.value === 'employeeExpenses',
-)
 
 function parseTabFromQuery(tab: unknown): FinanceTab | null {
   if (typeof tab === 'string' && VALID_TABS.includes(tab as FinanceTab)) {
@@ -112,21 +105,6 @@ watch(() => route.query.tab, syncTabFromRoute)
       role="tabpanel"
       class="p-4 sm:p-6"
     >
-      <div
-        v-if="isFormTab && submitMessage"
-        class="ui-alert-success mb-4"
-        role="status"
-      >
-        {{ submitMessage }}
-      </div>
-      <div
-        v-if="isFormTab && error"
-        class="ui-alert-error mb-4"
-        role="alert"
-      >
-        {{ error }}
-      </div>
-
       <StudentPaymentForm />
     </div>
 
@@ -135,21 +113,6 @@ watch(() => route.query.tab, syncTabFromRoute)
       role="tabpanel"
       class="p-4 sm:p-6"
     >
-      <div
-        v-if="isFormTab && submitMessage"
-        class="ui-alert-success mb-4"
-        role="status"
-      >
-        {{ submitMessage }}
-      </div>
-      <div
-        v-if="isFormTab && error"
-        class="ui-alert-error mb-4"
-        role="alert"
-      >
-        {{ error }}
-      </div>
-
       <EmployeeExpenseForm />
     </div>
   </section>

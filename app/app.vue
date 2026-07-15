@@ -57,6 +57,7 @@ useHead({
     </div>
     <AppBottomNav />
     <PwaUpdatePrompt />
+    <AppToast />
     <LazyOnboardingWizard v-if="showOnboarding" />
     <LazyWhatsNewModal :open="showWhatsNew" @close="dismissWhatsNew" />
   </div>

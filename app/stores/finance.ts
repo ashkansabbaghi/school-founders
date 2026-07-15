@@ -35,6 +35,7 @@ import {
   updateStudentTransaction as updateStudentTransactionRecord,
 } from '~/services/finance'
 import { translateApiError } from '~/utils/translateApiError'
+import type { AppToastKind } from '~/composables/useAppToast'
 
 type FetchStatus = 'idle' | 'loading' | 'error'
 type SubmitStatus = 'idle' | 'submitting' | 'error'
@@ -42,6 +43,10 @@ type SubmitStatus = 'idle' | 'submitting' | 'error'
 function getTranslator() {
   const nuxtApp = useNuxtApp()
   return nuxtApp.$i18n.t.bind(nuxtApp.$i18n)
+}
+
+function notifyFeedback(kind: AppToastKind, message: string) {
+  useAppToast().show(kind, message)
 }
 
 const SUMMARY_DEBOUNCE_MS = 300
@@ -75,7 +80,6 @@ export const useFinanceStore = defineStore('finance', {
     status: 'idle' as FetchStatus,
     submitStatus: 'idle' as SubmitStatus,
     error: null as string | null,
-    submitMessage: null as string | null,
     profileHydrated: false,
     initialized: false,
     onboardingComplete: null as boolean | null,
@@ -155,8 +159,10 @@ export const useFinanceStore = defineStore('finance', {
         this.initialized = true
       }
       catch (error) {
+        const message = translateApiError(error, getTranslator())
         this.status = 'error'
-        this.error = translateApiError(error, getTranslator())
+        this.error = message
+        notifyFeedback('error', message)
         initPromise = null
         throw error
       }
@@ -199,8 +205,6 @@ export const useFinanceStore = defineStore('finance', {
       payload: Omit<StudentLogPayload, 'termYear' | 'operator'>,
     ) {
       this.submitStatus = 'submitting'
-      this.error = null
-      this.submitMessage = null
 
       try {
         await logStudentPaymentRecord({
@@ -211,19 +215,17 @@ export const useFinanceStore = defineStore('finance', {
 
         await this.fetchSummary()
         this.submitStatus = 'idle'
-        this.submitMessage = getTranslator()('messages.studentLogged')
+        notifyFeedback('success', getTranslator()('messages.studentLogged'))
       }
       catch (error) {
         this.submitStatus = 'error'
-        this.error = translateApiError(error, getTranslator())
+        notifyFeedback('error', translateApiError(error, getTranslator()))
         throw error
       }
     },
 
     async logEmployeeExpense(payload: Omit<EmployeeLogPayload, 'termYear' | 'operator'>) {
       this.submitStatus = 'submitting'
-      this.error = null
-      this.submitMessage = null
 
       try {
         await logEmployeeExpenseRecord({
@@ -234,56 +236,50 @@ export const useFinanceStore = defineStore('finance', {
 
         await this.fetchSummary()
         this.submitStatus = 'idle'
-        this.submitMessage = getTranslator()('messages.employeeLogged')
+        notifyFeedback('success', getTranslator()('messages.employeeLogged'))
       }
       catch (error) {
         this.submitStatus = 'error'
-        this.error = translateApiError(error, getTranslator())
+        notifyFeedback('error', translateApiError(error, getTranslator()))
         throw error
       }
     },
 
     clearSubmitFeedback() {
-      this.error = null
-      this.submitMessage = null
       this.submitStatus = 'idle'
     },
 
     async saveStudent(payload: Omit<Student, 'id'> & { id?: string }) {
       this.submitStatus = 'submitting'
-      this.error = null
-      this.submitMessage = null
 
       try {
         const student = await saveStudentRecord(payload)
 
         await this.fetchMasterData()
         this.submitStatus = 'idle'
-        this.submitMessage = getTranslator()('messages.studentSaved')
+        notifyFeedback('success', getTranslator()('messages.studentSaved'))
         return student
       }
       catch (error) {
         this.submitStatus = 'error'
-        this.error = translateApiError(error, getTranslator())
+        notifyFeedback('error', translateApiError(error, getTranslator()))
         throw error
       }
     },
 
     async removeStudent(id: string) {
       this.submitStatus = 'submitting'
-      this.error = null
-      this.submitMessage = null
 
       try {
         await removeStudentRecord(id)
 
         await Promise.all([this.fetchMasterData(), this.fetchSummary()])
         this.submitStatus = 'idle'
-        this.submitMessage = getTranslator()('messages.studentRemoved')
+        notifyFeedback('success', getTranslator()('messages.studentRemoved'))
       }
       catch (error) {
         this.submitStatus = 'error'
-        this.error = translateApiError(error, getTranslator())
+        notifyFeedback('error', translateApiError(error, getTranslator()))
         throw error
       }
     },
@@ -304,8 +300,6 @@ export const useFinanceStore = defineStore('finance', {
       payload: Omit<StudentLogPayload, 'termYear' | 'operator'>,
     ) {
       this.submitStatus = 'submitting'
-      this.error = null
-      this.submitMessage = null
 
       try {
         await updateStudentTransactionRecord(id, {
@@ -316,69 +310,63 @@ export const useFinanceStore = defineStore('finance', {
 
         await this.fetchSummary()
         this.submitStatus = 'idle'
-        this.submitMessage = getTranslator()('messages.studentPaymentUpdated')
+        notifyFeedback('success', getTranslator()('messages.studentPaymentUpdated'))
       }
       catch (error) {
         this.submitStatus = 'error'
-        this.error = translateApiError(error, getTranslator())
+        notifyFeedback('error', translateApiError(error, getTranslator()))
         throw error
       }
     },
 
     async deleteStudentTransaction(id: string) {
       this.submitStatus = 'submitting'
-      this.error = null
-      this.submitMessage = null
 
       try {
         await deleteStudentTransactionRecord(id)
 
         await this.fetchSummary()
         this.submitStatus = 'idle'
-        this.submitMessage = getTranslator()('messages.studentPaymentRemoved')
+        notifyFeedback('success', getTranslator()('messages.studentPaymentRemoved'))
       }
       catch (error) {
         this.submitStatus = 'error'
-        this.error = translateApiError(error, getTranslator())
+        notifyFeedback('error', translateApiError(error, getTranslator()))
         throw error
       }
     },
 
     async saveEmployee(payload: Omit<Employee, 'id'> & { id?: string }) {
       this.submitStatus = 'submitting'
-      this.error = null
-      this.submitMessage = null
 
       try {
         const employee = await saveEmployeeRecord(payload)
 
         await this.fetchMasterData()
         this.submitStatus = 'idle'
-        this.submitMessage = getTranslator()('messages.employeeSaved')
+        notifyFeedback('success', getTranslator()('messages.employeeSaved'))
         return employee
       }
       catch (error) {
         this.submitStatus = 'error'
-        this.error = translateApiError(error, getTranslator())
+        notifyFeedback('error', translateApiError(error, getTranslator()))
         throw error
       }
     },
 
     async removeEmployee(id: string) {
       this.submitStatus = 'submitting'
-      this.error = null
-      this.submitMessage = null
 
       try {
         await removeEmployeeRecord(id)
 
         await Promise.all([this.fetchMasterData(), this.fetchSummary()])
         this.submitStatus = 'idle'
-        this.submitMessage = getTranslator()('messages.employeeRemoved')
+        notifyFeedback('success', getTranslator()('messages.employeeRemoved'))
       }
       catch (error) {
         this.submitStatus = 'error'
-        this.error = translateApiError(error, getTranslator())
+        notifyFeedback('error', translateApiError(error, getTranslator()))
         throw error
       }
     },
@@ -399,8 +387,6 @@ export const useFinanceStore = defineStore('finance', {
       payload: Omit<EmployeeLogPayload, 'termYear' | 'operator'>,
     ) {
       this.submitStatus = 'submitting'
-      this.error = null
-      this.submitMessage = null
 
       try {
         await updateEmployeeTransactionRecord(id, {
@@ -411,30 +397,28 @@ export const useFinanceStore = defineStore('finance', {
 
         await this.fetchSummary()
         this.submitStatus = 'idle'
-        this.submitMessage = getTranslator()('messages.employeeExpenseUpdated')
+        notifyFeedback('success', getTranslator()('messages.employeeExpenseUpdated'))
       }
       catch (error) {
         this.submitStatus = 'error'
-        this.error = translateApiError(error, getTranslator())
+        notifyFeedback('error', translateApiError(error, getTranslator()))
         throw error
       }
     },
 
     async deleteEmployeeTransaction(id: string) {
       this.submitStatus = 'submitting'
-      this.error = null
-      this.submitMessage = null
 
       try {
         await deleteEmployeeTransactionRecord(id)
 
         await this.fetchSummary()
         this.submitStatus = 'idle'
-        this.submitMessage = getTranslator()('messages.employeeExpenseRemoved')
+        notifyFeedback('success', getTranslator()('messages.employeeExpenseRemoved'))
       }
       catch (error) {
         this.submitStatus = 'error'
-        this.error = translateApiError(error, getTranslator())
+        notifyFeedback('error', translateApiError(error, getTranslator()))
         throw error
       }
     },

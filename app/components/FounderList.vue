@@ -25,6 +25,8 @@ const isSearchEmpty = computed(() =>
   && filteredFounders.value.length === 0,
 )
 
+const { paginatedItems, meta, goNext, goPrevious } = usePagination(filteredFounders)
+
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(part => part.length > 0)
   const first = parts[0]
@@ -70,50 +72,60 @@ function getInitials(name: string): string {
       </li>
     </ul>
 
-    <TransitionGroup
+    <div
       v-else-if="filteredFounders.length"
-      tag="ul"
-      name="list-item"
-      appear
       class="space-y-3"
     >
-      <li
-        v-for="founder in filteredFounders"
-        :key="founder.id"
-        class="ui-card-hover flex items-center gap-4 p-4"
+      <TransitionGroup
+        tag="ul"
+        name="list-item"
+        appear
+        class="space-y-3"
       >
-        <div
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-500/15 text-sm font-semibold text-violet-300"
-          aria-hidden="true"
+        <li
+          v-for="founder in paginatedItems"
+          :key="founder.id"
+          class="ui-card-hover flex items-center gap-4 p-4"
         >
-          {{ getInitials(founder.name) }}
-        </div>
-        <div class="min-w-0 flex-1">
-          <div class="font-medium">
-            <ListSearchHighlight
-              :text="founder.name"
-              :query="searchQuery"
-            />
-          </div>
           <div
-            v-if="founder.school"
-            class="truncate text-sm ui-text-muted"
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-500/15 text-sm font-semibold text-violet-300"
+            aria-hidden="true"
           >
-            <ListSearchHighlight
-              :text="founder.school"
-              :query="searchQuery"
-            />
+            {{ getInitials(founder.name) }}
           </div>
-        </div>
-        <button
-          type="button"
-          class="ui-btn-danger shrink-0 px-3 py-1.5"
-          @click="$emit('delete', founder.id)"
-        >
-          {{ $t('common.delete') }}
-        </button>
-      </li>
-    </TransitionGroup>
+          <div class="min-w-0 flex-1">
+            <div class="font-medium">
+              <ListSearchHighlight
+                :text="founder.name"
+                :query="searchQuery"
+              />
+            </div>
+            <div
+              v-if="founder.school"
+              class="truncate text-sm ui-text-muted"
+            >
+              <ListSearchHighlight
+                :text="founder.school"
+                :query="searchQuery"
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            class="ui-btn-danger shrink-0 px-3 py-1.5"
+            @click="$emit('delete', founder.id)"
+          >
+            {{ $t('common.delete') }}
+          </button>
+        </li>
+      </TransitionGroup>
+      <ListPagination
+        v-if="meta.showPagination"
+        :meta="meta"
+        @previous="goPrevious"
+        @next="goNext"
+      />
+    </div>
 
     <div
       v-else

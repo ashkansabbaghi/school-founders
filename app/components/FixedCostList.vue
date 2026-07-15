@@ -50,6 +50,8 @@ const isSearchEmpty = computed(() =>
   && props.fixedCosts.length > 0
   && filteredFixedCosts.value.length === 0,
 )
+
+const { paginatedItems, meta, goNext, goPrevious } = usePagination(filteredFixedCosts)
 </script>
 
 <template>
@@ -83,61 +85,71 @@ const isSearchEmpty = computed(() =>
       </li>
     </ul>
 
-    <TransitionGroup
+    <div
       v-else-if="filteredFixedCosts.length"
-      tag="ul"
-      name="list-item"
-      appear
       class="space-y-3"
     >
-      <li
-        v-for="cost in filteredFixedCosts"
-        :key="cost.id"
-        class="ui-card-hover flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4"
+      <TransitionGroup
+        tag="ul"
+        name="list-item"
+        appear
+        class="space-y-3"
       >
-        <div
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-sm font-semibold text-amber-300"
-          aria-hidden="true"
+        <li
+          v-for="cost in paginatedItems"
+          :key="cost.id"
+          class="ui-card-hover flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4"
         >
-          {{ cost.label.charAt(0) }}
-        </div>
-        <div class="min-w-0 flex-1">
-          <div class="font-medium">
-            <ListSearchHighlight
-              :text="cost.label"
-              :query="searchQuery"
-            />
-          </div>
-          <div class="truncate text-sm ui-text-muted">
-            <ListSearchHighlight
-              :text="schoolLabel(cost.schoolId)"
-              :query="searchQuery"
-            />
-          </div>
-        </div>
-        <div class="flex items-center justify-between gap-3 sm:contents">
-          <div class="shrink-0 text-sm font-semibold sm:order-3">
-            {{ formatCurrency(cost.amount) }}
-          </div>
-          <div class="flex shrink-0 gap-2 sm:order-4">
-          <button
-            type="button"
-            class="ui-btn-secondary px-3 py-1.5"
-            @click="$emit('edit', cost)"
+          <div
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-sm font-semibold text-amber-300"
+            aria-hidden="true"
           >
-            {{ $t('common.edit') }}
-          </button>
-          <button
-            type="button"
-            class="ui-btn-danger px-3 py-1.5"
-            @click="$emit('delete', cost.id)"
-          >
-            {{ $t('common.delete') }}
-          </button>
+            {{ cost.label.charAt(0) }}
           </div>
-        </div>
-      </li>
-    </TransitionGroup>
+          <div class="min-w-0 flex-1">
+            <div class="font-medium">
+              <ListSearchHighlight
+                :text="cost.label"
+                :query="searchQuery"
+              />
+            </div>
+            <div class="truncate text-sm ui-text-muted">
+              <ListSearchHighlight
+                :text="schoolLabel(cost.schoolId)"
+                :query="searchQuery"
+              />
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-3 sm:contents">
+            <div class="shrink-0 text-sm font-semibold sm:order-3">
+              {{ formatCurrency(cost.amount) }}
+            </div>
+            <div class="flex shrink-0 gap-2 sm:order-4">
+              <button
+                type="button"
+                class="ui-btn-secondary px-3 py-1.5"
+                @click="$emit('edit', cost)"
+              >
+                {{ $t('common.edit') }}
+              </button>
+              <button
+                type="button"
+                class="ui-btn-danger px-3 py-1.5"
+                @click="$emit('delete', cost.id)"
+              >
+                {{ $t('common.delete') }}
+              </button>
+            </div>
+          </div>
+        </li>
+      </TransitionGroup>
+      <ListPagination
+        v-if="meta.showPagination"
+        :meta="meta"
+        @previous="goPrevious"
+        @next="goNext"
+      />
+    </div>
 
     <div
       v-else

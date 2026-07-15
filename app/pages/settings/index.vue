@@ -37,8 +37,9 @@ const storageInfo = ref<StoragePersistenceInfo>({
   quotaBytes: null,
 })
 
+const { show: showToast } = useAppToast()
+
 const status = ref<'idle' | 'loading' | 'submitting'>('idle')
-const feedback = ref<{ kind: 'success' | 'error', message: string } | null>(null)
 const copyState = ref<'idle' | 'copied'>('idle')
 
 const importInput = ref<HTMLInputElement | null>(null)
@@ -55,22 +56,12 @@ const directoryStatus = ref<DirectoryBackupStatus>({
   connectedAt: null,
 })
 
-function clearFeedback() {
-  feedback.value = null
-}
-
 function showError(error: unknown) {
-  feedback.value = {
-    kind: 'error',
-    message: translateApiError(error, t),
-  }
+  showToast('error', translateApiError(error, t))
 }
 
 function showSuccess(messageKey: string) {
-  feedback.value = {
-    kind: 'success',
-    message: t(messageKey),
-  }
+  showToast('success', t(messageKey))
 }
 
 async function refreshProfileMeta() {
@@ -89,7 +80,6 @@ async function refreshDirectoryBackupStatus() {
 
 async function refreshAll() {
   status.value = 'loading'
-  clearFeedback()
 
   try {
     await financeStore.reload()
@@ -123,7 +113,6 @@ async function copyInstallId() {
 
 async function handleExport() {
   status.value = 'submitting'
-  clearFeedback()
 
   try {
     const payload = await exportBackup()
@@ -161,7 +150,6 @@ async function confirmImport() {
   }
 
   status.value = 'submitting'
-  clearFeedback()
 
   try {
     const content = await file.text()
@@ -189,7 +177,6 @@ function isUserCancelledPicker(error: unknown): boolean {
 
 async function handleSelectFolder() {
   status.value = 'submitting'
-  clearFeedback()
 
   try {
     directoryStatus.value = await selectBackupDirectory()
@@ -209,7 +196,6 @@ async function handleSelectFolder() {
 
 async function handleReconnectFolder() {
   status.value = 'submitting'
-  clearFeedback()
 
   try {
     directoryStatus.value = await reconnectBackupDirectory()
@@ -225,7 +211,6 @@ async function handleReconnectFolder() {
 
 async function handleSaveToFolder() {
   status.value = 'submitting'
-  clearFeedback()
 
   try {
     await writeDirectoryBackup()
@@ -247,7 +232,6 @@ async function handleResetToDemo() {
   }
 
   status.value = 'submitting'
-  clearFeedback()
 
   try {
     const profile = await resetToDemoData()
@@ -267,7 +251,6 @@ async function handleResetToDemo() {
 
 async function handleRequestPersistence() {
   status.value = 'submitting'
-  clearFeedback()
 
   try {
     const granted = await requestStoragePersistence()
@@ -406,8 +389,6 @@ const canSaveToFolder = computed(() =>
 )
 
 async function handleInstallPwa() {
-  clearFeedback()
-
   try {
     await $pwa?.install()
   }
@@ -431,17 +412,6 @@ onMounted(() => {
         {{ $t('settings.subtitle') }}
       </p>
     </header>
-
-    <div
-      v-if="feedback"
-      class="rounded-lg border px-4 py-3 text-sm"
-      :class="feedback.kind === 'success'
-        ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-        : 'border-rose-500/30 bg-rose-500/10 text-rose-300'"
-      role="status"
-    >
-      {{ feedback.message }}
-    </div>
 
     <section class="ui-card space-y-4 p-6">
       <div>

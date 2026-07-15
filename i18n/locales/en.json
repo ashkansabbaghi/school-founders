@@ -33,7 +33,13 @@
     "saving": "Saving…",
     "search": "Search",
     "searchPlaceholder": "Search…",
-    "noSearchResults": "No results found."
+    "noSearchResults": "No results found.",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "range": "{start}–{end} of {total}",
+      "navLabel": "Pagination"
+    }
   },
   "contextBar": {
     "ariaLabel": "Global academic year",
@@ -264,6 +270,12 @@
     "employeeRemoved": "Employee removed successfully.",
     "employeeExpenseUpdated": "Expense updated successfully.",
     "employeeExpenseRemoved": "Expense removed successfully.",
+    "schoolSaved": "School saved successfully.",
+    "schoolRemoved": "School removed successfully.",
+    "founderSaved": "Founder added successfully.",
+    "founderRemoved": "Founder removed successfully.",
+    "fixedCostSaved": "Fixed cost saved successfully.",
+    "fixedCostRemoved": "Fixed cost removed successfully.",
     "unexpectedError": "An unexpected error occurred",
     "backupExported": "Backup file downloaded successfully.",
     "backupImported": "Data restored successfully.",

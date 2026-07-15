@@ -33,6 +33,8 @@ const filteredSchoolRows = computed(() =>
   ),
 )
 
+const { paginatedItems, meta, goNext, goPrevious } = usePagination(filteredSchoolRows)
+
 const isSearchEmpty = computed(() =>
   searchQuery.value.trim().length > 0
   && allSchoolRows.value.length > 0
@@ -132,7 +134,7 @@ function profitLabel(netProfit: number): string {
       <template v-else-if="filteredSchoolRows.length">
         <ul class="ui-divide-y">
           <li
-            v-for="row in filteredSchoolRows as SchoolProfitBreakdown[]"
+            v-for="row in paginatedItems as SchoolProfitBreakdown[]"
             :key="row.schoolId"
             class="space-y-3 p-4"
           >
@@ -289,7 +291,7 @@ function profitLabel(netProfit: number): string {
           class="ui-divide-y"
         >
           <tr
-            v-for="row in filteredSchoolRows as SchoolProfitBreakdown[]"
+            v-for="row in paginatedItems as SchoolProfitBreakdown[]"
             :key="row.schoolId"
             class="ui-table-row"
           >
@@ -398,5 +400,12 @@ function profitLabel(netProfit: number): string {
         </tfoot>
       </table>
     </div>
+
+    <ListPagination
+      v-if="!isLoading && meta.showPagination"
+      :meta="meta"
+      @previous="goPrevious"
+      @next="goNext"
+    />
   </component>
 </template>

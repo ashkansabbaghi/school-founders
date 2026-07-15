@@ -18,7 +18,7 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 const financeStore = useFinanceStore()
-const { schools, termYear, isSubmitting, error, submitMessage } = storeToRefs(financeStore)
+const { schools, termYear, isSubmitting } = storeToRefs(financeStore)
 
 const transactions = ref<EmployeeTransaction[]>([])
 const transactionSearchQuery = ref('')
@@ -38,7 +38,6 @@ const form = reactive({
 const expenseAmount = ref<number | ''>('')
 const transactionType = ref<EmployeeTransactionType>('salary')
 const expenseDate = ref('')
-const expenseError = ref<string | null>(null)
 
 const numberFormatter = computed(() =>
   new Intl.NumberFormat(locale.value === 'fa' ? 'fa-IR' : 'en-US'),
@@ -71,6 +70,8 @@ const isTransactionSearchEmpty = computed(() =>
   && transactions.value.length > 0
   && filteredTransactions.value.length === 0,
 )
+
+const { paginatedItems, meta, goNext, goPrevious } = usePagination(filteredTransactions)
 
 const progressPercent = computed(() => {
   if (expenseSummary.value.expected <= 0) {
@@ -135,7 +136,6 @@ function resetExpenseForm() {
   expenseAmount.value = ''
   transactionType.value = 'salary'
   expenseDate.value = todayIso()
-  expenseError.value = null
 }
 
 async function loadTransactions() {
@@ -199,7 +199,6 @@ function startEditExpense(transaction: EmployeeTransaction) {
   expenseAmount.value = transaction.amountPaid
   transactionType.value = transaction.transactionType
   expenseDate.value = transaction.date
-  expenseError.value = null
 }
 
 async function submitExpense() {
@@ -207,7 +206,6 @@ async function submitExpense() {
     return
   }
 
-  expenseError.value = null
   financeStore.clearSubmitFeedback()
 
   const payload = {
@@ -230,7 +228,7 @@ async function submitExpense() {
     await loadTransactions()
   }
   catch {
-    expenseError.value = financeStore.error
+    // Error handled by store
   }
 }
 
@@ -317,21 +315,6 @@ onUnmounted(() => {
       </header>
 
       <div class="scrollbar-thin px-4 py-5 sm:max-h-[calc(100vh-8rem)] sm:overflow-y-auto sm:px-6">
-        <div
-          v-if="submitMessage"
-          class="ui-alert-success mb-4"
-          role="status"
-        >
-          {{ submitMessage }}
-        </div>
-        <div
-          v-if="error"
-          class="ui-alert-error mb-4"
-          role="alert"
-        >
-          {{ error }}
-        </div>
-
         <section class="mb-8">
           <h3 class="ui-section-header mb-4">
             {{ $t('employees.expenseSummary') }}
@@ -503,7 +486,7 @@ onUnmounted(() => {
               class="mb-6 space-y-3 md:hidden"
             >
               <li
-                v-for="transaction in filteredTransactions"
+                v-for="transaction in paginatedItems"
                 :key="transaction.id"
                 class="ui-card p-4"
               >
@@ -567,7 +550,7 @@ onUnmounted(() => {
                   appear
                   class="ui-divide-y"
                 >
-                  <tr v-for="transaction in filteredTransactions" :key="transaction.id" class="ui-table-row">
+                  <tr v-for="transaction in paginatedItems" :key="transaction.id" class="ui-table-row">
                     <td class="px-4 py-2">
                       <ListSearchHighlight
                         :text="formatTransactionDate(transaction.date)"
@@ -606,6 +589,12 @@ onUnmounted(() => {
                 </TransitionGroup>
               </table>
             </div>
+            <ListPagination
+              v-if="meta.showPagination"
+              :meta="meta"
+              @previous="goPrevious"
+              @next="goNext"
+            />
           </template>
 
           <form class="grid gap-4 ui-inset-panel sm:grid-cols-2" @submit.prevent="submitExpense">
@@ -655,13 +644,6 @@ onUnmounted(() => {
                 {{ $t('employees.cancelEdit') }}
               </button>
             </div>
-            <p
-              v-if="expenseError"
-              class="text-sm text-rose-400 sm:col-span-2"
-              role="alert"
-            >
-              {{ expenseError }}
-            </p>
           </form>
         </section>
       </div>

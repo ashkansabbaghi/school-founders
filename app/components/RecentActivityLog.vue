@@ -18,6 +18,8 @@ const filteredLogs = computed(() =>
   ),
 )
 
+const { paginatedItems, meta, goNext, goPrevious } = usePagination(filteredLogs)
+
 const isSearchEmpty = computed(() =>
   searchQuery.value.trim().length > 0
   && props.logs.length > 0
@@ -108,7 +110,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
         class="ui-divide-y"
       >
         <li
-          v-for="log in filteredLogs"
+          v-for="log in paginatedItems"
           :key="`${log.kind}-${log.id}`"
           class="p-4"
         >
@@ -201,7 +203,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
           class="ui-divide-y"
         >
           <tr
-            v-for="log in filteredLogs"
+            v-for="log in paginatedItems"
             :key="`${log.kind}-${log.id}`"
             class="ui-table-row"
           >
@@ -254,5 +256,12 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
         </tbody>
       </table>
     </div>
+
+    <ListPagination
+      v-if="!pending && meta.showPagination"
+      :meta="meta"
+      @previous="goPrevious"
+      @next="goNext"
+    />
   </section>
 </template>

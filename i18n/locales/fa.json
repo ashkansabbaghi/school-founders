@@ -33,7 +33,13 @@
     "saving": "در حال ذخیره...",
     "search": "جستجو",
     "searchPlaceholder": "جستجو...",
-    "noSearchResults": "نتیجه‌ای یافت نشد."
+    "noSearchResults": "نتیجه‌ای یافت نشد.",
+    "pagination": {
+      "previous": "قبلی",
+      "next": "بعدی",
+      "range": "{start}–{end} از {total}",
+      "navLabel": "صفحه‌بندی"
+    }
   },
   "contextBar": {
     "ariaLabel": "سال تحصیلی سراسری",
@@ -264,6 +270,12 @@
     "employeeRemoved": "پرسنل با موفقیت حذف شد.",
     "employeeExpenseUpdated": "هزینه با موفقیت به‌روزرسانی شد.",
     "employeeExpenseRemoved": "هزینه با موفقیت حذف شد.",
+    "schoolSaved": "مدرسه با موفقیت ذخیره شد.",
+    "schoolRemoved": "مدرسه با موفقیت حذف شد.",
+    "founderSaved": "بنیان‌گذار با موفقیت اضافه شد.",
+    "founderRemoved": "بنیان‌گذار با موفقیت حذف شد.",
+    "fixedCostSaved": "هزینه ثابت با موفقیت ذخیره شد.",
+    "fixedCostRemoved": "هزینه ثابت با موفقیت حذف شد.",
     "unexpectedError": "خطای غیرمنتظره‌ای رخ داد",
     "backupExported": "فایل پشتیبان با موفقیت دانلود شد.",
     "backupImported": "داده‌ها با موفقیت بازیابی شد.",

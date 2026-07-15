@@ -5,6 +5,7 @@ import {
   fetchFixedCosts,
   updateFixedCost as updateFixedCostRecord,
 } from '~/services/fixedCosts'
+import type { AppToastKind } from '~/composables/useAppToast'
 import { translateApiError } from '~/utils/translateApiError'
 
 type FixedCostsStatus = 'idle' | 'loading' | 'error'
@@ -12,6 +13,10 @@ type FixedCostsStatus = 'idle' | 'loading' | 'error'
 function getTranslator() {
   const nuxtApp = useNuxtApp()
   return nuxtApp.$i18n.t.bind(nuxtApp.$i18n)
+}
+
+function notifyFeedback(kind: AppToastKind, message: string) {
+  useAppToast().show(kind, message)
 }
 
 export function useFixedCosts() {
@@ -37,32 +42,49 @@ export function useFixedCosts() {
     catch (loadError) {
       status.value = 'error'
       error.value = translateApiError(loadError, getTranslator())
+      notifyFeedback('error', error.value)
     }
   }
 
   async function createFixedCost(
     payload: Pick<FixedCost, 'schoolId' | 'label' | 'amount'>,
   ) {
-    const cost = await createFixedCostRecord({
-      ...payload,
-      termYear: financeStore.termYear,
-    })
-    await refresh()
-    await syncSummary()
-    return cost
+    try {
+      const cost = await createFixedCostRecord({
+        ...payload,
+        termYear: financeStore.termYear,
+      })
+      await refresh()
+      await syncSummary()
+      notifyFeedback('success', getTranslator()('messages.fixedCostSaved'))
+      return cost
+    }
+    catch (createError) {
+      const message = translateApiError(createError, getTranslator())
+      notifyFeedback('error', message)
+      throw createError
+    }
   }
 
   async function updateFixedCost(
     id: string,
     payload: Pick<FixedCost, 'schoolId' | 'label' | 'amount'>,
   ) {
-    const cost = await updateFixedCostRecord(id, {
-      ...payload,
-      termYear: financeStore.termYear,
-    })
-    await refresh()
-    await syncSummary()
-    return cost
+    try {
+      const cost = await updateFixedCostRecord(id, {
+        ...payload,
+        termYear: financeStore.termYear,
+      })
+      await refresh()
+      await syncSummary()
+      notifyFeedback('success', getTranslator()('messages.fixedCostSaved'))
+      return cost
+    }
+    catch (updateError) {
+      const message = translateApiError(updateError, getTranslator())
+      notifyFeedback('error', message)
+      throw updateError
+    }
   }
 
   async function deleteFixedCost(id: string) {
@@ -72,9 +94,11 @@ export function useFixedCosts() {
       await deleteFixedCostRecord(id)
       await refresh()
       await syncSummary()
+      notifyFeedback('success', getTranslator()('messages.fixedCostRemoved'))
     }
     catch (deleteError) {
       error.value = translateApiError(deleteError, getTranslator())
+      notifyFeedback('error', error.value)
       throw deleteError
     }
   }

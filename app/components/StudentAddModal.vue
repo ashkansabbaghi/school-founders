@@ -12,7 +12,7 @@ const emit = defineEmits<{
 }>()
 
 const financeStore = useFinanceStore()
-const { schools, isSubmitting, error, submitMessage } = storeToRefs(financeStore)
+const { schools, isSubmitting } = storeToRefs(financeStore)
 
 const form = reactive({
   fullName: '',
@@ -137,21 +137,6 @@ onUnmounted(() => {
       </header>
 
       <div class="scrollbar-thin px-4 py-5 sm:max-h-[calc(100vh-8rem)] sm:overflow-y-auto sm:px-6">
-        <div
-          v-if="submitMessage"
-          class="ui-alert-success mb-4"
-          role="status"
-        >
-          {{ submitMessage }}
-        </div>
-        <div
-          v-if="error"
-          class="ui-alert-error mb-4"
-          role="alert"
-        >
-          {{ error }}
-        </div>
-
         <form
           class="grid gap-4 sm:grid-cols-2"
           @submit.prevent="submit"

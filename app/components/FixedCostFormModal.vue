@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import type { FixedCost } from '#shared/types/financial'
-import { translateApiError } from '~/utils/translateApiError'
 
 const props = defineProps<{
   fixedCost?: FixedCost | null
@@ -12,7 +11,6 @@ const emit = defineEmits<{
   saved: [cost: FixedCost]
 }>()
 
-const { t } = useI18n()
 const financeStore = useFinanceStore()
 const { schools, termYear } = storeToRefs(financeStore)
 const { createFixedCost, updateFixedCost } = useFixedCosts()
@@ -26,7 +24,6 @@ const form = reactive({
 })
 
 const isSubmitting = ref(false)
-const error = ref('')
 
 const canSubmit = computed(() =>
   Boolean(
@@ -42,7 +39,6 @@ function resetForm() {
   form.schoolId = props.fixedCost?.schoolId ?? schools.value[0]?.id ?? ''
   form.label = props.fixedCost?.label ?? ''
   form.amount = props.fixedCost?.amount ?? ''
-  error.value = ''
 }
 
 async function submit() {
@@ -50,7 +46,6 @@ async function submit() {
     return
   }
 
-  error.value = ''
   isSubmitting.value = true
 
   try {
@@ -68,8 +63,8 @@ async function submit() {
     emit('saved', cost)
     emit('close')
   }
-  catch (err) {
-    error.value = translateApiError(err, t)
+  catch {
+    // Error handled by composable
   }
   finally {
     isSubmitting.value = false
@@ -118,14 +113,6 @@ onUnmounted(() => {
       </header>
 
       <div class="scrollbar-thin px-4 py-5 sm:max-h-[calc(100vh-8rem)] sm:overflow-y-auto sm:px-6">
-        <div
-          v-if="error"
-          class="ui-alert-error mb-4"
-          role="alert"
-        >
-          {{ error }}
-        </div>
-
         <form
           class="grid gap-4 sm:grid-cols-2"
           @submit.prevent="submit"

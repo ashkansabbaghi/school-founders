@@ -5,6 +5,7 @@ import {
   fetchSchools,
   updateSchool as updateSchoolRecord,
 } from '~/services/schools'
+import type { AppToastKind } from '~/composables/useAppToast'
 import { translateApiError } from '~/utils/translateApiError'
 
 type SchoolsStatus = 'idle' | 'loading' | 'error'
@@ -12,6 +13,10 @@ type SchoolsStatus = 'idle' | 'loading' | 'error'
 function getTranslator() {
   const nuxtApp = useNuxtApp()
   return nuxtApp.$i18n.t.bind(nuxtApp.$i18n)
+}
+
+function notifyFeedback(kind: AppToastKind, message: string) {
+  useAppToast().show(kind, message)
 }
 
 export function useSchools() {
@@ -37,21 +42,38 @@ export function useSchools() {
     catch (loadError) {
       status.value = 'error'
       error.value = translateApiError(loadError, getTranslator())
+      notifyFeedback('error', error.value)
     }
   }
 
   async function createSchool(payload: Pick<School, 'name' | 'branch'>) {
-    const school = await createSchoolRecord(payload)
-    await refresh()
-    await syncFinanceStore()
-    return school
+    try {
+      const school = await createSchoolRecord(payload)
+      await refresh()
+      await syncFinanceStore()
+      notifyFeedback('success', getTranslator()('messages.schoolSaved'))
+      return school
+    }
+    catch (createError) {
+      const message = translateApiError(createError, getTranslator())
+      notifyFeedback('error', message)
+      throw createError
+    }
   }
 
   async function updateSchool(id: string, payload: Pick<School, 'name' | 'branch'>) {
-    const school = await updateSchoolRecord(id, payload)
-    await refresh()
-    await syncFinanceStore()
-    return school
+    try {
+      const school = await updateSchoolRecord(id, payload)
+      await refresh()
+      await syncFinanceStore()
+      notifyFeedback('success', getTranslator()('messages.schoolSaved'))
+      return school
+    }
+    catch (updateError) {
+      const message = translateApiError(updateError, getTranslator())
+      notifyFeedback('error', message)
+      throw updateError
+    }
   }
 
   async function deleteSchool(id: string) {
@@ -61,9 +83,11 @@ export function useSchools() {
       await deleteSchoolRecord(id)
       await refresh()
       await syncFinanceStore()
+      notifyFeedback('success', getTranslator()('messages.schoolRemoved'))
     }
     catch (deleteError) {
       error.value = translateApiError(deleteError, getTranslator())
+      notifyFeedback('error', error.value)
       throw deleteError
     }
   }

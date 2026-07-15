@@ -51,6 +51,8 @@ const rows = computed(() =>
   }),
 )
 
+const { paginatedItems, meta, goNext, goPrevious } = usePagination(rows)
+
 function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
   switch (status) {
     case 'paid':
@@ -133,7 +135,7 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
         class="space-y-3 md:hidden"
       >
         <li
-          v-for="row in rows"
+          v-for="row in paginatedItems"
           :key="row.student.id"
         >
           <button
@@ -196,7 +198,7 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
               class="ui-divide-y"
             >
               <tr
-                v-for="row in rows"
+                v-for="row in paginatedItems"
                 :key="row.student.id"
                 class="ui-table-row cursor-pointer focus-visible:bg-zinc-100 dark:focus-visible:bg-zinc-800/50 focus-visible:outline-none"
                 tabindex="0"
@@ -234,6 +236,12 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
           </table>
         </div>
       </div>
+      <ListPagination
+        v-if="meta.showPagination"
+        :meta="meta"
+        @previous="goPrevious"
+        @next="goNext"
+      />
     </template>
   </section>
 </template>

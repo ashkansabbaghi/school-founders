@@ -24,7 +24,6 @@ async function refreshRecentLogs() {
   try {
     recentLogs.value = await listRecentLogs({
       termYear: termYear.value,
-      limit: 10,
     })
     recentLogsStatus.value = 'idle'
   }

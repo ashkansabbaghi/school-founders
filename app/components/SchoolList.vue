@@ -25,6 +25,8 @@ const isSearchEmpty = computed(() =>
   && props.schools.length > 0
   && filteredSchools.value.length === 0,
 )
+
+const { paginatedItems, meta, goNext, goPrevious } = usePagination(filteredSchools)
 </script>
 
 <template>
@@ -58,56 +60,66 @@ const isSearchEmpty = computed(() =>
       </li>
     </ul>
 
-    <TransitionGroup
+    <div
       v-else-if="filteredSchools.length"
-      tag="ul"
-      name="list-item"
-      appear
       class="space-y-3"
     >
-      <li
-        v-for="school in filteredSchools"
-        :key="school.id"
-        class="ui-card-hover flex items-center gap-4 p-4"
+      <TransitionGroup
+        tag="ul"
+        name="list-item"
+        appear
+        class="space-y-3"
       >
-        <div
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sky-500/15 text-sm font-semibold text-sky-300"
-          aria-hidden="true"
+        <li
+          v-for="school in paginatedItems"
+          :key="school.id"
+          class="ui-card-hover flex items-center gap-4 p-4"
         >
-          {{ school.name.charAt(0) }}
-        </div>
-        <div class="min-w-0 flex-1">
-          <div class="font-medium">
-            <ListSearchHighlight
-              :text="school.name"
-              :query="searchQuery"
-            />
-          </div>
-          <div class="truncate text-sm ui-text-muted">
-            <ListSearchHighlight
-              :text="school.branch"
-              :query="searchQuery"
-            />
-          </div>
-        </div>
-        <div class="flex shrink-0 gap-2">
-          <button
-            type="button"
-            class="ui-btn-secondary px-3 py-1.5"
-            @click="$emit('edit', school)"
+          <div
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sky-500/15 text-sm font-semibold text-sky-300"
+            aria-hidden="true"
           >
-            {{ $t('common.edit') }}
-          </button>
-          <button
-            type="button"
-            class="ui-btn-danger px-3 py-1.5"
-            @click="$emit('delete', school.id)"
-          >
-            {{ $t('common.delete') }}
-          </button>
-        </div>
-      </li>
-    </TransitionGroup>
+            {{ school.name.charAt(0) }}
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="font-medium">
+              <ListSearchHighlight
+                :text="school.name"
+                :query="searchQuery"
+              />
+            </div>
+            <div class="truncate text-sm ui-text-muted">
+              <ListSearchHighlight
+                :text="school.branch"
+                :query="searchQuery"
+              />
+            </div>
+          </div>
+          <div class="flex shrink-0 gap-2">
+            <button
+              type="button"
+              class="ui-btn-secondary px-3 py-1.5"
+              @click="$emit('edit', school)"
+            >
+              {{ $t('common.edit') }}
+            </button>
+            <button
+              type="button"
+              class="ui-btn-danger px-3 py-1.5"
+              @click="$emit('delete', school.id)"
+            >
+              {{ $t('common.delete') }}
+            </button>
+          </div>
+        </li>
+      </TransitionGroup>
+      <ListPagination
+        v-if="meta.showPagination"
+        :meta="meta"
+        @previous="goPrevious"
+        @next="goNext"
+      />
+    </div>
 
     <div
       v-else

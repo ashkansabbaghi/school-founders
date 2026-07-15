@@ -12,7 +12,6 @@ export async function listRecentLogs(options?: {
   limit?: number
   termYear?: string
 }): Promise<RecentLogEntry[]> {
-  const limit = options?.limit ?? 10
   const termYear = options?.termYear?.trim()
 
   const [studentTransactions, employeeTransactions, schools, students, employees] = await Promise.all([
@@ -69,7 +68,13 @@ export async function listRecentLogs(options?: {
     })
   })
 
-  return entries
+  const sorted = entries
     .sort((left, right) => right.loggedAt.localeCompare(left.loggedAt))
-    .slice(0, limit)
+
+  const limit = options?.limit
+  if (limit !== undefined && limit > 0) {
+    return sorted.slice(0, limit)
+  }
+
+  return sorted
 }

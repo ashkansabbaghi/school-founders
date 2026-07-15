@@ -5,6 +5,7 @@ import {
   fetchFounders,
   updateFounder as updateFounderRecord,
 } from '~/services/founders'
+import type { AppToastKind } from '~/composables/useAppToast'
 import { translateApiError } from '~/utils/translateApiError'
 
 type FoundersStatus = 'idle' | 'loading' | 'error'
@@ -12,6 +13,10 @@ type FoundersStatus = 'idle' | 'loading' | 'error'
 function getTranslator() {
   const nuxtApp = useNuxtApp()
   return nuxtApp.$i18n.t.bind(nuxtApp.$i18n)
+}
+
+function notifyFeedback(kind: AppToastKind, message: string) {
+  useAppToast().show(kind, message)
 }
 
 export function useFounders() {
@@ -30,13 +35,22 @@ export function useFounders() {
     catch (loadError) {
       status.value = 'error'
       error.value = translateApiError(loadError, getTranslator())
+      notifyFeedback('error', error.value)
     }
   }
 
   async function createFounder(payload: Pick<Founder, 'name' | 'school'>) {
-    const founder = await createFounderRecord(payload)
-    await refresh()
-    return founder
+    try {
+      const founder = await createFounderRecord(payload)
+      await refresh()
+      notifyFeedback('success', getTranslator()('messages.founderSaved'))
+      return founder
+    }
+    catch (createError) {
+      const message = translateApiError(createError, getTranslator())
+      notifyFeedback('error', message)
+      throw createError
+    }
   }
 
   async function updateFounder(id: string, payload: Pick<Founder, 'name' | 'school'>) {
@@ -50,9 +64,11 @@ export function useFounders() {
     try {
       await deleteFounderRecord(id)
       await refresh()
+      notifyFeedback('success', getTranslator()('messages.founderRemoved'))
     }
     catch (deleteError) {
       error.value = translateApiError(deleteError, getTranslator())
+      notifyFeedback('error', error.value)
       throw deleteError
     }
   }

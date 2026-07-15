@@ -10,7 +10,7 @@ import { matchesListSearch } from '~/utils/listSearch'
 
 const { t } = useI18n()
 const financeStore = useFinanceStore()
-const { schools, employees, termYear, error, submitMessage } = storeToRefs(financeStore)
+const { schools, employees, termYear } = storeToRefs(financeStore)
 
 useHead({
   title: () => t('employees.title'),
@@ -132,21 +132,6 @@ onMounted(async () => {
         </button>
       </div>
     </header>
-
-    <div
-      v-if="submitMessage"
-      class="ui-alert-success"
-      role="status"
-    >
-      {{ submitMessage }}
-    </div>
-    <div
-      v-if="error"
-      class="ui-alert-error"
-      role="alert"
-    >
-      {{ error }}
-    </div>
 
     <section class="ui-card p-4 sm:p-6">
       <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
