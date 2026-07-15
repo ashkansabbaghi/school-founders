@@ -1,4 +1,6 @@
 export * from './backup'
+export * from './directoryBackup'
+export * from './directoryBackupSchedule'
 export * from './finance'
 export * from './fixedCosts'
 export * from './founders'

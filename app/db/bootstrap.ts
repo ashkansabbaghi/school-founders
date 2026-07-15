@@ -11,14 +11,20 @@ const LEGACY_OPERATOR_STORAGE_KEY = 'finance:operatorName'
 
 export interface ProfileSettings {
   installId: string
-  operatorName: string
+  userName: string
   termYear: string
 }
 
 export interface CompleteOnboardingOptions {
-  operatorName: string
+  userName?: string
+  /** @deprecated Use `userName` instead. Kept for backward compatibility. */
+  operatorName?: string
   termYear: string
   startWithDemo: boolean
+}
+
+function resolveUserName(options: CompleteOnboardingOptions): string {
+  return (options.userName ?? options.operatorName ?? '').trim()
 }
 
 async function migrateLegacyOperatorName(): Promise<string | null> {
@@ -125,7 +131,7 @@ async function ensureInstallId(): Promise<string> {
 export async function loadProfileSettings(): Promise<ProfileSettings> {
   await migrateLegacyOperatorName()
 
-  const [installId, operatorName, termYear] = await Promise.all([
+  const [installId, storedUserName, termYear] = await Promise.all([
     getMetaValue(META_KEYS.installId),
     getMetaValue(META_KEYS.operatorName),
     getMetaValue(META_KEYS.termYear),
@@ -137,14 +143,17 @@ export async function loadProfileSettings(): Promise<ProfileSettings> {
 
   return {
     installId,
-    operatorName: operatorName ?? '',
+    userName: storedUserName ?? '',
     termYear: termYear ?? DEMO_TERM_YEAR,
   }
 }
 
-export async function saveOperatorName(name: string): Promise<void> {
+export async function saveUserName(name: string): Promise<void> {
   await setMetaValue(META_KEYS.operatorName, name)
 }
+
+/** @deprecated Use `saveUserName` instead. */
+export const saveOperatorName = saveUserName
 
 export async function saveTermYear(termYear: string): Promise<void> {
   await setMetaValue(META_KEYS.termYear, termYear)
@@ -164,11 +173,11 @@ export async function completeOnboarding(
   options: CompleteOnboardingOptions,
 ): Promise<ProfileSettings> {
   const installId = await ensureInstallId()
-  const operatorName = options.operatorName.trim()
+  const userName = resolveUserName(options)
   const termYear = options.termYear.trim() || DEMO_TERM_YEAR
 
-  if (!operatorName) {
-    throw new Error('Operator name is required to complete onboarding.')
+  if (!userName) {
+    throw new Error('User name is required to complete onboarding.')
   }
 
   if (options.startWithDemo) {
@@ -177,7 +186,7 @@ export async function completeOnboarding(
 
   await setMetaValues({
     [META_KEYS.installId]: installId,
-    [META_KEYS.operatorName]: operatorName,
+    [META_KEYS.operatorName]: userName,
     [META_KEYS.termYear]: termYear,
     [META_KEYS.initialized]: 'true',
     [META_KEYS.showFirstPaymentCta]: options.startWithDemo ? 'false' : 'true',
@@ -185,7 +194,7 @@ export async function completeOnboarding(
 
   return {
     installId,
-    operatorName,
+    userName,
     termYear,
   }
 }
@@ -207,7 +216,7 @@ export async function resetToDemoData(): Promise<ProfileSettings> {
 
   return {
     installId,
-    operatorName: DEMO_OPERATOR,
+    userName: DEMO_OPERATOR,
     termYear: DEMO_TERM_YEAR,
   }
 }

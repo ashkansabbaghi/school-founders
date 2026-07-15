@@ -1,6 +1,6 @@
-# School Fanders
+# پردیسان (Pardisan)
 
-School Fanders is a local-first PWA for school financial management. All data stays on your device in IndexedDB — nothing is sent to a server.
+پردیسان یک PWA محلی برای مدیریت مالی مدارس است. تمام داده‌ها روی دستگاه شما در IndexedDB ذخیره می‌شوند — چیزی به سرور ارسال نمی‌شود.
 
 Live demo: [https://ashkansabbaghi.github.io/school-founders/](https://ashkansabbaghi.github.io/school-founders/)
 

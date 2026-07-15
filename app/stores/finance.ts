@@ -15,7 +15,7 @@ import { getEmployeeExpenseSummary } from '#shared/utils/payroll'
 import { getStudentPaymentSummary } from '#shared/utils/tuition'
 import {
   loadProfileSettings,
-  saveOperatorName as persistOperatorName,
+  saveUserName as persistUserName,
   saveTermYear as persistTermYear,
 } from '~/db/bootstrap'
 import {
@@ -67,7 +67,7 @@ function scheduleDebouncedSummaryFetch(fetchSummary: () => Promise<void>) {
 export const useFinanceStore = defineStore('finance', {
   state: () => ({
     termYear: '1404-1405',
-    operatorName: '',
+    userName: '',
     schools: [] as School[],
     students: [] as Student[],
     employees: [] as Employee[],
@@ -107,7 +107,7 @@ export const useFinanceStore = defineStore('finance', {
       }
 
       const profile = await loadProfileSettings()
-      this.operatorName = profile.operatorName
+      this.userName = profile.userName
       this.termYear = profile.termYear
       this.profileHydrated = true
     },
@@ -177,10 +177,10 @@ export const useFinanceStore = defineStore('finance', {
       scheduleDebouncedSummaryFetch(() => this.fetchSummary())
     },
 
-    setOperatorName(name: string) {
-      this.operatorName = name
+    setUserName(name: string) {
+      this.userName = name
       if (import.meta.client) {
-        void persistOperatorName(name)
+        void persistUserName(name)
       }
     },
 
@@ -206,7 +206,7 @@ export const useFinanceStore = defineStore('finance', {
         await logStudentPaymentRecord({
           ...payload,
           termYear: this.termYear,
-          operator: this.operatorName,
+          operator: this.userName,
         })
 
         await this.fetchSummary()
@@ -229,7 +229,7 @@ export const useFinanceStore = defineStore('finance', {
         await logEmployeeExpenseRecord({
           ...payload,
           termYear: this.termYear,
-          operator: this.operatorName,
+          operator: this.userName,
         })
 
         await this.fetchSummary()
@@ -311,7 +311,7 @@ export const useFinanceStore = defineStore('finance', {
         await updateStudentTransactionRecord(id, {
           ...payload,
           termYear: this.termYear,
-          operator: this.operatorName,
+          operator: this.userName,
         })
 
         await this.fetchSummary()
@@ -406,7 +406,7 @@ export const useFinanceStore = defineStore('finance', {
         await updateEmployeeTransactionRecord(id, {
           ...payload,
           termYear: this.termYear,
-          operator: this.operatorName,
+          operator: this.userName,
         })
 
         await this.fetchSummary()

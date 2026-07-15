@@ -45,7 +45,7 @@ defineExpose({ refresh })
     </div>
     <div class="flex shrink-0 flex-wrap items-center gap-2">
       <NuxtLink
-        :to="localePath('/finance')"
+        :to="localePath({ path: '/finance', query: { tab: 'studentPayments' } })"
         class="ui-btn-primary"
       >
         {{ t('onboarding.firstPaymentCta.action') }}

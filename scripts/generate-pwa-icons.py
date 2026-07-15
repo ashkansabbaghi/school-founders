@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate PWA icons for School Fanders."""
+"""Generate PWA icons for Pardisan (پردیسان)."""
 
 from __future__ import annotations
 

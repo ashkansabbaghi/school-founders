@@ -1,4 +1,7 @@
 {
+  "app": {
+    "name": "Pardisan"
+  },
   "nav": {
     "ariaLabel": "Main navigation",
     "dashboard": "Dashboard",
@@ -30,8 +33,16 @@
     "saving": "Saving…"
   },
   "contextBar": {
-    "ariaLabel": "Global context",
-    "tooltip": "These settings apply across all pages."
+    "ariaLabel": "Global academic year",
+    "tooltip": "The selected academic year applies across all pages."
+  },
+  "academicYear": {
+    "label": "Academic year",
+    "placeholder": "1404-1405"
+  },
+  "profile": {
+    "userName": "Your name",
+    "userNamePlaceholder": "Your name"
   },
   "locale": {
     "switchTo": "Switch to {language}"
@@ -41,7 +52,7 @@
     "stepIndicator": "Step {current} of {total}",
     "steps": {
       "1": {
-        "title": "Welcome to School Fanders",
+        "title": "Welcome to Pardisan",
         "subtitle": "Offline school finance management — your data stays on this device only.",
         "points": {
           "offline": "Works without internet — log payments and expenses anytime.",
@@ -50,9 +61,9 @@
         }
       },
       "2": {
-        "title": "Operator settings",
-        "subtitle": "These apply to every financial log you record.",
-        "operatorHint": "Your name appears on reports and transaction logs.",
+        "title": "Your profile",
+        "subtitle": "Your name and academic year for this session.",
+        "userNameHint": "Your name appears on reports and transaction logs.",
         "termYearHint": "Example: 1404-1405 — you can change this later from the bar at the top."
       },
       "3": {
@@ -123,7 +134,14 @@
     "subtitle": "Analytical view for founders and data entry for operators.",
     "backToFounders": "← Back to Founders",
     "studentsLink": "Student Management →",
-    "employeesLink": "Staff Management →"
+    "employeesLink": "Staff Management →",
+    "tabs": {
+      "report": "Founders Report",
+      "fixedCosts": "Fixed Costs",
+      "studentPayments": "Student Payments",
+      "employeeExpenses": "Staff Expenses"
+    },
+    "tabListAriaLabel": "Finance dashboard sections"
   },
   "founders": {
     "pageTitle": "Founders",
@@ -237,6 +255,8 @@
     "unexpectedError": "An unexpected error occurred",
     "backupExported": "Backup file downloaded successfully.",
     "backupImported": "Data restored successfully.",
+    "directoryBackupSaved": "Backup saved to the selected folder.",
+    "directoryBackupReconnected": "Folder access restored.",
     "demoReset": "Data reset to demo state."
   },
   "fields": {
@@ -312,6 +332,12 @@
       "missingCollection": "Collection \"{filename}\" is missing from the backup",
       "invalidCollection": "Collection \"{filename}\" in the backup is invalid",
       "duplicateId": "Duplicate ID \"{id}\" found in the backup"
+    },
+    "directoryBackup": {
+      "unsupported": "Folder backup is not supported in this browser",
+      "notConnected": "No backup folder is connected",
+      "permissionDenied": "Write permission for the backup folder was denied",
+      "writeFailed": "Could not write the backup file"
     }
   },
   "students": {
@@ -473,11 +499,29 @@
       "resetTitle": "Reset to demo data",
       "resetSubtitle": "Remove all real data and replace with anonymous demo data.",
       "reset": "Reset",
-      "resetConfirm": "Are you sure? All current data will be deleted and replaced with demo data."
+      "resetConfirm": "Are you sure? All current data will be deleted and replaced with demo data.",
+      "folder": {
+        "title": "Automatic folder backup",
+        "subtitle": "Save a daily JSON file to a folder on this device. Changes are saved automatically after each edit.",
+        "unsupported": "Folder backup requires a browser with the File System Access API (such as Chrome or Edge on desktop). On Safari and iOS, use JSON export above.",
+        "notConnected": "No folder selected",
+        "connectedFolder": "{name}",
+        "folderLabel": "Backup folder",
+        "permissionLabel": "Write access",
+        "permissionGranted": "Granted",
+        "permissionDenied": "Denied",
+        "permissionPrompt": "Needs approval",
+        "lastFolderSave": "Last folder save",
+        "lastError": "Last error",
+        "selectFolder": "Choose backup folder",
+        "changeFolder": "Change folder",
+        "reconnect": "Reconnect folder",
+        "saveNow": "Save now"
+      }
     },
     "pwa": {
       "title": "Install App",
-      "subtitle": "Add School Fanders to your home screen for offline access.",
+      "subtitle": "Add Pardisan to your home screen for offline access.",
       "installed": "App is installed on this device.",
       "installAvailable": "Install is available — add the app to your home screen.",
       "installAction": "Install app",

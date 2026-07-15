@@ -233,6 +233,32 @@
   .app-bottom-nav {
     padding-bottom: env(safe-area-inset-bottom);
   }
+
+  .pdp-group,
+  .pdp-picker {
+    color: rgb(228 228 231);
+  }
+
+  .pdp-group .pdp-month,
+  .pdp-group .pdp-weekday,
+  .pdp-group .pdp-day {
+    color: rgb(228 228 231);
+  }
+
+  .pdp-group .pdp-day:not(.disabled):hover {
+    background: rgb(63 63 70);
+  }
+
+  .pdp-group .pdp-day.today {
+    border-color: rgb(139 92 246);
+  }
+
+  .pdp-group .pdp-day.start-range,
+  .pdp-group .pdp-day.end-range,
+  .pdp-group .pdp-day.selected {
+    background: rgb(139 92 246);
+    color: rgb(250 250 250);
+  }
 }
 
 @layer utilities {

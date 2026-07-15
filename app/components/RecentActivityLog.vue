@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import type { RecentLogEntry } from '#shared/types/financial'
+import { formatIsoDateDisplay } from '#shared/utils/jalaliDate'
 
 const props = defineProps<{
   logs: RecentLogEntry[]
@@ -12,20 +14,20 @@ const currencyFormatter = computed(() =>
   new Intl.NumberFormat(locale.value === 'fa' ? 'fa-IR' : 'en-US'),
 )
 
-const dateFormatter = computed(() =>
-  new Intl.DateTimeFormat(locale.value === 'fa' ? 'fa-IR' : 'en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }),
-)
-
 function formatCurrency(value: number): string {
   return currencyFormatter.value.format(value)
 }
 
 function formatDate(value: string): string {
-  return dateFormatter.value.format(new Date(`${value}T00:00:00`))
+  if (locale.value === 'fa') {
+    return formatIsoDateDisplay(value)
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date(`${value}T00:00:00`))
 }
 
 function kindLabel(kind: RecentLogEntry['kind']): string {
@@ -78,7 +80,6 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
           </div>
           <div class="ui-skeleton h-4 w-40" />
           <div class="ui-skeleton h-3 w-32" />
-          <div class="ui-skeleton h-3 w-48" />
         </li>
       </ul>
 
@@ -118,7 +119,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
           </div>
 
           <div class="mt-2 text-xs text-zinc-500">
-            {{ formatDate(log.date) }} · {{ log.operator }}
+            {{ formatDate(log.date) }}
           </div>
         </li>
       </ul>
@@ -153,9 +154,6 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
             <th scope="col" class="ui-table-th">
               {{ $t('dashboard.recentLogs.columns.date') }}
             </th>
-            <th scope="col" class="ui-table-th">
-              {{ $t('dashboard.recentLogs.columns.operator') }}
-            </th>
           </tr>
         </thead>
 
@@ -166,7 +164,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
           :aria-label="$t('common.loading')"
         >
           <tr v-for="n in 5" :key="n">
-            <td v-for="col in 7" :key="col" class="px-6 py-4">
+            <td v-for="col in 6" :key="col" class="px-6 py-4">
               <div class="ui-skeleton h-4" />
             </td>
           </tr>
@@ -212,15 +210,12 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
             <td class="px-6 py-4 text-sm text-zinc-400">
               {{ formatDate(log.date) }}
             </td>
-            <td class="px-6 py-4 text-sm text-zinc-400">
-              {{ log.operator }}
-            </td>
           </tr>
         </tbody>
 
         <tbody v-else>
           <tr>
-            <td colspan="7" class="px-6 py-12 text-center text-sm text-zinc-500">
+            <td colspan="6" class="px-6 py-12 text-center text-sm text-zinc-500">
               {{ $t('dashboard.recentLogs.empty') }}
             </td>
           </tr>

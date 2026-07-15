@@ -10,13 +10,13 @@ const isSubmitting = ref(false)
 const error = ref('')
 
 const form = reactive({
-  operatorName: '',
+  userName: '',
   termYear: '1404-1405',
   startWithDemo: true as boolean | null,
 })
 
 const canProceedStep2 = computed(() =>
-  Boolean(form.operatorName.trim() && form.termYear.trim()),
+  Boolean(form.userName.trim() && form.termYear.trim()),
 )
 
 const canFinish = computed(() =>
@@ -47,7 +47,7 @@ async function finish() {
 
   try {
     await completeOnboarding({
-      operatorName: form.operatorName.trim(),
+      userName: form.userName.trim(),
       termYear: form.termYear.trim(),
       startWithDemo: form.startWithDemo,
     })
@@ -133,35 +133,33 @@ onUnmounted(() => {
           @submit.prevent="canProceedStep2 && nextStep()"
         >
           <div>
-            <label class="ui-label" for="onboarding-operator-name">
-              {{ t('operator.fields.operatorName') }}
+            <label class="ui-label" for="onboarding-user-name">
+              {{ t('profile.userName') }}
             </label>
             <input
-              id="onboarding-operator-name"
-              v-model="form.operatorName"
+              id="onboarding-user-name"
+              v-model="form.userName"
               type="text"
               class="ui-input mt-1.5"
-              :placeholder="t('operator.placeholders.operatorName')"
+              :placeholder="t('profile.userNamePlaceholder')"
               autocomplete="name"
               required
             >
             <p class="mt-1.5 text-xs text-zinc-500">
-              {{ t('onboarding.steps.2.operatorHint') }}
+              {{ t('onboarding.steps.2.userNameHint') }}
             </p>
           </div>
 
           <div>
             <label class="ui-label" for="onboarding-term-year">
-              {{ t('operator.fields.termYear') }}
+              {{ t('academicYear.label') }}
             </label>
-            <input
+            <AcademicYearField
               id="onboarding-term-year"
               v-model="form.termYear"
-              type="text"
-              class="ui-input mt-1.5"
-              :placeholder="t('operator.placeholders.termYear')"
+              class="mt-1.5"
               required
-            >
+            />
             <p class="mt-1.5 text-xs text-zinc-500">
               {{ t('onboarding.steps.2.termYearHint') }}
             </p>

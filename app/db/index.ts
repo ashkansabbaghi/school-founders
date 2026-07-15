@@ -1,4 +1,4 @@
-export { db, DB_NAME, DB_VERSION, SchoolFandersDatabase } from './database'
+export { db, DB_NAME, DB_VERSION, PardisanDatabase } from './database'
 export * from './bootstrap'
 export * from './demoData'
 export * from './repositories'

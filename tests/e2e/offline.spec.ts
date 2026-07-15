@@ -79,7 +79,7 @@ test('exports backup from settings without errors', async ({ page }) => {
   await page.getByRole('button', { name: 'خروجی JSON' }).click()
 
   const download = await downloadPromise
-  expect(download.suggestedFilename()).toMatch(/^school-fanders-backup-\d{4}-\d{2}-\d{2}\.json$/)
+  expect(download.suggestedFilename()).toMatch(/^pardisan-backup-\d{4}-\d{2}-\d{2}\.json$/)
 
   const content = await download.createReadStream().then(async (stream) => {
     const chunks: Buffer[] = []

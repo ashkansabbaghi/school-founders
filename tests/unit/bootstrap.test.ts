@@ -35,12 +35,12 @@ describe('bootstrap onboarding', () => {
     await ensureInitialized()
 
     const profile = await completeOnboarding({
-      operatorName: 'Test Operator',
+      userName: 'Test Operator',
       termYear: '1404-1405',
       startWithDemo: true,
     })
 
-    expect(profile.operatorName).toBe('Test Operator')
+    expect(profile.userName).toBe('Test Operator')
     expect(await isOnboardingComplete()).toBe(true)
     expect(await shouldShowFirstPaymentCta()).toBe(false)
 
@@ -52,7 +52,7 @@ describe('bootstrap onboarding', () => {
     await ensureInitialized()
 
     await completeOnboarding({
-      operatorName: 'Empty Operator',
+      userName: 'Empty Operator',
       termYear: '1403-1404',
       startWithDemo: false,
     })
@@ -64,7 +64,19 @@ describe('bootstrap onboarding', () => {
     expect(founders).toHaveLength(0)
 
     const profile = await loadProfileSettings()
-    expect(profile.operatorName).toBe('Empty Operator')
+    expect(profile.userName).toBe('Empty Operator')
     expect(profile.termYear).toBe('1403-1404')
+  })
+
+  it('accepts legacy operatorName option for backward compatibility', async () => {
+    await ensureInitialized()
+
+    const profile = await completeOnboarding({
+      operatorName: 'Legacy Operator',
+      termYear: '1404-1405',
+      startWithDemo: false,
+    })
+
+    expect(profile.userName).toBe('Legacy Operator')
   })
 })

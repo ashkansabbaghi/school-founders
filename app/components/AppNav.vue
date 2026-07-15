@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const { items, isActive } = useAppNav()
+const { primaryItems, isActive } = useAppNav()
 </script>
 
 <template>
-  <nav class="hidden flex-wrap items-center gap-1 md:flex" :aria-label="$t('nav.ariaLabel')">
+  <nav class="hidden items-center gap-1 md:flex" :aria-label="$t('nav.ariaLabel')">
     <NuxtLink
-      v-for="item in items"
+      v-for="item in primaryItems"
       :key="item.key"
       :to="item.to"
       class="rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
@@ -15,5 +15,6 @@ const { items, isActive } = useAppNav()
     >
       {{ item.label }}
     </NuxtLink>
+    <AppNavMoreMenu />
   </nav>
 </template>

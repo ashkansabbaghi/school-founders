@@ -2,6 +2,8 @@
 import { storeToRefs } from 'pinia'
 import type { SchoolProfitBreakdown } from '#shared/types/financial'
 
+const { embedded = false } = defineProps<{ embedded?: boolean }>()
+
 const { t, locale } = useI18n()
 const financeStore = useFinanceStore()
 const { summary, isLoading, termYear } = storeToRefs(financeStore)
@@ -61,7 +63,10 @@ function profitLabel(netProfit: number): string {
 </script>
 
 <template>
-  <section class="ui-card overflow-hidden">
+  <component
+    :is="embedded ? 'div' : 'section'"
+    :class="embedded ? undefined : 'ui-card overflow-hidden'"
+  >
     <header class="border-b border-zinc-800 px-4 py-4 sm:px-6">
       <h2 class="text-lg font-semibold text-zinc-100">
         {{ $t('report.title') }}
@@ -353,5 +358,5 @@ function profitLabel(netProfit: number): string {
         </tfoot>
       </table>
     </div>
-  </section>
+  </component>
 </template>

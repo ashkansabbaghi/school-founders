@@ -29,8 +29,6 @@ useHead({
       {{ error }}
     </div>
 
-    <FoundersReportTable />
-    <FixedCostsPanel />
-    <LazyOperatorLogger />
+    <LazyFinanceEntryTabs />
   </main>
 </template>

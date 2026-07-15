@@ -341,7 +341,7 @@ function downloadJson(data: unknown, filename: string): void {
 export async function exportBackup(): Promise<BackupPayload> {
   const payload = await createBackupPayload()
   const datePart = payload.exportedAt.slice(0, 10)
-  downloadJson(payload, `school-fanders-backup-${datePart}.json`)
+  downloadJson(payload, `pardisan-backup-${datePart}.json`)
   await setMetaValue(META_KEYS.lastBackupAt, payload.exportedAt)
   return payload
 }

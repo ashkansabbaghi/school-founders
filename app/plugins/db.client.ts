@@ -1,13 +1,16 @@
 import { ensureInitialized, isOnboardingComplete } from '~/db/bootstrap'
 
-export default defineNuxtPlugin(async () => {
-  await ensureInitialized()
+export default defineNuxtPlugin({
+  name: 'db',
+  async setup() {
+    await ensureInitialized()
 
-  const financeStore = useFinanceStore()
-  const onboardingComplete = await isOnboardingComplete()
-  financeStore.setOnboardingComplete(onboardingComplete)
+    const financeStore = useFinanceStore()
+    const onboardingComplete = await isOnboardingComplete()
+    financeStore.setOnboardingComplete(onboardingComplete)
 
-  if (onboardingComplete) {
-    await financeStore.ensureReady()
-  }
+    if (onboardingComplete) {
+      await financeStore.ensureReady()
+    }
+  },
 })

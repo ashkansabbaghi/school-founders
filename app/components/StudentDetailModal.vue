@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import type { PaymentMethod, Student, StudentTransaction } from '#shared/types/financial'
+import { formatIsoDateDisplay, todayIso } from '#shared/utils/jalaliDate'
 
 const props = defineProps<{
   student: Student
@@ -15,7 +16,7 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 const financeStore = useFinanceStore()
-const { schools, termYear, operatorName, isSubmitting, error, submitMessage } = storeToRefs(financeStore)
+const { schools, termYear, isSubmitting, error, submitMessage } = storeToRefs(financeStore)
 
 const transactions = ref<StudentTransaction[]>([])
 const isLoadingTransactions = ref(true)
@@ -96,13 +97,12 @@ const canSubmitPayment = computed(() =>
     && Number(paymentAmount.value) > 0
     && paymentMethod.value
     && paymentDate.value
-    && operatorName.value.trim()
     && !isSubmitting.value,
   ),
 )
 
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10)
+function formatTransactionDate(date: string): string {
+  return formatIsoDateDisplay(date)
 }
 
 function resetFormFromStudent(student: Student) {
@@ -399,14 +399,10 @@ onUnmounted(() => {
             </label>
             <label class="block space-y-1">
               <span class="ui-label">{{ $t('students.fields.fullPrice') }}</span>
-              <input
-                v-model.number="form.fullPrice"
-                type="number"
-                min="1"
-                step="1"
+              <CurrencyField
+                v-model="form.fullPrice"
                 required
-                class="ui-input"
-              >
+              />
             </label>
             <label class="block space-y-1">
               <span class="ui-label">{{ $t('students.fields.discountRate') }}</span>
@@ -508,13 +504,10 @@ onUnmounted(() => {
                   {{ numberFormatter.format(transaction.amountPaid) }}
                 </div>
                 <div class="mt-1 text-sm text-zinc-400">
-                  {{ transaction.date }}
+                  {{ formatTransactionDate(transaction.date) }}
                 </div>
                 <div class="mt-0.5 text-sm text-zinc-300">
                   {{ $t(`operator.paymentMethods.${transaction.paymentMethod}`) }}
-                </div>
-                <div class="mt-0.5 text-xs text-zinc-500">
-                  {{ transaction.operator }}
                 </div>
                 <div class="mt-3 flex gap-2">
                   <button
@@ -547,9 +540,6 @@ onUnmounted(() => {
                     <th class="ui-table-th">
                       {{ $t('students.columns.method') }}
                     </th>
-                    <th class="ui-table-th">
-                      {{ $t('students.columns.operator') }}
-                    </th>
                     <th class="px-4 py-2 text-end text-xs font-semibold uppercase tracking-wide text-zinc-400">
                       {{ $t('students.columns.actions') }}
                     </th>
@@ -563,16 +553,13 @@ onUnmounted(() => {
                 >
                   <tr v-for="transaction in transactions" :key="transaction.id" class="ui-table-row">
                     <td class="px-4 py-2 text-zinc-100">
-                      {{ transaction.date }}
+                      {{ formatTransactionDate(transaction.date) }}
                     </td>
                     <td class="px-4 py-2 text-zinc-100">
                       {{ numberFormatter.format(transaction.amountPaid) }}
                     </td>
                     <td class="px-4 py-2 text-zinc-400">
                       {{ $t(`operator.paymentMethods.${transaction.paymentMethod}`) }}
-                    </td>
-                    <td class="px-4 py-2 text-zinc-400">
-                      {{ transaction.operator }}
                     </td>
                     <td class="px-4 py-2 text-end">
                       <button
@@ -602,14 +589,10 @@ onUnmounted(() => {
             </p>
             <label class="block space-y-1">
               <span class="ui-label">{{ $t('students.fields.amount') }}</span>
-              <input
-                v-model.number="paymentAmount"
-                type="number"
-                min="1"
-                step="1"
+              <CurrencyField
+                v-model="paymentAmount"
                 required
-                class="ui-input"
-              >
+              />
             </label>
             <label class="block space-y-1">
               <span class="ui-label">{{ $t('students.fields.paymentMethod') }}</span>
@@ -625,21 +608,10 @@ onUnmounted(() => {
             </label>
             <label class="block space-y-1">
               <span class="ui-label">{{ $t('students.fields.date') }}</span>
-              <input
+              <PersianDateField
                 v-model="paymentDate"
-                type="date"
                 required
-                class="ui-input"
-              >
-            </label>
-            <label class="block space-y-1">
-              <span class="ui-label">{{ $t('operator.fields.operatorName') }}</span>
-              <input
-                :value="operatorName"
-                type="text"
-                disabled
-                class="ui-input cursor-not-allowed opacity-60"
-              >
+              />
             </label>
             <div class="flex flex-wrap gap-3 sm:col-span-2">
               <button
@@ -658,13 +630,6 @@ onUnmounted(() => {
                 {{ $t('students.cancelEdit') }}
               </button>
             </div>
-            <p
-              v-if="!operatorName.trim()"
-              class="text-sm text-amber-400 sm:col-span-2"
-              role="status"
-            >
-              {{ $t('operator.errors.operatorNameRequired') }}
-            </p>
             <p
               v-if="paymentError"
               class="text-sm text-rose-400 sm:col-span-2"

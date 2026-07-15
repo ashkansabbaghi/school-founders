@@ -204,25 +204,18 @@ onUnmounted(() => {
           </label>
           <label class="block space-y-1">
             <span class="ui-label">{{ $t('employees.fields.baseSalary') }}</span>
-            <input
-              v-model.number="form.baseSalary"
-              type="number"
-              min="1"
-              step="1"
+            <CurrencyField
+              v-model="form.baseSalary"
               required
-              class="ui-input"
-            >
+            />
           </label>
           <label class="block space-y-1">
             <span class="ui-label">{{ $t('employees.fields.insuranceCost') }}</span>
-            <input
-              v-model.number="form.insuranceCost"
-              type="number"
-              min="0"
-              step="1"
+            <CurrencyField
+              v-model="form.insuranceCost"
+              :min="0"
               required
-              class="ui-input"
-            >
+            />
           </label>
           <div class="sm:col-span-2">
             <button

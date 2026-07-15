@@ -167,14 +167,10 @@ onUnmounted(() => {
 
           <label class="block space-y-1">
             <span class="ui-label">{{ $t('fixedCosts.fields.amount') }}</span>
-            <input
-              v-model.number="form.amount"
-              type="number"
-              min="1"
-              step="1"
+            <CurrencyField
+              v-model="form.amount"
               required
-              class="ui-input"
-            >
+            />
           </label>
 
           <div class="block space-y-1 sm:col-span-2">

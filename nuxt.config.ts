@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url'
 
-const baseURL = process.env.NUXT_APP_BASE_URL || '/school-fanders/'
+const baseURL = process.env.NUXT_APP_BASE_URL || '/pardisan/'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -32,7 +32,7 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#18181b' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-        { name: 'apple-mobile-web-app-title', content: 'School Fanders' },
+        { name: 'apple-mobile-web-app-title', content: 'پردیسان' },
       ],
     },
     pageTransition: {
@@ -47,7 +47,17 @@ export default defineNuxtConfig({
     cssPath: false,
   },
 
-  modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', '@nuxtjs/i18n', '@vite-pwa/nuxt'],
+  modules: [
+    '@pinia/nuxt',
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/i18n',
+    '@vite-pwa/nuxt',
+    '@alireza-ab/vue3-persian-datepicker/nuxt',
+  ],
+
+  datepicker: {
+    PersianDate: true,
+  },
 
   i18n: {
     defaultLocale: 'fa',
@@ -73,8 +83,8 @@ export default defineNuxtConfig({
       'robots.txt',
     ],
     manifest: {
-      name: 'School Fanders',
-      short_name: 'Fanders',
+      name: 'پردیسان',
+      short_name: 'پردیسان',
       description: 'مدیریت مالی مدرسه — آفلاین و محلی روی دستگاه شما',
       theme_color: '#18181b',
       background_color: '#09090b',

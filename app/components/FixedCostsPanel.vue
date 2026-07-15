@@ -2,6 +2,8 @@
 import { storeToRefs } from 'pinia'
 import type { FixedCost } from '#shared/types/financial'
 
+const { embedded = false } = defineProps<{ embedded?: boolean }>()
+
 const { t } = useI18n()
 const financeStore = useFinanceStore()
 const { schools } = storeToRefs(financeStore)
@@ -40,7 +42,10 @@ async function onDelete(id: string) {
 </script>
 
 <template>
-  <section class="ui-card overflow-hidden">
+  <component
+    :is="embedded ? 'div' : 'section'"
+    :class="embedded ? undefined : 'ui-card overflow-hidden'"
+  >
     <header class="flex items-start justify-between gap-4 border-b border-zinc-800 px-4 py-4 sm:px-6">
       <div>
         <h2 class="text-lg font-semibold text-zinc-100">
@@ -83,5 +88,5 @@ async function onDelete(id: string) {
       :fixed-cost="editingCost"
       @close="closeFormModal"
     />
-  </section>
+  </component>
 </template>

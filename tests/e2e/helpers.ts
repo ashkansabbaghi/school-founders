@@ -1,11 +1,11 @@
-import type { Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 export async function clearIndexedDb(page: Page): Promise<void> {
   await page.goto('/')
   await page.evaluate(async () => {
     await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.deleteDatabase('school-fanders')
+      const request = indexedDB.deleteDatabase('pardisan')
       request.onsuccess = () => resolve()
       request.onerror = () => reject(request.error ?? new Error('Failed to delete IndexedDB'))
       request.onblocked = () => resolve()
@@ -14,8 +14,28 @@ export async function clearIndexedDb(page: Page): Promise<void> {
   await page.reload()
 }
 
+async function selectAcademicYear(
+  page: Page,
+  scope: Locator,
+  termYear: string,
+): Promise<void> {
+  const input = scope.locator('#onboarding-term-year')
+  const currentValue = await input.inputValue()
+
+  if (currentValue === termYear) {
+    return
+  }
+
+  await input.click()
+
+  const yearPicker = page.getByRole('dialog', { name: 'سال تحصیلی' })
+  await expect(yearPicker).toBeVisible()
+  await yearPicker.getByRole('button', { name: termYear, exact: true }).click()
+  await expect(yearPicker).not.toBeVisible()
+}
+
 interface CompleteOnboardingOptions {
-  operatorName?: string
+  userName?: string
   termYear?: string
   startWithDemo?: boolean
 }
@@ -25,7 +45,7 @@ export async function completeOnboardingWizard(
   options: CompleteOnboardingOptions = {},
 ): Promise<void> {
   const {
-    operatorName = 'اپراتور تست',
+    userName = 'کاربر تست',
     termYear = '1404-1405',
     startWithDemo = true,
   } = options
@@ -37,8 +57,8 @@ export async function completeOnboardingWizard(
 
   await page.getByRole('button', { name: 'ادامه' }).click()
 
-  await dialog.getByLabel('نام اپراتور').fill(operatorName)
-  await dialog.getByLabel('سال تحصیلی').fill(termYear)
+  await dialog.getByLabel('نام شما').fill(userName)
+  await selectAcademicYear(page, dialog, termYear)
   await page.getByRole('button', { name: 'ادامه' }).click()
 
   if (startWithDemo) {

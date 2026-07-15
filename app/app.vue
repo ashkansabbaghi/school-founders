@@ -25,7 +25,7 @@ useHead({
               :to="localePath('/')"
               class="shrink-0 text-lg font-semibold tracking-tight text-zinc-100 transition-colors duration-200 hover:text-violet-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
             >
-              School Fanders
+              {{ $t('app.name') }}
             </NuxtLink>
             <AppNav />
           </div>
