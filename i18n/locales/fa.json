@@ -30,7 +30,10 @@
     "edit": "ویرایش",
     "save": "ذخیره",
     "total": "جمع کل",
-    "saving": "در حال ذخیره..."
+    "saving": "در حال ذخیره...",
+    "search": "جستجو",
+    "searchPlaceholder": "جستجو...",
+    "noSearchResults": "نتیجه‌ای یافت نشد."
   },
   "contextBar": {
     "ariaLabel": "سال تحصیلی سراسری",
@@ -118,6 +121,7 @@
       "title": "۱۰ ثبت اخیر",
       "subtitle": "آخرین تغییراتی که توسط اپراتورها ثبت شده‌اند.",
       "empty": "هنوز ثبتی برای این سال تحصیلی وجود ندارد.",
+      "searchPlaceholder": "نام یا مدرسه",
       "columns": {
         "type": "نوع",
         "person": "نام",
@@ -153,6 +157,7 @@
     "listTitle": "بنیان‌گذاران",
     "addButtonLabel": "افزودن بنیان‌گذار",
     "empty": "هنوز بنیان‌گذاری ثبت نشده است.",
+    "searchPlaceholder": "نام یا مدرسه",
     "confirmDelete": "آیا از حذف این بنیان‌گذار مطمئن هستید؟"
   },
   "schools": {
@@ -163,6 +168,7 @@
     "editTitle": "ویرایش مدرسه",
     "addButtonLabel": "افزودن مدرسه",
     "empty": "هنوز مدرسه‌ای ثبت نشده است.",
+    "searchPlaceholder": "نام مدرسه یا شعبه",
     "confirmDelete": "آیا از حذف این مدرسه مطمئن هستید؟",
     "selectOptional": "بدون مدرسه (اختیاری)",
     "namePlaceholder": "نام مدرسه"
@@ -175,6 +181,7 @@
     "editTitle": "ویرایش هزینه ثابت",
     "addButtonLabel": "افزودن هزینه ثابت",
     "empty": "هنوز هزینه ثابتی برای این سال تحصیلی ثبت نشده است.",
+    "searchPlaceholder": "عنوان یا مدرسه",
     "confirmDelete": "آیا از حذف این هزینه ثابت مطمئن هستید؟",
     "labelPlaceholder": "مثلاً اجاره، آب و برق",
     "fields": {
@@ -195,7 +202,8 @@
     },
     "profit": "سود",
     "loss": "زیان",
-    "empty": "داده‌ای برای این سال تحصیلی وجود ندارد."
+    "empty": "داده‌ای برای این سال تحصیلی وجود ندارد.",
+    "searchPlaceholder": "نام مدرسه یا شعبه"
   },
   "operator": {
     "title": "ثبت‌کننده اپراتور",
@@ -349,16 +357,20 @@
     "subtitle": "افزودن دانش‌آموز، ویرایش اطلاعات و ثبت پرداخت‌ها برای سال تحصیلی انتخاب‌شده.",
     "backToFinance": "بازگشت به داشبورد مالی →",
     "allSchools": "همه مدارس",
+    "allGrades": "همه پایه‌ها",
+    "allStatuses": "همه وضعیت‌ها",
     "addStudent": "افزودن دانش‌آموز",
     "addButtonLabel": "افزودن دانش‌آموز",
     "addStudentButton": "ثبت دانش‌آموز",
     "empty": "دانش‌آموزی یافت نشد.",
+    "searchPlaceholder": "نام، شماره تماس یا شماره دانش‌آموزی",
     "modalTitle": "جزئیات {name}",
     "close": "بستن",
     "termYear": "سال تحصیلی {termYear}",
     "paymentSummary": "خلاصه پرداخت",
     "studentInfo": "اطلاعات دانش‌آموز",
     "payments": "پرداخت‌ها",
+    "paymentsSearchPlaceholder": "تاریخ، مبلغ یا روش پرداخت",
     "noPayments": "هنوز پرداختی ثبت نشده است.",
     "saveStudent": "ذخیره تغییرات",
     "deleteStudent": "حذف دانش‌آموز",
@@ -410,16 +422,19 @@
     "subtitle": "افزودن پرسنل، ویرایش اطلاعات و ثبت هزینه‌ها برای سال تحصیلی انتخاب‌شده.",
     "backToFinance": "بازگشت به داشبورد مالی →",
     "allSchools": "همه مدارس",
+    "allStatuses": "همه وضعیت‌ها",
     "addEmployee": "افزودن پرسنل",
     "addButtonLabel": "افزودن پرسنل",
     "addEmployeeButton": "ثبت پرسنل",
     "empty": "پرسنلی یافت نشد.",
+    "searchPlaceholder": "نام یا شماره پرسنلی",
     "modalTitle": "جزئیات {name}",
     "close": "بستن",
     "termYear": "سال تحصیلی {termYear}",
     "expenseSummary": "خلاصه هزینه",
     "employeeInfo": "اطلاعات پرسنل",
     "expenses": "هزینه‌ها",
+    "expensesSearchPlaceholder": "تاریخ، مبلغ یا نوع هزینه",
     "noExpenses": "هنوز هزینه‌ای ثبت نشده است.",
     "saveEmployee": "ذخیره تغییرات",
     "deleteEmployee": "حذف پرسنل",
@@ -550,5 +565,11 @@
       "message": "نسخه جدید در دسترس است.",
       "reload": "بارگذاری مجدد"
     }
+  },
+  "whatsNew": {
+    "badge": "نسخه {version}",
+    "title": "تازه‌های نسخه {version}",
+    "acknowledge": "متوجه شدم",
+    "close": "بستن"
   }
 }

@@ -5,6 +5,7 @@ const financeStore = useFinanceStore()
 const colorMode = useColorMode()
 
 const showOnboarding = computed(() => financeStore.onboardingComplete === false)
+const { showWhatsNew, dismissWhatsNew } = useWhatsNew()
 
 const themeColor = computed(() => (colorMode.value === 'dark' ? '#18181b' : '#fafafa'))
 
@@ -57,5 +58,6 @@ useHead({
     <AppBottomNav />
     <PwaUpdatePrompt />
     <LazyOnboardingWizard v-if="showOnboarding" />
+    <LazyWhatsNewModal :open="showWhatsNew" @close="dismissWhatsNew" />
   </div>
 </template>

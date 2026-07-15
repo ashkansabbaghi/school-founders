@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import type { SchoolProfitBreakdown } from '#shared/types/financial'
+import { matchesListSearch } from '~/utils/listSearch'
 
 const { embedded = false } = defineProps<{ embedded?: boolean }>()
 
 const { t, locale } = useI18n()
+const searchQuery = ref('')
 const financeStore = useFinanceStore()
 const { summary, isLoading, termYear } = storeToRefs(financeStore)
 
@@ -23,22 +25,42 @@ function barWidth(value: number, max: number): string {
   return `${Math.min(100, (Math.abs(value) / max) * 100)}%`
 }
 
-const schoolRows = computed(() => summary.value?.schools ?? [])
+const allSchoolRows = computed(() => summary.value?.schools ?? [])
+
+const filteredSchoolRows = computed(() =>
+  allSchoolRows.value.filter(row =>
+    matchesListSearch(searchQuery.value, [row.schoolName, row.branch]),
+  ),
+)
+
+const isSearchEmpty = computed(() =>
+  searchQuery.value.trim().length > 0
+  && allSchoolRows.value.length > 0
+  && filteredSchoolRows.value.length === 0,
+)
 
 const maxRevenue = computed(() =>
-  Math.max(0, ...schoolRows.value.map(row => row.revenue)),
+  Math.max(0, ...filteredSchoolRows.value.map(row => row.revenue)),
 )
 
 const maxExpenses = computed(() =>
-  Math.max(0, ...schoolRows.value.map(row => row.employeeExpenses)),
+  Math.max(0, ...filteredSchoolRows.value.map(row => row.employeeExpenses)),
 )
 
 const maxNetProfit = computed(() =>
-  Math.max(0, ...schoolRows.value.map(row => Math.abs(row.netProfit))),
+  Math.max(0, ...filteredSchoolRows.value.map(row => Math.abs(row.netProfit))),
+)
+
+const filteredTotalRevenue = computed(() =>
+  filteredSchoolRows.value.reduce((sum, row) => sum + row.revenue, 0),
 )
 
 const totalEmployeeExpenses = computed(() =>
-  schoolRows.value.reduce((sum, row) => sum + row.employeeExpenses, 0),
+  filteredSchoolRows.value.reduce((sum, row) => sum + row.employeeExpenses, 0),
+)
+
+const filteredTotalNetProfit = computed(() =>
+  filteredSchoolRows.value.reduce((sum, row) => sum + row.netProfit, 0),
 )
 
 function profitBadgeClass(netProfit: number): string {
@@ -67,13 +89,19 @@ function profitLabel(netProfit: number): string {
     :is="embedded ? 'div' : 'section'"
     :class="embedded ? undefined : 'ui-card overflow-hidden'"
   >
-    <header class="ui-card-header">
-      <h2 class="text-lg font-semibold">
-        {{ $t('report.title') }}
-      </h2>
-      <p class="mt-1 text-sm ui-text-muted">
-        {{ $t('report.subtitle', { termYear }) }}
-      </p>
+    <header class="ui-card-header space-y-4">
+      <div>
+        <h2 class="text-lg font-semibold">
+          {{ $t('report.title') }}
+        </h2>
+        <p class="mt-1 text-sm ui-text-muted">
+          {{ $t('report.subtitle', { termYear }) }}
+        </p>
+      </div>
+      <ListSearchInput
+        v-model="searchQuery"
+        :placeholder="$t('report.searchPlaceholder')"
+      />
     </header>
 
     <div class="md:hidden">
@@ -101,19 +129,25 @@ function profitLabel(netProfit: number): string {
         </li>
       </ul>
 
-      <template v-else-if="schoolRows.length">
+      <template v-else-if="filteredSchoolRows.length">
         <ul class="ui-divide-y">
           <li
-            v-for="row in schoolRows as SchoolProfitBreakdown[]"
+            v-for="row in filteredSchoolRows as SchoolProfitBreakdown[]"
             :key="row.schoolId"
             class="space-y-3 p-4"
           >
             <div>
               <div class="font-medium">
-                {{ row.schoolName }}
+                <ListSearchHighlight
+                  :text="row.schoolName"
+                  :query="searchQuery"
+                />
               </div>
               <div class="text-sm ui-text-muted">
-                {{ row.branch }}
+                <ListSearchHighlight
+                  :text="row.branch"
+                  :query="searchQuery"
+                />
               </div>
             </div>
 
@@ -183,7 +217,7 @@ function profitLabel(netProfit: number): string {
           <div class="space-y-2 text-sm">
             <div class="flex items-center justify-between">
               <span class="ui-text-muted">{{ $t('report.columns.studentIncomes') }}</span>
-              <span class="font-semibold">{{ formatCurrency(summary.totalRevenue) }}</span>
+              <span class="font-semibold">{{ formatCurrency(filteredTotalRevenue) }}</span>
             </div>
             <div class="flex items-center justify-between">
               <span class="ui-text-muted">{{ $t('report.columns.staffExpenses') }}</span>
@@ -194,15 +228,15 @@ function profitLabel(netProfit: number): string {
               <div class="flex items-center gap-2">
                 <span
                   class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                  :class="profitBadgeClass(summary.totalNetProfit)"
+                  :class="profitBadgeClass(filteredTotalNetProfit)"
                 >
-                  {{ profitLabel(summary.totalNetProfit) }}
+                  {{ profitLabel(filteredTotalNetProfit) }}
                 </span>
                 <span
                   class="font-semibold"
-                  :class="profitTextClass(summary.totalNetProfit)"
+                  :class="profitTextClass(filteredTotalNetProfit)"
                 >
-                  {{ formatCurrency(summary.totalNetProfit) }}
+                  {{ formatCurrency(filteredTotalNetProfit) }}
                 </span>
               </div>
             </div>
@@ -214,7 +248,7 @@ function profitLabel(netProfit: number): string {
         v-else
         class="ui-empty-state"
       >
-        {{ $t('report.empty') }}
+        {{ isSearchEmpty ? $t('common.noSearchResults') : $t('report.empty') }}
       </div>
     </div>
 
@@ -251,20 +285,26 @@ function profitLabel(netProfit: number): string {
         </tbody>
 
         <tbody
-          v-else-if="schoolRows.length"
+          v-else-if="filteredSchoolRows.length"
           class="ui-divide-y"
         >
           <tr
-            v-for="row in schoolRows as SchoolProfitBreakdown[]"
+            v-for="row in filteredSchoolRows as SchoolProfitBreakdown[]"
             :key="row.schoolId"
             class="ui-table-row"
           >
             <td class="px-6 py-4">
               <div class="font-medium">
-                {{ row.schoolName }}
+                <ListSearchHighlight
+                  :text="row.schoolName"
+                  :query="searchQuery"
+                />
               </div>
               <div class="text-sm ui-text-muted">
-                {{ row.branch }}
+                <ListSearchHighlight
+                  :text="row.branch"
+                  :query="searchQuery"
+                />
               </div>
             </td>
 
@@ -321,13 +361,13 @@ function profitLabel(netProfit: number): string {
         <tbody v-else>
           <tr>
             <td colspan="4" class="px-6 py-12 text-center text-sm text-zinc-500">
-              {{ $t('report.empty') }}
+              {{ isSearchEmpty ? $t('common.noSearchResults') : $t('report.empty') }}
             </td>
           </tr>
         </tbody>
 
         <tfoot
-          v-if="summary && schoolRows.length"
+          v-if="summary && filteredSchoolRows.length"
           class="ui-table-footer"
         >
           <tr>
@@ -335,7 +375,7 @@ function profitLabel(netProfit: number): string {
               {{ $t('common.total') }}
             </td>
             <td class="px-6 py-4 text-sm font-semibold">
-              {{ formatCurrency(summary.totalRevenue) }}
+              {{ formatCurrency(filteredTotalRevenue) }}
             </td>
             <td class="px-6 py-4 text-sm font-semibold">
               {{ formatCurrency(totalEmployeeExpenses) }}
@@ -343,15 +383,15 @@ function profitLabel(netProfit: number): string {
             <td class="px-6 py-4">
               <span
                 class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                :class="profitBadgeClass(summary.totalNetProfit)"
+                :class="profitBadgeClass(filteredTotalNetProfit)"
               >
-                {{ profitLabel(summary.totalNetProfit) }}
+                {{ profitLabel(filteredTotalNetProfit) }}
               </span>
               <span
                 class="ms-2 text-sm font-semibold"
-                :class="profitTextClass(summary.totalNetProfit)"
+                :class="profitTextClass(filteredTotalNetProfit)"
               >
-                {{ formatCurrency(summary.totalNetProfit) }}
+                {{ formatCurrency(filteredTotalNetProfit) }}
               </span>
             </td>
           </tr>

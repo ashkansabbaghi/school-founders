@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia'
 import type { RecentLogEntry } from '#shared/types/financial'
 import { formatIsoDateDisplay } from '#shared/utils/jalaliDate'
+import { matchesListSearch } from '~/utils/listSearch'
 
 const props = defineProps<{
   logs: RecentLogEntry[]
@@ -9,6 +10,19 @@ const props = defineProps<{
 }>()
 
 const { t, locale } = useI18n()
+const searchQuery = ref('')
+
+const filteredLogs = computed(() =>
+  props.logs.filter(log =>
+    matchesListSearch(searchQuery.value, [log.personName, log.schoolName]),
+  ),
+)
+
+const isSearchEmpty = computed(() =>
+  searchQuery.value.trim().length > 0
+  && props.logs.length > 0
+  && filteredLogs.value.length === 0,
+)
 
 const currencyFormatter = computed(() =>
   new Intl.NumberFormat(locale.value === 'fa' ? 'fa-IR' : 'en-US'),
@@ -53,13 +67,19 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
 
 <template>
   <section class="ui-card overflow-hidden">
-    <header class="ui-card-header">
-      <h2 class="text-lg font-semibold">
-        {{ $t('dashboard.recentLogs.title') }}
-      </h2>
-      <p class="mt-1 text-sm ui-text-muted">
-        {{ $t('dashboard.recentLogs.subtitle') }}
-      </p>
+    <header class="ui-card-header space-y-4">
+      <div>
+        <h2 class="text-lg font-semibold">
+          {{ $t('dashboard.recentLogs.title') }}
+        </h2>
+        <p class="mt-1 text-sm ui-text-muted">
+          {{ $t('dashboard.recentLogs.subtitle') }}
+        </p>
+      </div>
+      <ListSearchInput
+        v-model="searchQuery"
+        :placeholder="$t('dashboard.recentLogs.searchPlaceholder')"
+      />
     </header>
 
     <div class="md:hidden">
@@ -84,11 +104,11 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
       </ul>
 
       <ul
-        v-else-if="props.logs.length"
+        v-else-if="filteredLogs.length"
         class="ui-divide-y"
       >
         <li
-          v-for="log in props.logs"
+          v-for="log in filteredLogs"
           :key="`${log.kind}-${log.id}`"
           class="p-4"
         >
@@ -106,10 +126,16 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
 
           <div class="mt-2">
             <div class="font-medium">
-              {{ log.personName }}
+              <ListSearchHighlight
+                :text="log.personName"
+                :query="searchQuery"
+              />
             </div>
             <div class="text-sm ui-text-muted">
-              {{ log.schoolName }}
+              <ListSearchHighlight
+                :text="log.schoolName"
+                :query="searchQuery"
+              />
               <span v-if="log.schoolBranch"> — {{ log.schoolBranch }}</span>
             </div>
           </div>
@@ -128,7 +154,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
         v-else
         class="ui-empty-state"
       >
-        {{ $t('dashboard.recentLogs.empty') }}
+        {{ isSearchEmpty ? $t('common.noSearchResults') : $t('dashboard.recentLogs.empty') }}
       </div>
     </div>
 
@@ -171,11 +197,11 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
         </tbody>
 
         <tbody
-          v-else-if="props.logs.length"
+          v-else-if="filteredLogs.length"
           class="ui-divide-y"
         >
           <tr
-            v-for="log in props.logs"
+            v-for="log in filteredLogs"
             :key="`${log.kind}-${log.id}`"
             class="ui-table-row"
           >
@@ -188,11 +214,17 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
               </span>
             </td>
             <td class="px-6 py-4 font-medium">
-              {{ log.personName }}
+              <ListSearchHighlight
+                :text="log.personName"
+                :query="searchQuery"
+              />
             </td>
             <td class="px-6 py-4">
               <div class="text-sm">
-                {{ log.schoolName }}
+                <ListSearchHighlight
+                  :text="log.schoolName"
+                  :query="searchQuery"
+                />
               </div>
               <div
                 v-if="log.schoolBranch"
@@ -216,7 +248,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
         <tbody v-else>
           <tr>
             <td colspan="6" class="px-6 py-12 text-center text-sm text-zinc-500">
-              {{ $t('dashboard.recentLogs.empty') }}
+              {{ isSearchEmpty ? $t('common.noSearchResults') : $t('dashboard.recentLogs.empty') }}
             </td>
           </tr>
         </tbody>

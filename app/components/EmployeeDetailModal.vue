@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import type { Employee, EmployeeTransaction, EmployeeTransactionType } from '#shared/types/financial'
 import { getExpectedPayroll } from '#shared/utils/payroll'
 import { formatIsoDateDisplay, todayIso } from '#shared/utils/jalaliDate'
+import { matchesListSearch } from '~/utils/listSearch'
 
 const props = defineProps<{
   employee: Employee
@@ -20,6 +21,7 @@ const financeStore = useFinanceStore()
 const { schools, termYear, isSubmitting, error, submitMessage } = storeToRefs(financeStore)
 
 const transactions = ref<EmployeeTransaction[]>([])
+const transactionSearchQuery = ref('')
 const isLoadingTransactions = ref(true)
 const editingTransactionId = ref<string | null>(null)
 
@@ -50,6 +52,24 @@ const transactionTypes = computed(() => [
 
 const expenseSummary = computed(() =>
   financeStore.employeeExpenseSummary(props.employee, transactions.value),
+)
+
+const filteredTransactions = computed(() =>
+  transactions.value.filter(transaction =>
+    matchesListSearch(transactionSearchQuery.value, [
+      transaction.date,
+      formatTransactionDate(transaction.date),
+      transaction.amountPaid,
+      numberFormatter.value.format(transaction.amountPaid),
+      t(`operator.transactionTypes.${transaction.transactionType}`),
+    ]),
+  ),
+)
+
+const isTransactionSearchEmpty = computed(() =>
+  transactionSearchQuery.value.trim().length > 0
+  && transactions.value.length > 0
+  && filteredTransactions.value.length === 0,
 )
 
 const progressPercent = computed(() => {
@@ -433,6 +453,12 @@ onUnmounted(() => {
             {{ $t('employees.expenses') }}
           </h3>
 
+          <ListSearchInput
+            v-model="transactionSearchQuery"
+            class="mb-4"
+            :placeholder="$t('employees.expensesSearchPlaceholder')"
+          />
+
           <div
             v-if="isLoadingTransactions"
             aria-busy="true"
@@ -463,6 +489,12 @@ onUnmounted(() => {
           >
             {{ $t('employees.noExpenses') }}
           </div>
+          <div
+            v-else-if="isTransactionSearchEmpty"
+            class="ui-empty-state mb-4 py-8"
+          >
+            {{ $t('common.noSearchResults') }}
+          </div>
           <template v-else>
             <TransitionGroup
               tag="ul"
@@ -471,18 +503,27 @@ onUnmounted(() => {
               class="mb-6 space-y-3 md:hidden"
             >
               <li
-                v-for="transaction in transactions"
+                v-for="transaction in filteredTransactions"
                 :key="transaction.id"
                 class="ui-card p-4"
               >
                 <div class="text-lg font-semibold">
-                  {{ numberFormatter.format(transaction.amountPaid) }}
+                  <ListSearchHighlight
+                    :text="numberFormatter.format(transaction.amountPaid)"
+                    :query="transactionSearchQuery"
+                  />
                 </div>
                 <div class="mt-1 text-sm ui-text-muted">
-                  {{ formatTransactionDate(transaction.date) }}
+                  <ListSearchHighlight
+                    :text="formatTransactionDate(transaction.date)"
+                    :query="transactionSearchQuery"
+                  />
                 </div>
                 <div class="mt-0.5 text-sm ui-text-secondary">
-                  {{ $t(`operator.transactionTypes.${transaction.transactionType}`) }}
+                  <ListSearchHighlight
+                    :text="$t(`operator.transactionTypes.${transaction.transactionType}`)"
+                    :query="transactionSearchQuery"
+                  />
                 </div>
                 <div class="mt-3 flex gap-2">
                   <button
@@ -526,15 +567,24 @@ onUnmounted(() => {
                   appear
                   class="ui-divide-y"
                 >
-                  <tr v-for="transaction in transactions" :key="transaction.id" class="ui-table-row">
+                  <tr v-for="transaction in filteredTransactions" :key="transaction.id" class="ui-table-row">
                     <td class="px-4 py-2">
-                      {{ formatTransactionDate(transaction.date) }}
+                      <ListSearchHighlight
+                        :text="formatTransactionDate(transaction.date)"
+                        :query="transactionSearchQuery"
+                      />
                     </td>
                     <td class="px-4 py-2">
-                      {{ numberFormatter.format(transaction.amountPaid) }}
+                      <ListSearchHighlight
+                        :text="numberFormatter.format(transaction.amountPaid)"
+                        :query="transactionSearchQuery"
+                      />
                     </td>
                     <td class="px-4 py-2 ui-text-muted">
-                      {{ $t(`operator.transactionTypes.${transaction.transactionType}`) }}
+                      <ListSearchHighlight
+                        :text="$t(`operator.transactionTypes.${transaction.transactionType}`)"
+                        :query="transactionSearchQuery"
+                      />
                     </td>
                     <td class="px-4 py-2 text-end">
                       <button

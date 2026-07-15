@@ -278,6 +278,10 @@ html.dark {
     @apply inline-flex rounded-full bg-violet-500/15 px-2.5 py-1 text-xs font-medium text-violet-300;
   }
 
+  .ui-search-highlight {
+    @apply rounded-sm bg-violet-500/20 text-inherit;
+  }
+
   .ui-alert-success {
     @apply rounded-lg px-4 py-3 text-sm;
     border: 1px solid var(--app-alert-success-border);

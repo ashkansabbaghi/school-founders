@@ -6,6 +6,8 @@ const props = defineProps<{
   students: Student[]
   transactions: StudentTransaction[]
   isLoading?: boolean
+  isSearchEmpty?: boolean
+  searchQuery?: string
 }>()
 
 const emit = defineEmits<{
@@ -120,7 +122,7 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
       class="ui-card"
     >
       <div class="ui-empty-state">
-        {{ $t('students.empty') }}
+        {{ isSearchEmpty ? $t('common.noSearchResults') : $t('students.empty') }}
       </div>
     </div>
     <template v-else>
@@ -141,7 +143,10 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
           >
             <div class="min-w-0 flex-1">
               <div class="truncate text-base font-medium">
-                {{ row.student.fullName }}
+                <ListSearchHighlight
+                  :text="row.student.fullName"
+                  :query="searchQuery ?? ''"
+                />
               </div>
               <div class="mt-0.5 truncate text-sm ui-text-muted">
                 {{ row.schoolLabel }}
@@ -199,10 +204,16 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
                 @keydown.enter="emit('select', row.student)"
               >
                 <td class="px-4 py-3 font-medium">
-                  {{ row.student.fullName }}
+                  <ListSearchHighlight
+                    :text="row.student.fullName"
+                    :query="searchQuery ?? ''"
+                  />
                 </td>
                 <td class="px-4 py-3 ui-text-secondary">
-                  {{ row.student.studentId }}
+                  <ListSearchHighlight
+                    :text="row.student.studentId"
+                    :query="searchQuery ?? ''"
+                  />
                 </td>
                 <td class="px-4 py-3 ui-text-secondary">
                   {{ row.student.grade }}

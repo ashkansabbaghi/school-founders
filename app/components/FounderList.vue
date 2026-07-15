@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Founder } from '#shared/types/founder'
+import { matchesListSearch } from '~/utils/listSearch'
 
-defineProps<{
+const props = defineProps<{
   founders: Founder[]
   pending?: boolean
 }>()
@@ -9,6 +10,20 @@ defineProps<{
 defineEmits<{
   delete: [id: string]
 }>()
+
+const searchQuery = ref('')
+
+const filteredFounders = computed(() =>
+  props.founders.filter(founder =>
+    matchesListSearch(searchQuery.value, [founder.name, founder.school]),
+  ),
+)
+
+const isSearchEmpty = computed(() =>
+  searchQuery.value.trim().length > 0
+  && props.founders.length > 0
+  && filteredFounders.value.length === 0,
+)
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(part => part.length > 0)
@@ -29,6 +44,11 @@ function getInitials(name: string): string {
     <h2 class="ui-section-header">
       {{ $t('founders.listTitle') }}
     </h2>
+
+    <ListSearchInput
+      v-model="searchQuery"
+      :placeholder="$t('founders.searchPlaceholder')"
+    />
 
     <ul
       v-if="pending"
@@ -51,14 +71,14 @@ function getInitials(name: string): string {
     </ul>
 
     <TransitionGroup
-      v-else-if="founders.length"
+      v-else-if="filteredFounders.length"
       tag="ul"
       name="list-item"
       appear
       class="space-y-3"
     >
       <li
-        v-for="founder in founders"
+        v-for="founder in filteredFounders"
         :key="founder.id"
         class="ui-card-hover flex items-center gap-4 p-4"
       >
@@ -70,13 +90,19 @@ function getInitials(name: string): string {
         </div>
         <div class="min-w-0 flex-1">
           <div class="font-medium">
-            {{ founder.name }}
+            <ListSearchHighlight
+              :text="founder.name"
+              :query="searchQuery"
+            />
           </div>
           <div
             v-if="founder.school"
             class="truncate text-sm ui-text-muted"
           >
-            {{ founder.school }}
+            <ListSearchHighlight
+              :text="founder.school"
+              :query="searchQuery"
+            />
           </div>
         </div>
         <button
@@ -93,7 +119,7 @@ function getInitials(name: string): string {
       v-else
       class="ui-empty-state"
     >
-      {{ $t('founders.empty') }}
+      {{ isSearchEmpty ? $t('common.noSearchResults') : $t('founders.empty') }}
     </div>
   </section>
 </template>

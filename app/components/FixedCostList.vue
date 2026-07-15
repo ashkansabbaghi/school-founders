@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FixedCost, School } from '#shared/types/financial'
+import { matchesListSearch } from '~/utils/listSearch'
 
 const props = defineProps<{
   fixedCosts: FixedCost[]
@@ -11,6 +12,8 @@ defineEmits<{
   edit: [cost: FixedCost]
   delete: [id: string]
 }>()
+
+const searchQuery = ref('')
 
 const { locale } = useI18n()
 
@@ -35,6 +38,18 @@ function schoolLabel(schoolId: string): string {
 
   return `${school.name} — ${school.branch}`
 }
+
+const filteredFixedCosts = computed(() =>
+  props.fixedCosts.filter(cost =>
+    matchesListSearch(searchQuery.value, [cost.label, schoolLabel(cost.schoolId)]),
+  ),
+)
+
+const isSearchEmpty = computed(() =>
+  searchQuery.value.trim().length > 0
+  && props.fixedCosts.length > 0
+  && filteredFixedCosts.value.length === 0,
+)
 </script>
 
 <template>
@@ -42,6 +57,11 @@ function schoolLabel(schoolId: string): string {
     <h2 class="ui-section-header">
       {{ $t('fixedCosts.listTitle') }}
     </h2>
+
+    <ListSearchInput
+      v-model="searchQuery"
+      :placeholder="$t('fixedCosts.searchPlaceholder')"
+    />
 
     <ul
       v-if="pending"
@@ -64,14 +84,14 @@ function schoolLabel(schoolId: string): string {
     </ul>
 
     <TransitionGroup
-      v-else-if="fixedCosts.length"
+      v-else-if="filteredFixedCosts.length"
       tag="ul"
       name="list-item"
       appear
       class="space-y-3"
     >
       <li
-        v-for="cost in fixedCosts"
+        v-for="cost in filteredFixedCosts"
         :key="cost.id"
         class="ui-card-hover flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4"
       >
@@ -83,10 +103,16 @@ function schoolLabel(schoolId: string): string {
         </div>
         <div class="min-w-0 flex-1">
           <div class="font-medium">
-            {{ cost.label }}
+            <ListSearchHighlight
+              :text="cost.label"
+              :query="searchQuery"
+            />
           </div>
           <div class="truncate text-sm ui-text-muted">
-            {{ schoolLabel(cost.schoolId) }}
+            <ListSearchHighlight
+              :text="schoolLabel(cost.schoolId)"
+              :query="searchQuery"
+            />
           </div>
         </div>
         <div class="flex items-center justify-between gap-3 sm:contents">
@@ -117,7 +143,7 @@ function schoolLabel(schoolId: string): string {
       v-else
       class="ui-empty-state"
     >
-      {{ $t('fixedCosts.empty') }}
+      {{ isSearchEmpty ? $t('common.noSearchResults') : $t('fixedCosts.empty') }}
     </div>
   </section>
 </template>

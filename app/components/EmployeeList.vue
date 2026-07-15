@@ -6,6 +6,8 @@ const props = defineProps<{
   employees: Employee[]
   transactions: EmployeeTransaction[]
   isLoading?: boolean
+  isSearchEmpty?: boolean
+  searchQuery?: string
 }>()
 
 const emit = defineEmits<{
@@ -120,7 +122,7 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
       class="ui-card"
     >
       <div class="ui-empty-state">
-        {{ $t('employees.empty') }}
+        {{ isSearchEmpty ? $t('common.noSearchResults') : $t('employees.empty') }}
       </div>
     </div>
     <template v-else>
@@ -141,7 +143,10 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
           >
             <div class="min-w-0 flex-1">
               <div class="truncate text-base font-medium">
-                {{ row.employee.fullName }}
+                <ListSearchHighlight
+                  :text="row.employee.fullName"
+                  :query="searchQuery ?? ''"
+                />
               </div>
               <div class="mt-0.5 truncate text-sm ui-text-muted">
                 {{ row.employee.role }}
@@ -202,10 +207,16 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
                 @keydown.enter="emit('select', row.employee)"
               >
                 <td class="px-4 py-3 font-medium">
-                  {{ row.employee.fullName }}
+                  <ListSearchHighlight
+                    :text="row.employee.fullName"
+                    :query="searchQuery ?? ''"
+                  />
                 </td>
                 <td class="px-4 py-3 ui-text-secondary">
-                  {{ row.employee.employeeId }}
+                  <ListSearchHighlight
+                    :text="row.employee.employeeId"
+                    :query="searchQuery ?? ''"
+                  />
                 </td>
                 <td class="px-4 py-3 ui-text-secondary">
                   {{ row.employee.role }}

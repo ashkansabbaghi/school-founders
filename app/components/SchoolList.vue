@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { School } from '#shared/types/financial'
+import { matchesListSearch } from '~/utils/listSearch'
 
-defineProps<{
+const props = defineProps<{
   schools: School[]
   pending?: boolean
 }>()
@@ -10,6 +11,20 @@ defineEmits<{
   edit: [school: School]
   delete: [id: string]
 }>()
+
+const searchQuery = ref('')
+
+const filteredSchools = computed(() =>
+  props.schools.filter(school =>
+    matchesListSearch(searchQuery.value, [school.name, school.branch]),
+  ),
+)
+
+const isSearchEmpty = computed(() =>
+  searchQuery.value.trim().length > 0
+  && props.schools.length > 0
+  && filteredSchools.value.length === 0,
+)
 </script>
 
 <template>
@@ -17,6 +32,11 @@ defineEmits<{
     <h2 class="ui-section-header">
       {{ $t('schools.listTitle') }}
     </h2>
+
+    <ListSearchInput
+      v-model="searchQuery"
+      :placeholder="$t('schools.searchPlaceholder')"
+    />
 
     <ul
       v-if="pending"
@@ -39,14 +59,14 @@ defineEmits<{
     </ul>
 
     <TransitionGroup
-      v-else-if="schools.length"
+      v-else-if="filteredSchools.length"
       tag="ul"
       name="list-item"
       appear
       class="space-y-3"
     >
       <li
-        v-for="school in schools"
+        v-for="school in filteredSchools"
         :key="school.id"
         class="ui-card-hover flex items-center gap-4 p-4"
       >
@@ -58,10 +78,16 @@ defineEmits<{
         </div>
         <div class="min-w-0 flex-1">
           <div class="font-medium">
-            {{ school.name }}
+            <ListSearchHighlight
+              :text="school.name"
+              :query="searchQuery"
+            />
           </div>
           <div class="truncate text-sm ui-text-muted">
-            {{ school.branch }}
+            <ListSearchHighlight
+              :text="school.branch"
+              :query="searchQuery"
+            />
           </div>
         </div>
         <div class="flex shrink-0 gap-2">
@@ -87,7 +113,7 @@ defineEmits<{
       v-else
       class="ui-empty-state"
     >
-      {{ $t('schools.empty') }}
+      {{ isSearchEmpty ? $t('common.noSearchResults') : $t('schools.empty') }}
     </div>
   </section>
 </template>
