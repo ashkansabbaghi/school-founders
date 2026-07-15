@@ -78,10 +78,10 @@ const stats = computed(() => {
 <template>
   <section>
     <header class="mb-4">
-      <h2 class="text-lg font-semibold text-zinc-100">
+      <h2 class="text-lg font-semibold">
         {{ $t('dashboard.stats.title') }}
       </h2>
-      <p class="mt-1 text-sm text-zinc-400">
+      <p class="mt-1 text-sm ui-text-muted">
         {{ $t('dashboard.stats.subtitle', { termYear }) }}
       </p>
     </header>
@@ -103,7 +103,7 @@ const stats = computed(() => {
           <div class="ui-skeleton h-8 w-32" />
         </div>
         <template v-else>
-          <p class="text-sm text-zinc-400">
+          <p class="text-sm ui-text-muted">
             {{ stat.label }}
           </p>
           <p

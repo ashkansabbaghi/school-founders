@@ -122,13 +122,13 @@ onUnmounted(() => {
       :aria-label="$t('students.addStudent')"
       class="ui-modal-panel max-w-3xl sm:my-8"
     >
-      <header class="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-zinc-800 bg-zinc-900/95 px-4 py-4 backdrop-blur sm:static sm:rounded-t-xl sm:px-6">
-        <h2 class="text-lg font-semibold text-zinc-100">
+      <header class="ui-modal-header">
+        <h2 class="text-lg font-semibold">
           {{ $t('students.addStudent') }}
         </h2>
         <button
           type="button"
-          class="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg p-2 text-zinc-400 transition-colors duration-200 hover:bg-zinc-800 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+          class="ui-modal-close"
           :aria-label="$t('students.close')"
           @click="emit('close')"
         >

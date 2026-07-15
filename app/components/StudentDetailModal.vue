@@ -280,18 +280,18 @@ onUnmounted(() => {
       :aria-label="$t('students.modalTitle', { name: student.fullName })"
       class="ui-modal-panel max-w-3xl sm:my-8"
     >
-      <header class="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-zinc-800 bg-zinc-900/95 px-4 py-4 backdrop-blur sm:static sm:rounded-t-xl sm:px-6">
+      <header class="ui-modal-header">
         <div class="min-w-0">
-          <h2 class="text-lg font-semibold text-zinc-100">
+          <h2 class="text-lg font-semibold">
             {{ student.fullName }}
           </h2>
-          <p class="mt-1 text-sm text-zinc-400">
+          <p class="mt-1 text-sm ui-text-muted">
             {{ student.studentId }} — {{ $t('students.termYear', { termYear }) }}
           </p>
         </div>
         <button
           type="button"
-          class="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg p-2 text-zinc-400 transition-colors duration-200 hover:bg-zinc-800 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+          class="ui-modal-close"
           :aria-label="$t('students.close')"
           @click="emit('close')"
         >
@@ -319,25 +319,25 @@ onUnmounted(() => {
           <h3 class="ui-section-header mb-4">
             {{ $t('students.paymentSummary') }}
           </h3>
-          <div class="rounded-lg border border-zinc-800 bg-zinc-800/40 p-4">
+          <div class="ui-inset-panel">
             <div class="mb-3 flex flex-wrap items-center gap-3">
               <span :class="statusClasses">
                 {{ $t(`students.status.${paymentSummary.status}`) }}
               </span>
-              <span class="text-sm text-zinc-400">
+              <span class="text-sm ui-text-muted">
                 {{ $t('students.paidOfExpected', {
                   paid: numberFormatter.format(paymentSummary.paid),
                   expected: numberFormatter.format(paymentSummary.expected),
                 }) }}
               </span>
             </div>
-            <div class="h-2 overflow-hidden rounded-full bg-zinc-800">
+            <div class="h-2 ui-progress-track">
               <div
                 class="h-full rounded-full bg-violet-600 shadow-glow transition-all"
                 :style="{ width: `${progressPercent}%` }"
               />
             </div>
-            <p class="mt-2 text-sm text-zinc-400">
+            <p class="mt-2 text-sm ui-text-muted">
               {{ $t('students.remaining', { amount: numberFormatter.format(paymentSummary.remaining) }) }}
             </p>
           </div>
@@ -500,13 +500,13 @@ onUnmounted(() => {
                 :key="transaction.id"
                 class="ui-card p-4"
               >
-                <div class="text-lg font-semibold text-zinc-100">
+                <div class="text-lg font-semibold">
                   {{ numberFormatter.format(transaction.amountPaid) }}
                 </div>
-                <div class="mt-1 text-sm text-zinc-400">
+                <div class="mt-1 text-sm ui-text-muted">
                   {{ formatTransactionDate(transaction.date) }}
                 </div>
-                <div class="mt-0.5 text-sm text-zinc-300">
+                <div class="mt-0.5 text-sm ui-text-secondary">
                   {{ $t(`operator.paymentMethods.${transaction.paymentMethod}`) }}
                 </div>
                 <div class="mt-3 flex gap-2">
@@ -527,7 +527,7 @@ onUnmounted(() => {
                 </div>
               </li>
             </TransitionGroup>
-            <div class="ui-table-scroll mb-6 hidden rounded-lg border border-zinc-800 md:block">
+            <div class="ui-table-scroll mb-6 hidden md:block">
               <table class="ui-table">
                 <thead class="ui-table-head">
                   <tr>
@@ -540,7 +540,7 @@ onUnmounted(() => {
                     <th class="ui-table-th">
                       {{ $t('students.columns.method') }}
                     </th>
-                    <th class="px-4 py-2 text-end text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                    <th class="px-4 py-2 text-end text-xs font-semibold uppercase tracking-wide ui-text-muted">
                       {{ $t('students.columns.actions') }}
                     </th>
                   </tr>
@@ -549,16 +549,16 @@ onUnmounted(() => {
                   tag="tbody"
                   name="list-item"
                   appear
-                  class="divide-y divide-zinc-800"
+                  class="ui-divide-y"
                 >
                   <tr v-for="transaction in transactions" :key="transaction.id" class="ui-table-row">
-                    <td class="px-4 py-2 text-zinc-100">
+                    <td class="px-4 py-2">
                       {{ formatTransactionDate(transaction.date) }}
                     </td>
-                    <td class="px-4 py-2 text-zinc-100">
+                    <td class="px-4 py-2">
                       {{ numberFormatter.format(transaction.amountPaid) }}
                     </td>
-                    <td class="px-4 py-2 text-zinc-400">
+                    <td class="px-4 py-2 ui-text-muted">
                       {{ $t(`operator.paymentMethods.${transaction.paymentMethod}`) }}
                     </td>
                     <td class="px-4 py-2 text-end">
@@ -583,7 +583,7 @@ onUnmounted(() => {
             </div>
           </template>
 
-          <form class="grid gap-4 rounded-lg border border-zinc-800 bg-zinc-800/40 p-4 sm:grid-cols-2" @submit.prevent="submitPayment">
+          <form class="grid gap-4 ui-inset-panel sm:grid-cols-2" @submit.prevent="submitPayment">
             <p class="ui-label sm:col-span-2">
               {{ editingTransactionId ? $t('students.editPaymentForm') : $t('students.addPayment') }}
             </p>

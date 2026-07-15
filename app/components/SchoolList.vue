@@ -57,10 +57,10 @@ defineEmits<{
           {{ school.name.charAt(0) }}
         </div>
         <div class="min-w-0 flex-1">
-          <div class="font-medium text-zinc-100">
+          <div class="font-medium">
             {{ school.name }}
           </div>
-          <div class="truncate text-sm text-zinc-400">
+          <div class="truncate text-sm ui-text-muted">
             {{ school.branch }}
           </div>
         </div>

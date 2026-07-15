@@ -50,10 +50,17 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/color-mode',
     '@nuxtjs/i18n',
     '@vite-pwa/nuxt',
     '@alireza-ab/vue3-persian-datepicker/nuxt',
   ],
+
+  colorMode: {
+    classSuffix: '',
+    preference: 'system',
+    fallback: 'dark',
+  },
 
   datepicker: {
     PersianDate: true,
@@ -62,10 +69,7 @@ export default defineNuxtConfig({
   i18n: {
     defaultLocale: 'fa',
     strategy: 'prefix_except_default',
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'i18n_locale',
-    },
+    detectBrowserLanguage: false,
     locales: [
       { code: 'fa', language: 'fa-IR', name: 'فارسی', dir: 'rtl', file: 'fa.json' },
       { code: 'en', language: 'en-US', name: 'English', dir: 'ltr', file: 'en.json' },
@@ -124,7 +128,9 @@ export default defineNuxtConfig({
       periodicSyncForUpdates: 3600,
     },
     devOptions: {
-      enabled: true,
+      // Disabled in dev: hot config reloads leave stale SW state and cause
+      // ENOENT on `.nuxt/dev-sw-dist/sw.js`. Test PWA via `npm run preview`.
+      enabled: false,
       type: 'module',
     },
   },

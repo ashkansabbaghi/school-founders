@@ -67,11 +67,11 @@ function profitLabel(netProfit: number): string {
     :is="embedded ? 'div' : 'section'"
     :class="embedded ? undefined : 'ui-card overflow-hidden'"
   >
-    <header class="border-b border-zinc-800 px-4 py-4 sm:px-6">
-      <h2 class="text-lg font-semibold text-zinc-100">
+    <header class="ui-card-header">
+      <h2 class="text-lg font-semibold">
         {{ $t('report.title') }}
       </h2>
-      <p class="mt-1 text-sm text-zinc-400">
+      <p class="mt-1 text-sm ui-text-muted">
         {{ $t('report.subtitle', { termYear }) }}
       </p>
     </header>
@@ -79,7 +79,7 @@ function profitLabel(netProfit: number): string {
     <div class="md:hidden">
       <ul
         v-if="isLoading"
-        class="divide-y divide-zinc-800"
+        class="ui-divide-y"
         aria-busy="true"
         :aria-label="$t('common.loading')"
       >
@@ -102,27 +102,27 @@ function profitLabel(netProfit: number): string {
       </ul>
 
       <template v-else-if="schoolRows.length">
-        <ul class="divide-y divide-zinc-800">
+        <ul class="ui-divide-y">
           <li
             v-for="row in schoolRows as SchoolProfitBreakdown[]"
             :key="row.schoolId"
             class="space-y-3 p-4"
           >
             <div>
-              <div class="font-medium text-zinc-100">
+              <div class="font-medium">
                 {{ row.schoolName }}
               </div>
-              <div class="text-sm text-zinc-400">
+              <div class="text-sm ui-text-muted">
                 {{ row.branch }}
               </div>
             </div>
 
             <div>
               <div class="flex items-center justify-between text-sm">
-                <span class="text-zinc-400">{{ $t('report.columns.studentIncomes') }}</span>
-                <span class="font-medium text-zinc-100">{{ formatCurrency(row.revenue) }}</span>
+                <span class="ui-text-muted">{{ $t('report.columns.studentIncomes') }}</span>
+                <span class="font-medium">{{ formatCurrency(row.revenue) }}</span>
               </div>
-              <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+              <div class="mt-1.5 h-2 w-full ui-progress-track">
                 <div
                   class="h-full rounded-full bg-emerald-500 shadow-glow transition-all"
                   :style="{ width: barWidth(row.revenue, maxRevenue) }"
@@ -132,10 +132,10 @@ function profitLabel(netProfit: number): string {
 
             <div>
               <div class="flex items-center justify-between text-sm">
-                <span class="text-zinc-400">{{ $t('report.columns.staffExpenses') }}</span>
-                <span class="font-medium text-zinc-100">{{ formatCurrency(row.employeeExpenses) }}</span>
+                <span class="ui-text-muted">{{ $t('report.columns.staffExpenses') }}</span>
+                <span class="font-medium">{{ formatCurrency(row.employeeExpenses) }}</span>
               </div>
-              <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+              <div class="mt-1.5 h-2 w-full ui-progress-track">
                 <div
                   class="h-full rounded-full bg-rose-500 shadow-[0_0_20px_-5px_rgba(244,63,94,0.25)] transition-all"
                   :style="{ width: barWidth(row.employeeExpenses, maxExpenses) }"
@@ -145,7 +145,7 @@ function profitLabel(netProfit: number): string {
 
             <div>
               <div class="flex items-center justify-between text-sm">
-                <span class="text-zinc-400">{{ $t('report.columns.netProfit') }}</span>
+                <span class="ui-text-muted">{{ $t('report.columns.netProfit') }}</span>
                 <div class="flex items-center gap-2">
                   <span
                     class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
@@ -161,7 +161,7 @@ function profitLabel(netProfit: number): string {
                   </span>
                 </div>
               </div>
-              <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+              <div class="mt-1.5 h-2 w-full ui-progress-track">
                 <div
                   class="h-full rounded-full transition-all"
                   :class="profitBarClass(row.netProfit)"
@@ -174,23 +174,23 @@ function profitLabel(netProfit: number): string {
 
         <div
           v-if="summary"
-          class="border-t border-zinc-800 bg-zinc-800/40 p-4"
+          class="ui-card-footer"
         >
-          <div class="mb-3 text-sm font-semibold text-zinc-100">
+          <div class="mb-3 text-sm font-semibold">
             {{ $t('common.total') }}
           </div>
 
           <div class="space-y-2 text-sm">
             <div class="flex items-center justify-between">
-              <span class="text-zinc-400">{{ $t('report.columns.studentIncomes') }}</span>
-              <span class="font-semibold text-zinc-100">{{ formatCurrency(summary.totalRevenue) }}</span>
+              <span class="ui-text-muted">{{ $t('report.columns.studentIncomes') }}</span>
+              <span class="font-semibold">{{ formatCurrency(summary.totalRevenue) }}</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-zinc-400">{{ $t('report.columns.staffExpenses') }}</span>
-              <span class="font-semibold text-zinc-100">{{ formatCurrency(totalEmployeeExpenses) }}</span>
+              <span class="ui-text-muted">{{ $t('report.columns.staffExpenses') }}</span>
+              <span class="font-semibold">{{ formatCurrency(totalEmployeeExpenses) }}</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-zinc-400">{{ $t('report.columns.netProfit') }}</span>
+              <span class="ui-text-muted">{{ $t('report.columns.netProfit') }}</span>
               <div class="flex items-center gap-2">
                 <span
                   class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
@@ -239,7 +239,7 @@ function profitLabel(netProfit: number): string {
 
         <tbody
           v-if="isLoading"
-          class="divide-y divide-zinc-800"
+          class="ui-divide-y"
           aria-busy="true"
           :aria-label="$t('common.loading')"
         >
@@ -252,7 +252,7 @@ function profitLabel(netProfit: number): string {
 
         <tbody
           v-else-if="schoolRows.length"
-          class="divide-y divide-zinc-800"
+          class="ui-divide-y"
         >
           <tr
             v-for="row in schoolRows as SchoolProfitBreakdown[]"
@@ -260,19 +260,19 @@ function profitLabel(netProfit: number): string {
             class="ui-table-row"
           >
             <td class="px-6 py-4">
-              <div class="font-medium text-zinc-100">
+              <div class="font-medium">
                 {{ row.schoolName }}
               </div>
-              <div class="text-sm text-zinc-400">
+              <div class="text-sm ui-text-muted">
                 {{ row.branch }}
               </div>
             </td>
 
             <td class="px-6 py-4">
-              <div class="mb-1 text-sm font-medium text-zinc-100">
+              <div class="mb-1 text-sm font-medium">
                 {{ formatCurrency(row.revenue) }}
               </div>
-              <div class="h-2 w-full max-w-xs overflow-hidden rounded-full bg-zinc-800">
+              <div class="h-2 w-full max-w-xs ui-progress-track">
                 <div
                   class="h-full rounded-full bg-emerald-500 shadow-glow transition-all"
                   :style="{ width: barWidth(row.revenue, maxRevenue) }"
@@ -281,10 +281,10 @@ function profitLabel(netProfit: number): string {
             </td>
 
             <td class="px-6 py-4">
-              <div class="mb-1 text-sm font-medium text-zinc-100">
+              <div class="mb-1 text-sm font-medium">
                 {{ formatCurrency(row.employeeExpenses) }}
               </div>
-              <div class="h-2 w-full max-w-xs overflow-hidden rounded-full bg-zinc-800">
+              <div class="h-2 w-full max-w-xs ui-progress-track">
                 <div
                   class="h-full rounded-full bg-rose-500 shadow-[0_0_20px_-5px_rgba(244,63,94,0.25)] transition-all"
                   :style="{ width: barWidth(row.employeeExpenses, maxExpenses) }"
@@ -307,7 +307,7 @@ function profitLabel(netProfit: number): string {
                   {{ formatCurrency(row.netProfit) }}
                 </span>
               </div>
-              <div class="h-2 w-full max-w-xs overflow-hidden rounded-full bg-zinc-800">
+              <div class="h-2 w-full max-w-xs ui-progress-track">
                 <div
                   class="h-full rounded-full transition-all"
                   :class="profitBarClass(row.netProfit)"
@@ -328,16 +328,16 @@ function profitLabel(netProfit: number): string {
 
         <tfoot
           v-if="summary && schoolRows.length"
-          class="border-t border-zinc-800 bg-zinc-800/40"
+          class="ui-table-footer"
         >
           <tr>
-            <td class="px-6 py-4 text-sm font-semibold text-zinc-100">
+            <td class="px-6 py-4 text-sm font-semibold">
               {{ $t('common.total') }}
             </td>
-            <td class="px-6 py-4 text-sm font-semibold text-zinc-100">
+            <td class="px-6 py-4 text-sm font-semibold">
               {{ formatCurrency(summary.totalRevenue) }}
             </td>
-            <td class="px-6 py-4 text-sm font-semibold text-zinc-100">
+            <td class="px-6 py-4 text-sm font-semibold">
               {{ formatCurrency(totalEmployeeExpenses) }}
             </td>
             <td class="px-6 py-4">

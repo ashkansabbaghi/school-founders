@@ -80,23 +80,23 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="fixed inset-0 z-[100] flex items-stretch justify-center overflow-y-auto bg-zinc-950/95 backdrop-blur-sm sm:items-center sm:p-4"
+    class="ui-modal-overlay z-[100]"
     role="presentation"
   >
     <div
       role="dialog"
       aria-modal="true"
       :aria-label="t('onboarding.title')"
-      class="flex min-h-dvh w-full max-w-lg flex-col bg-zinc-900 shadow-xl sm:min-h-0 sm:rounded-xl sm:border sm:border-zinc-800"
+      class="ui-modal-panel flex min-h-dvh w-full max-w-lg flex-col sm:min-h-0 sm:max-w-lg"
     >
-      <header class="border-b border-zinc-800 px-4 py-5 sm:px-6">
+      <header class="ui-card-header py-5">
         <p class="text-xs font-medium uppercase tracking-wide text-violet-400">
           {{ t('onboarding.stepIndicator', { current: step, total: 3 }) }}
         </p>
-        <h1 class="mt-1 text-xl font-bold text-zinc-100">
+        <h1 class="mt-1 text-xl font-bold">
           {{ t(`onboarding.steps.${step}.title`) }}
         </h1>
-        <p class="mt-2 text-sm text-zinc-400">
+        <p class="mt-2 text-sm ui-text-muted">
           {{ t(`onboarding.steps.${step}.subtitle`) }}
         </p>
       </header>
@@ -111,7 +111,7 @@ onUnmounted(() => {
         </div>
 
         <div v-if="step === 1" class="space-y-4">
-          <ul class="space-y-3 text-sm text-zinc-300">
+          <ul class="space-y-3 text-sm ui-text-secondary">
             <li class="flex gap-3">
               <span class="mt-0.5 text-violet-400" aria-hidden="true">✓</span>
               <span>{{ t('onboarding.steps.1.points.offline') }}</span>
@@ -172,13 +172,13 @@ onUnmounted(() => {
             class="w-full rounded-xl border p-4 text-start transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
             :class="form.startWithDemo === true
               ? 'border-violet-500/60 bg-violet-500/10'
-              : 'border-zinc-700 bg-zinc-800/40 hover:border-zinc-600'"
+              : 'border-zinc-200 bg-zinc-50 hover:border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/40 dark:hover:border-zinc-600'"
             @click="selectDataOption(true)"
           >
-            <p class="font-medium text-zinc-100">
+            <p class="font-medium">
               {{ t('onboarding.steps.3.demo.title') }}
             </p>
-            <p class="mt-1 text-sm text-zinc-400">
+            <p class="mt-1 text-sm ui-text-muted">
               {{ t('onboarding.steps.3.demo.description') }}
             </p>
           </button>
@@ -188,20 +188,20 @@ onUnmounted(() => {
             class="w-full rounded-xl border p-4 text-start transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
             :class="form.startWithDemo === false
               ? 'border-violet-500/60 bg-violet-500/10'
-              : 'border-zinc-700 bg-zinc-800/40 hover:border-zinc-600'"
+              : 'border-zinc-200 bg-zinc-50 hover:border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/40 dark:hover:border-zinc-600'"
             @click="selectDataOption(false)"
           >
-            <p class="font-medium text-zinc-100">
+            <p class="font-medium">
               {{ t('onboarding.steps.3.empty.title') }}
             </p>
-            <p class="mt-1 text-sm text-zinc-400">
+            <p class="mt-1 text-sm ui-text-muted">
               {{ t('onboarding.steps.3.empty.description') }}
             </p>
           </button>
         </div>
       </div>
 
-      <footer class="flex items-center justify-between gap-3 border-t border-zinc-800 px-4 py-4 sm:px-6">
+      <footer class="ui-divider-t-only flex items-center justify-between gap-3 px-4 py-4 sm:px-6">
         <button
           v-if="step > 1"
           type="button"

@@ -69,12 +69,12 @@ function getInitials(name: string): string {
           {{ getInitials(founder.name) }}
         </div>
         <div class="min-w-0 flex-1">
-          <div class="font-medium text-zinc-100">
+          <div class="font-medium">
             {{ founder.name }}
           </div>
           <div
             v-if="founder.school"
-            class="truncate text-sm text-zinc-400"
+            class="truncate text-sm ui-text-muted"
           >
             {{ founder.school }}
           </div>

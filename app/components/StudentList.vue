@@ -104,7 +104,7 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-zinc-800">
+            <tbody class="ui-divide-y">
               <tr v-for="n in 5" :key="n">
                 <td v-for="col in 6" :key="col" class="px-4 py-3">
                   <div class="ui-skeleton h-4" />
@@ -136,17 +136,17 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
         >
           <button
             type="button"
-            class="ui-card-hover flex w-full items-start justify-between gap-3 p-4 text-start transition-colors duration-200 active:bg-zinc-800/50 focus-visible:bg-zinc-800/50 focus-visible:outline-none"
+            class="ui-card-hover flex w-full items-start justify-between gap-3 p-4 text-start transition-colors duration-200 active:bg-zinc-100 dark:active:bg-zinc-800/50 focus-visible:bg-zinc-100 dark:focus-visible:bg-zinc-800/50 focus-visible:outline-none"
             @click="emit('select', row.student)"
           >
             <div class="min-w-0 flex-1">
-              <div class="truncate text-base font-medium text-zinc-100">
+              <div class="truncate text-base font-medium">
                 {{ row.student.fullName }}
               </div>
-              <div class="mt-0.5 truncate text-sm text-zinc-400">
+              <div class="mt-0.5 truncate text-sm ui-text-muted">
                 {{ row.schoolLabel }}
               </div>
-              <div class="mt-1.5 text-sm text-zinc-300">
+              <div class="mt-1.5 text-sm ui-text-secondary">
                 {{ $t('students.remaining', { amount: numberFormatter.format(row.summary.remaining) }) }}
               </div>
             </div>
@@ -188,29 +188,29 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
               tag="tbody"
               name="list-item"
               appear
-              class="divide-y divide-zinc-800"
+              class="ui-divide-y"
             >
               <tr
                 v-for="row in rows"
                 :key="row.student.id"
-                class="ui-table-row cursor-pointer focus-visible:bg-zinc-800/50 focus-visible:outline-none"
+                class="ui-table-row cursor-pointer focus-visible:bg-zinc-100 dark:focus-visible:bg-zinc-800/50 focus-visible:outline-none"
                 tabindex="0"
                 @click="emit('select', row.student)"
                 @keydown.enter="emit('select', row.student)"
               >
-                <td class="px-4 py-3 font-medium text-zinc-100">
+                <td class="px-4 py-3 font-medium">
                   {{ row.student.fullName }}
                 </td>
-                <td class="px-4 py-3 text-zinc-300">
+                <td class="px-4 py-3 ui-text-secondary">
                   {{ row.student.studentId }}
                 </td>
-                <td class="px-4 py-3 text-zinc-300">
+                <td class="px-4 py-3 ui-text-secondary">
                   {{ row.student.grade }}
                 </td>
-                <td class="px-4 py-3 text-zinc-400">
+                <td class="px-4 py-3 ui-text-muted">
                   {{ row.schoolLabel }}
                 </td>
-                <td class="px-4 py-3 text-zinc-300">
+                <td class="px-4 py-3 ui-text-secondary">
                   {{ numberFormatter.format(row.summary.paid) }} / {{ numberFormatter.format(row.summary.expected) }}
                 </td>
                 <td class="px-4 py-3">

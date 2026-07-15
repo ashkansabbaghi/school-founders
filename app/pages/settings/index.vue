@@ -448,7 +448,7 @@ onMounted(() => {
         <h2 class="ui-section-header">
           {{ $t('settings.profile.title') }}
         </h2>
-        <p class="mt-1 text-sm text-zinc-400">
+        <p class="mt-1 text-sm ui-text-muted">
           {{ $t('settings.profile.subtitle') }}
         </p>
       </div>
@@ -482,7 +482,7 @@ onMounted(() => {
         <h2 class="ui-section-header">
           {{ $t('settings.storage.title') }}
         </h2>
-        <p class="mt-1 text-sm text-zinc-400">
+        <p class="mt-1 text-sm ui-text-muted">
           {{ $t('settings.storage.subtitle') }}
         </p>
       </div>
@@ -495,7 +495,7 @@ onMounted(() => {
       </div>
 
       <dl class="grid gap-3 text-sm sm:grid-cols-2">
-        <div class="rounded-lg border border-zinc-800 bg-zinc-950/40 px-4 py-3">
+        <div class="ui-inset-panel px-4 py-3">
           <dt class="text-zinc-500">
             {{ $t('settings.storage.persistenceStatus') }}
           </dt>
@@ -503,7 +503,7 @@ onMounted(() => {
             {{ persistenceStatusLabel }}
           </dd>
         </div>
-        <div class="rounded-lg border border-zinc-800 bg-zinc-950/40 px-4 py-3">
+        <div class="ui-inset-panel px-4 py-3">
           <dt class="text-zinc-500">
             {{ $t('settings.storage.usageLabel') }}
           </dt>
@@ -528,12 +528,12 @@ onMounted(() => {
         <h2 class="ui-section-header">
           {{ $t('settings.pwa.title') }}
         </h2>
-        <p class="mt-1 text-sm text-zinc-400">
+        <p class="mt-1 text-sm ui-text-muted">
           {{ $t('settings.pwa.subtitle') }}
         </p>
       </div>
 
-      <p class="text-sm text-zinc-300">
+      <p class="text-sm ui-text-secondary">
         {{ installStatusLabel }}
       </p>
 
@@ -546,9 +546,9 @@ onMounted(() => {
         {{ $t('settings.pwa.installAction') }}
       </button>
 
-      <div class="space-y-4 text-sm text-zinc-400">
+      <div class="space-y-4 text-sm ui-text-muted">
         <div v-if="installPlatform === 'ios'" class="space-y-2">
-          <h3 class="font-medium text-zinc-300">
+          <h3 class="font-medium ui-text-secondary">
             {{ $t('settings.pwa.iosTitle') }}
           </h3>
           <ol class="list-decimal space-y-1 ps-5">
@@ -559,7 +559,7 @@ onMounted(() => {
         </div>
 
         <div v-else-if="installPlatform === 'android'" class="space-y-2">
-          <h3 class="font-medium text-zinc-300">
+          <h3 class="font-medium ui-text-secondary">
             {{ $t('settings.pwa.androidTitle') }}
           </h3>
           <ol class="list-decimal space-y-1 ps-5">
@@ -569,7 +569,7 @@ onMounted(() => {
         </div>
 
         <div v-else class="space-y-2">
-          <h3 class="font-medium text-zinc-300">
+          <h3 class="font-medium ui-text-secondary">
             {{ $t('settings.pwa.desktopTitle') }}
           </h3>
           <ol class="list-decimal space-y-1 ps-5">
@@ -585,21 +585,21 @@ onMounted(() => {
         <h2 class="ui-section-header">
           {{ $t('settings.backup.title') }}
         </h2>
-        <p class="mt-1 text-sm text-zinc-400">
+        <p class="mt-1 text-sm ui-text-muted">
           {{ $t('settings.backup.subtitle') }}
         </p>
       </div>
 
-      <p class="text-sm text-zinc-400">
+      <p class="text-sm ui-text-muted">
         {{ $t('settings.backup.lastBackup', { date: formatTimestamp(lastBackupAt) }) }}
       </p>
 
-      <div class="space-y-4 rounded-lg border border-zinc-800 bg-zinc-950/40 p-4">
+      <div class="space-y-4 ui-inset-panel">
         <div>
-          <h3 class="text-sm font-medium text-zinc-300">
+          <h3 class="text-sm font-medium ui-text-secondary">
             {{ $t('settings.backup.folder.title') }}
           </h3>
-          <p class="mt-1 text-sm text-zinc-400">
+          <p class="mt-1 text-sm ui-text-muted">
             {{ $t('settings.backup.folder.subtitle') }}
           </p>
         </div>
@@ -614,7 +614,7 @@ onMounted(() => {
 
         <template v-else>
           <dl class="grid gap-3 text-sm sm:grid-cols-2">
-            <div class="rounded-lg border border-zinc-800 bg-zinc-950/40 px-4 py-3">
+            <div class="ui-inset-panel px-4 py-3">
               <dt class="text-zinc-500">
                 {{ $t('settings.backup.folder.folderLabel') }}
               </dt>
@@ -622,7 +622,7 @@ onMounted(() => {
                 {{ folderConnectionLabel }}
               </dd>
             </div>
-            <div class="rounded-lg border border-zinc-800 bg-zinc-950/40 px-4 py-3">
+            <div class="ui-inset-panel px-4 py-3">
               <dt class="text-zinc-500">
                 {{ $t('settings.backup.folder.permissionLabel') }}
               </dt>
@@ -639,7 +639,7 @@ onMounted(() => {
             </div>
             <div
               v-if="directoryStatus.connected"
-              class="rounded-lg border border-zinc-800 bg-zinc-950/40 px-4 py-3 sm:col-span-2"
+              class="ui-inset-panel px-4 py-3 sm:col-span-2"
             >
               <dt class="text-zinc-500">
                 {{ $t('settings.backup.folder.lastFolderSave') }}
@@ -759,11 +759,11 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="border-t border-zinc-800 pt-4">
-        <h3 class="mb-2 text-sm font-medium text-zinc-300">
+      <div class="ui-divider-t-only pt-4">
+        <h3 class="mb-2 text-sm font-medium ui-text-secondary">
           {{ $t('settings.backup.resetTitle') }}
         </h3>
-        <p class="mb-3 text-sm text-zinc-400">
+        <p class="mb-3 text-sm ui-text-muted">
           {{ $t('settings.backup.resetSubtitle') }}
         </p>
         <button

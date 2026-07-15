@@ -11,8 +11,8 @@ const { error, submitMessage } = storeToRefs(financeStore)
 
 const activeTab = ref<FinanceTab>('report')
 
-const tabActiveClass = 'bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/30'
-const tabInactiveClass = 'text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200'
+const tabActiveClass = 'bg-violet-500/15 text-violet-700 ring-1 ring-violet-500/30 dark:text-violet-300'
+const tabInactiveClass = 'text-zinc-500 hover:bg-zinc-200/70 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200'
 
 const isFormTab = computed(() =>
   activeTab.value === 'studentPayments' || activeTab.value === 'employeeExpenses',
@@ -44,11 +44,11 @@ watch(() => route.query.tab, syncTabFromRoute)
 
 <template>
   <section class="ui-card overflow-hidden">
-    <div class="border-b border-zinc-800 px-4 py-4 sm:px-6">
+    <div class="ui-card-header">
       <div
         role="tablist"
         :aria-label="$t('finance.tabListAriaLabel')"
-        class="flex flex-wrap gap-1 rounded-lg bg-zinc-800/60 p-1"
+        class="ui-tab-list"
       >
         <button
           type="button"

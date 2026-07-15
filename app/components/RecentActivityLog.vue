@@ -53,11 +53,11 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
 
 <template>
   <section class="ui-card overflow-hidden">
-    <header class="border-b border-zinc-800 px-4 py-4 sm:px-6">
-      <h2 class="text-lg font-semibold text-zinc-100">
+    <header class="ui-card-header">
+      <h2 class="text-lg font-semibold">
         {{ $t('dashboard.recentLogs.title') }}
       </h2>
-      <p class="mt-1 text-sm text-zinc-400">
+      <p class="mt-1 text-sm ui-text-muted">
         {{ $t('dashboard.recentLogs.subtitle') }}
       </p>
     </header>
@@ -65,7 +65,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
     <div class="md:hidden">
       <ul
         v-if="pending"
-        class="divide-y divide-zinc-800"
+        class="ui-divide-y"
         aria-busy="true"
         :aria-label="$t('common.loading')"
       >
@@ -85,7 +85,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
 
       <ul
         v-else-if="props.logs.length"
-        class="divide-y divide-zinc-800"
+        class="ui-divide-y"
       >
         <li
           v-for="log in props.logs"
@@ -99,22 +99,22 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
             >
               {{ kindLabel(log.kind) }}
             </span>
-            <span class="text-lg font-semibold text-zinc-100">
+            <span class="text-lg font-semibold">
               {{ formatCurrency(log.amountPaid) }}
             </span>
           </div>
 
           <div class="mt-2">
-            <div class="font-medium text-zinc-100">
+            <div class="font-medium">
               {{ log.personName }}
             </div>
-            <div class="text-sm text-zinc-400">
+            <div class="text-sm ui-text-muted">
               {{ log.schoolName }}
               <span v-if="log.schoolBranch"> — {{ log.schoolBranch }}</span>
             </div>
           </div>
 
-          <div class="mt-1.5 text-sm text-zinc-300">
+          <div class="mt-1.5 text-sm ui-text-secondary">
             {{ detailLabel(log) }}
           </div>
 
@@ -159,7 +159,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
 
         <tbody
           v-if="pending"
-          class="divide-y divide-zinc-800"
+          class="ui-divide-y"
           aria-busy="true"
           :aria-label="$t('common.loading')"
         >
@@ -172,7 +172,7 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
 
         <tbody
           v-else-if="props.logs.length"
-          class="divide-y divide-zinc-800"
+          class="ui-divide-y"
         >
           <tr
             v-for="log in props.logs"
@@ -187,11 +187,11 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
                 {{ kindLabel(log.kind) }}
               </span>
             </td>
-            <td class="px-6 py-4 font-medium text-zinc-100">
+            <td class="px-6 py-4 font-medium">
               {{ log.personName }}
             </td>
             <td class="px-6 py-4">
-              <div class="text-sm text-zinc-100">
+              <div class="text-sm">
                 {{ log.schoolName }}
               </div>
               <div
@@ -201,13 +201,13 @@ function kindBadgeClass(kind: RecentLogEntry['kind']): string {
                 {{ log.schoolBranch }}
               </div>
             </td>
-            <td class="px-6 py-4 text-sm font-medium text-zinc-100">
+            <td class="px-6 py-4 text-sm font-medium">
               {{ formatCurrency(log.amountPaid) }}
             </td>
-            <td class="px-6 py-4 text-sm text-zinc-300">
+            <td class="px-6 py-4 text-sm ui-text-secondary">
               {{ detailLabel(log) }}
             </td>
-            <td class="px-6 py-4 text-sm text-zinc-400">
+            <td class="px-6 py-4 text-sm ui-text-muted">
               {{ formatDate(log.date) }}
             </td>
           </tr>

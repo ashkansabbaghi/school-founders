@@ -138,8 +138,8 @@ onUnmounted(() => {
       type="button"
       class="rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
       :class="moreActive
-        ? 'bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/30'
-        : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200'"
+        ? 'bg-violet-500/15 text-violet-700 ring-1 ring-violet-500/30 dark:text-violet-300'
+        : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200'"
       :aria-expanded="open"
       aria-haspopup="menu"
       :aria-controls="menuId"
@@ -163,7 +163,7 @@ onUnmounted(() => {
         ref="menuRef"
         role="menu"
         :aria-label="$t('nav.drawerAriaLabel')"
-        class="absolute top-full z-50 mt-1 min-w-48 rounded-lg border border-zinc-800 bg-zinc-950 py-1 shadow-lg end-0"
+        class="absolute top-full z-50 mt-1 min-w-48 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg end-0 dark:border-zinc-800 dark:bg-zinc-950"
         @keydown="onMenuKeydown"
       >
         <NuxtLink
@@ -174,8 +174,8 @@ onUnmounted(() => {
           tabindex="-1"
           class="block rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50 focus-visible:ring-inset"
           :class="isActive(item.to, item.key)
-            ? 'bg-violet-500/15 text-violet-300'
-            : 'text-zinc-300 hover:bg-zinc-800/60 hover:text-zinc-100'"
+            ? 'bg-violet-500/15 text-violet-700 dark:text-violet-300'
+            : 'text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100'"
           :aria-current="isActive(item.to, item.key) ? 'page' : undefined"
           @click="onItemClick"
         >

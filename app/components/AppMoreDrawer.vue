@@ -56,7 +56,7 @@ onUnmounted(() => {
       >
         <button
           type="button"
-          class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          class="absolute inset-0 bg-black/40 backdrop-blur-sm dark:bg-black/60"
           :aria-label="$t('nav.closeDrawer')"
           @click="close"
         />
@@ -75,16 +75,16 @@ onUnmounted(() => {
             role="dialog"
             aria-modal="true"
             :aria-label="$t('nav.drawerTitle')"
-            class="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-zinc-800 bg-zinc-950 shadow-2xl"
+            class="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950"
             style="padding-bottom: env(safe-area-inset-bottom)"
           >
-            <div class="flex items-center justify-between border-b border-zinc-800/80 px-4 py-3">
-              <h2 class="text-sm font-semibold text-zinc-100">
+            <div class="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800/80">
+              <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 {{ $t('nav.drawerTitle') }}
               </h2>
               <button
                 type="button"
-                class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-800/60 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
+                class="rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200"
                 :aria-label="$t('nav.closeDrawer')"
                 @click="close"
               >
@@ -101,8 +101,8 @@ onUnmounted(() => {
                 :to="item.to"
                 class="flex items-center gap-3 rounded-xl px-3 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
                 :class="isActive(item.to, item.key)
-                  ? 'bg-violet-500/15 text-violet-300'
-                  : 'text-zinc-300 active:bg-zinc-800/60'"
+                  ? 'bg-violet-500/15 text-violet-700 dark:text-violet-300'
+                  : 'text-zinc-700 active:bg-zinc-100 dark:text-zinc-300 dark:active:bg-zinc-800/60'"
                 :aria-current="isActive(item.to, item.key) ? 'page' : undefined"
                 @click="close"
               >
@@ -118,7 +118,7 @@ onUnmounted(() => {
                 </svg>
                 <span
                   class="text-sm font-medium"
-                  :class="isActive(item.to, item.key) ? 'text-violet-200' : 'text-zinc-200'"
+                  :class="isActive(item.to, item.key) ? 'text-violet-700 dark:text-violet-200' : 'text-zinc-900 dark:text-zinc-200'"
                 >
                   {{ item.label }}
                 </span>

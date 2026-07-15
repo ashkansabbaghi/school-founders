@@ -47,6 +47,10 @@
   "locale": {
     "switchTo": "Switch to {language}"
   },
+  "theme": {
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
+  },
   "onboarding": {
     "title": "Initial setup",
     "stepIndicator": "Step {current} of {total}",

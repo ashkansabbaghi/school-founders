@@ -46,12 +46,12 @@ async function onDelete(id: string) {
     :is="embedded ? 'div' : 'section'"
     :class="embedded ? undefined : 'ui-card overflow-hidden'"
   >
-    <header class="flex items-start justify-between gap-4 border-b border-zinc-800 px-4 py-4 sm:px-6">
+    <header class="flex items-start justify-between gap-4 ui-card-header">
       <div>
-        <h2 class="text-lg font-semibold text-zinc-100">
+        <h2 class="text-lg font-semibold">
           {{ $t('fixedCosts.title') }}
         </h2>
-        <p class="mt-1 text-sm text-zinc-400">
+        <p class="mt-1 text-sm ui-text-muted">
           {{ $t('fixedCosts.subtitle') }}
         </p>
       </div>

@@ -19,7 +19,7 @@ function openDrawer() {
 
 <template>
   <nav
-    class="app-bottom-nav fixed inset-x-0 bottom-0 z-50 border-t border-zinc-800/80 bg-zinc-950/90 backdrop-blur-md md:hidden"
+    class="app-bottom-nav fixed inset-x-0 bottom-0 z-50 border-t border-zinc-200 bg-white/90 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/90 md:hidden"
     :aria-label="$t('nav.ariaLabel')"
   >
     <div class="mx-auto flex max-w-lg items-stretch justify-around px-1">
@@ -29,8 +29,8 @@ function openDrawer() {
         :to="item.to"
         class="relative flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg px-1 py-2 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500/50"
         :class="isActive(item.to, item.key)
-          ? 'bg-violet-500/15 text-violet-300'
-          : 'text-zinc-500 active:bg-zinc-800/40 active:text-zinc-300'"
+          ? 'bg-violet-500/15 text-violet-700 dark:text-violet-300'
+          : 'text-zinc-500 active:bg-zinc-100 active:text-zinc-700 dark:active:bg-zinc-800/40 dark:active:text-zinc-300'"
         :aria-current="isActive(item.to, item.key) ? 'page' : undefined"
       >
         <span
@@ -52,7 +52,7 @@ function openDrawer() {
         </svg>
         <span
           class="w-full truncate text-center text-[11px] leading-tight"
-          :class="isActive(item.to, item.key) ? 'font-semibold text-violet-200' : 'font-medium'"
+          :class="isActive(item.to, item.key) ? 'font-semibold text-violet-700 dark:text-violet-200' : 'font-medium'"
         >
           {{ item.shortLabel }}
         </span>
@@ -62,8 +62,8 @@ function openDrawer() {
         type="button"
         class="relative flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg px-1 py-2 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500/50"
         :class="moreActive
-          ? 'bg-violet-500/15 text-violet-300'
-          : 'text-zinc-500 active:bg-zinc-800/40 active:text-zinc-300'"
+          ? 'bg-violet-500/15 text-violet-700 dark:text-violet-300'
+          : 'text-zinc-500 active:bg-zinc-100 active:text-zinc-700 dark:active:bg-zinc-800/40 dark:active:text-zinc-300'"
         :aria-expanded="drawerOpen"
         :aria-controls="'app-more-drawer'"
         @click="openDrawer"
@@ -87,7 +87,7 @@ function openDrawer() {
         </svg>
         <span
           class="w-full truncate text-center text-[11px] leading-tight"
-          :class="moreActive ? 'font-semibold text-violet-200' : 'font-medium'"
+          :class="moreActive ? 'font-semibold text-violet-700 dark:text-violet-200' : 'font-medium'"
         >
           {{ $t('nav.moreShort') }}
         </span>

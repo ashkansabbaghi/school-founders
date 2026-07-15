@@ -47,6 +47,10 @@
   "locale": {
     "switchTo": "تغییر به {language}"
   },
+  "theme": {
+    "switchToLight": "تغییر به تم روشن",
+    "switchToDark": "تغییر به تم تاریک"
+  },
   "onboarding": {
     "title": "راه‌اندازی اولیه",
     "stepIndicator": "مرحله {current} از {total}",

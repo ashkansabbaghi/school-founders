@@ -20,7 +20,7 @@ function switchLocale() {
   <button
     v-if="alternateLocale"
     type="button"
-    class="inline-flex min-h-10 min-w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/80 p-2 text-zinc-400 transition-colors duration-200 hover:bg-zinc-800/60 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50 sm:min-h-0 sm:min-w-0"
+    class="inline-flex min-h-10 min-w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white/80 p-2 text-zinc-500 transition-colors duration-200 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50 dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200 sm:min-h-0 sm:min-w-0"
     :aria-label="t('locale.switchTo', { language: alternateLabel })"
     :title="t('locale.switchTo', { language: alternateLabel })"
     @click="switchLocale"

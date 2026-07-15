@@ -82,15 +82,15 @@ function schoolLabel(schoolId: string): string {
           {{ cost.label.charAt(0) }}
         </div>
         <div class="min-w-0 flex-1">
-          <div class="font-medium text-zinc-100">
+          <div class="font-medium">
             {{ cost.label }}
           </div>
-          <div class="truncate text-sm text-zinc-400">
+          <div class="truncate text-sm ui-text-muted">
             {{ schoolLabel(cost.schoolId) }}
           </div>
         </div>
         <div class="flex items-center justify-between gap-3 sm:contents">
-          <div class="shrink-0 text-sm font-semibold text-zinc-100 sm:order-3">
+          <div class="shrink-0 text-sm font-semibold sm:order-3">
             {{ formatCurrency(cost.amount) }}
           </div>
           <div class="flex shrink-0 gap-2 sm:order-4">

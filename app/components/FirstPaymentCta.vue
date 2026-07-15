@@ -36,10 +36,10 @@ defineExpose({ refresh })
     role="status"
   >
     <div>
-      <p class="font-medium text-zinc-100">
+      <p class="font-medium">
         {{ t('onboarding.firstPaymentCta.title') }}
       </p>
-      <p class="mt-1 text-sm text-zinc-400">
+      <p class="mt-1 text-sm ui-text-muted">
         {{ t('onboarding.firstPaymentCta.subtitle') }}
       </p>
     </div>

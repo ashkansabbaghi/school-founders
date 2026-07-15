@@ -62,15 +62,6 @@ watch(showPicker, (open) => {
     class="academic-year-field"
     :class="{ 'academic-year-field--compact': compact }"
   >
-    <!-- <label
-      v-if="label"
-      class="ui-label"
-      :for="id"
-    >
-      {{ label }}
-    </label> -->
-
-    <!-- <div class="academic-year-field__control"> -->
       <input
         :id="id"
         :value="modelValue"
@@ -82,7 +73,6 @@ watch(showPicker, (open) => {
         @click="openPicker"
         @keydown.enter.prevent="openPicker"
       >
-    <!-- </div> -->
 
     <Teleport to="body">
       <div
@@ -129,13 +119,18 @@ watch(showPicker, (open) => {
 .academic-year-field__input {
   width: 100%;
   border-radius: 0.5rem;
-  border: 1px solid rgb(63 63 70 / 0.8);
-  background: rgb(39 39 42 / 0.5);
+  border: 1px solid var(--app-border-strong);
+  background-color: var(--app-surface-input);
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: rgb(244 244 245);
+  color: var(--app-text);
   cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.academic-year-field__input::placeholder {
+  color: var(--app-text-muted);
 }
 
 .academic-year-field__input:focus {
@@ -148,7 +143,7 @@ watch(showPicker, (open) => {
   position: fixed;
   inset: 0;
   z-index: 119;
-  background: rgb(9 9 11 / 0.75);
+  background: var(--app-modal-overlay);
 }
 
 .academic-year-field__dialog {
@@ -162,10 +157,14 @@ watch(showPicker, (open) => {
   flex-direction: column;
   overflow: hidden;
   border-radius: 0.5rem;
-  border: 1px solid #52525b;
-  background: #27272a;
-  box-shadow: 0 10px 40px rgb(0 0 0 / 0.45);
+  border: 1px solid var(--app-border-strong);
+  background: var(--app-surface-elevated);
+  box-shadow: 0 10px 40px rgb(0 0 0 / 0.12);
   transform: translate(-50%, -50%);
+}
+
+:global(html.dark) .academic-year-field__dialog {
+  box-shadow: 0 10px 40px rgb(0 0 0 / 0.45);
 }
 
 .academic-year-field__years {
@@ -186,18 +185,18 @@ watch(showPicker, (open) => {
   text-align: center;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: #e4e4e7;
+  color: var(--app-text-secondary);
   transition: background-color 150ms ease, color 150ms ease;
 }
 
 .academic-year-field__year-button:hover {
   background: rgb(139 92 246 / 0.2);
-  color: #fafafa;
+  color: var(--app-text);
 }
 
 .academic-year-field__year--selected .academic-year-field__year-button {
   background: rgb(139 92 246 / 0.2);
-  color: #fafafa;
+  color: var(--app-text);
 }
 
 .academic-year-field--compact {
