@@ -340,7 +340,9 @@
       "schoolHasStudentTransactions": "Cannot delete school with existing student transactions",
       "schoolHasEmployeeTransactions": "Cannot delete school with existing employee transactions",
       "studentHasTransactions": "Cannot delete student with existing transactions",
-      "employeeHasTransactions": "Cannot delete employee with existing transactions"
+      "employeeHasTransactions": "Cannot delete employee with existing transactions",
+      "duplicateStudentNationalCode": "National code \"{nationalCode}\" is already registered for another student",
+      "duplicateEmployeeNationalCode": "National code \"{nationalCode}\" is already registered for another employee"
     },
     "relation": {
       "studentNotInSchool": "Student does not belong to the provided school",
@@ -370,6 +372,7 @@
     "backToFinance": "← Back to Finance Dashboard",
     "allSchools": "All schools",
     "allGrades": "All grades",
+    "selectGrade": "Select a grade",
     "allStatuses": "All statuses",
     "addStudent": "Add Student",
     "addButtonLabel": "Add student",

@@ -7,7 +7,7 @@ const { toast } = useAppToast()
     <Transition name="toast-slide">
       <div
         v-if="toast"
-        class="app-toast pointer-events-none fixed inset-x-0 z-50 flex justify-center px-4 sm:px-6"
+        class="app-toast pointer-events-none fixed inset-x-0 z-[70] flex justify-center px-4 sm:px-6"
       >
         <div
           :class="toast.kind === 'success' ? 'ui-alert-success' : 'ui-alert-error'"

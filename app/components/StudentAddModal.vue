@@ -12,7 +12,9 @@ const emit = defineEmits<{
 }>()
 
 const financeStore = useFinanceStore()
-const { schools, isSubmitting } = storeToRefs(financeStore)
+const { schools, isSubmitting, submitError } = storeToRefs(financeStore)
+
+const gradeOptions = ['7', '8', '9', '10', '11', '12']
 
 const form = reactive({
   fullName: '',
@@ -31,7 +33,7 @@ const canSubmit = computed(() =>
     form.fullName.trim()
     && form.nationalCode.trim()
     && form.studentId.trim()
-    && form.grade.trim()
+    && form.grade
     && form.schoolId
     && form.fullPrice !== ''
     && Number(form.fullPrice) > 0
@@ -137,6 +139,13 @@ onUnmounted(() => {
       </header>
 
       <div class="scrollbar-thin px-4 py-5 sm:max-h-[calc(100vh-8rem)] sm:overflow-y-auto sm:px-6">
+        <div
+          v-if="submitError"
+          class="ui-alert-error mb-4"
+          role="alert"
+        >
+          {{ submitError }}
+        </div>
         <form
           class="grid gap-4 sm:grid-cols-2"
           @submit.prevent="submit"
@@ -171,12 +180,18 @@ onUnmounted(() => {
           </label>
           <label class="block space-y-1">
             <span class="ui-label">{{ $t('students.fields.grade') }}</span>
-            <input
+            <select
               v-model="form.grade"
-              type="text"
               required
               class="ui-input"
             >
+              <option value="" disabled>
+                {{ $t('students.selectGrade') }}
+              </option>
+              <option v-for="grade in gradeOptions" :key="grade" :value="grade">
+                {{ grade }}
+              </option>
+            </select>
           </label>
           <label class="block space-y-1">
             <span class="ui-label">{{ $t('students.fields.school') }}</span>

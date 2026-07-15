@@ -10,6 +10,7 @@ import { db } from '../database'
 import {
   assertNoEmployeeDependents,
   assertSchoolExists,
+  assertUniqueEmployeeNationalCode,
 } from '../validation'
 
 export async function listEmployees(schoolId?: string): Promise<Employee[]> {
@@ -37,11 +38,15 @@ export async function saveEmployee(input: {
   const schoolId = assertNonEmptyString(input.schoolId, 'schoolId')
   await assertSchoolExists(schoolId)
 
+  const id = input.id?.trim() || crypto.randomUUID()
+  const nationalCode = assertNationalCode(input.nationalCode)
+  await assertUniqueEmployeeNationalCode(nationalCode, id)
+
   const employee: Employee = {
-    id: input.id?.trim() || crypto.randomUUID(),
+    id,
     schoolId,
     fullName: assertNonEmptyString(input.fullName, 'fullName'),
-    nationalCode: assertNationalCode(input.nationalCode),
+    nationalCode,
     employeeId: assertNonEmptyString(input.employeeId, 'employeeId'),
     role: assertNonEmptyString(input.role, 'role'),
     baseSalary: assertPositiveInteger(input.baseSalary, 'baseSalary'),

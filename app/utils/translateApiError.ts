@@ -39,6 +39,9 @@ function translateStatusMessage(
   if (params?.employeeId !== undefined) {
     interpolation.employeeId = params.employeeId
   }
+  if (params?.nationalCode !== undefined) {
+    interpolation.nationalCode = params.nationalCode
+  }
   if (params?.values !== undefined) {
     interpolation.values = params.values
   }

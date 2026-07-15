@@ -12,7 +12,7 @@ import type { DirectoryBackupRecord } from '#shared/types/directoryBackup'
 import type { MetaRecord } from '#shared/types/meta'
 
 export const DB_NAME = 'pardisan'
-export const DB_VERSION = 2
+export const DB_VERSION = 3
 
 export class PardisanDatabase extends Dexie {
   schools!: EntityTable<School, 'id'>
@@ -41,8 +41,8 @@ export class PardisanDatabase extends Dexie {
 
     this.version(DB_VERSION).stores({
       schools: 'id',
-      students: 'id, schoolId',
-      employees: 'id, schoolId',
+      students: 'id, schoolId, nationalCode',
+      employees: 'id, schoolId, nationalCode',
       studentTransactions: 'id, studentId, schoolId, termYear',
       employeeTransactions: 'id, employeeId, schoolId, termYear',
       fixedCosts: 'id, schoolId, termYear',

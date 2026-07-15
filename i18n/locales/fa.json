@@ -340,7 +340,9 @@
       "schoolHasStudentTransactions": "امکان حذف مدرسه با تراکنش دانش‌آموز موجود وجود ندارد",
       "schoolHasEmployeeTransactions": "امکان حذف مدرسه با تراکنش پرسنل موجود وجود ندارد",
       "studentHasTransactions": "امکان حذف دانش‌آموز با تراکنش موجود وجود ندارد",
-      "employeeHasTransactions": "امکان حذف پرسنل با تراکنش موجود وجود ندارد"
+      "employeeHasTransactions": "امکان حذف پرسنل با تراکنش موجود وجود ندارد",
+      "duplicateStudentNationalCode": "کد ملی «{nationalCode}» قبلاً برای دانش‌آموز دیگری ثبت شده است",
+      "duplicateEmployeeNationalCode": "کد ملی «{nationalCode}» قبلاً برای پرسنل دیگری ثبت شده است"
     },
     "relation": {
       "studentNotInSchool": "دانش‌آموز به مدرسه انتخاب‌شده تعلق ندارد",
@@ -370,6 +372,7 @@
     "backToFinance": "بازگشت به داشبورد مالی →",
     "allSchools": "همه مدارس",
     "allGrades": "همه پایه‌ها",
+    "selectGrade": "یک پایه انتخاب کنید",
     "allStatuses": "همه وضعیت‌ها",
     "addStudent": "افزودن دانش‌آموز",
     "addButtonLabel": "افزودن دانش‌آموز",

@@ -79,6 +79,7 @@ export const useFinanceStore = defineStore('finance', {
     summary: null as FinanceSummary | null,
     status: 'idle' as FetchStatus,
     submitStatus: 'idle' as SubmitStatus,
+    submitError: null as string | null,
     error: null as string | null,
     profileHydrated: false,
     initialized: false,
@@ -218,9 +219,7 @@ export const useFinanceStore = defineStore('finance', {
         notifyFeedback('success', getTranslator()('messages.studentLogged'))
       }
       catch (error) {
-        this.submitStatus = 'error'
-        notifyFeedback('error', translateApiError(error, getTranslator()))
-        throw error
+        this.handleSubmitError(error)
       }
     },
 
@@ -239,31 +238,38 @@ export const useFinanceStore = defineStore('finance', {
         notifyFeedback('success', getTranslator()('messages.employeeLogged'))
       }
       catch (error) {
-        this.submitStatus = 'error'
-        notifyFeedback('error', translateApiError(error, getTranslator()))
-        throw error
+        this.handleSubmitError(error)
       }
     },
 
     clearSubmitFeedback() {
       this.submitStatus = 'idle'
+      this.submitError = null
+    },
+
+    handleSubmitError(error: unknown): never {
+      const message = translateApiError(error, getTranslator())
+      this.submitStatus = 'error'
+      this.submitError = message
+      notifyFeedback('error', message)
+      throw error
     },
 
     async saveStudent(payload: Omit<Student, 'id'> & { id?: string }) {
       this.submitStatus = 'submitting'
+      this.submitError = null
 
       try {
         const student = await saveStudentRecord(payload)
 
         await this.fetchMasterData()
         this.submitStatus = 'idle'
+        this.submitError = null
         notifyFeedback('success', getTranslator()('messages.studentSaved'))
         return student
       }
       catch (error) {
-        this.submitStatus = 'error'
-        notifyFeedback('error', translateApiError(error, getTranslator()))
-        throw error
+        this.handleSubmitError(error)
       }
     },
 
@@ -278,9 +284,7 @@ export const useFinanceStore = defineStore('finance', {
         notifyFeedback('success', getTranslator()('messages.studentRemoved'))
       }
       catch (error) {
-        this.submitStatus = 'error'
-        notifyFeedback('error', translateApiError(error, getTranslator()))
-        throw error
+        this.handleSubmitError(error)
       }
     },
 
@@ -313,9 +317,7 @@ export const useFinanceStore = defineStore('finance', {
         notifyFeedback('success', getTranslator()('messages.studentPaymentUpdated'))
       }
       catch (error) {
-        this.submitStatus = 'error'
-        notifyFeedback('error', translateApiError(error, getTranslator()))
-        throw error
+        this.handleSubmitError(error)
       }
     },
 
@@ -330,27 +332,25 @@ export const useFinanceStore = defineStore('finance', {
         notifyFeedback('success', getTranslator()('messages.studentPaymentRemoved'))
       }
       catch (error) {
-        this.submitStatus = 'error'
-        notifyFeedback('error', translateApiError(error, getTranslator()))
-        throw error
+        this.handleSubmitError(error)
       }
     },
 
     async saveEmployee(payload: Omit<Employee, 'id'> & { id?: string }) {
       this.submitStatus = 'submitting'
+      this.submitError = null
 
       try {
         const employee = await saveEmployeeRecord(payload)
 
         await this.fetchMasterData()
         this.submitStatus = 'idle'
+        this.submitError = null
         notifyFeedback('success', getTranslator()('messages.employeeSaved'))
         return employee
       }
       catch (error) {
-        this.submitStatus = 'error'
-        notifyFeedback('error', translateApiError(error, getTranslator()))
-        throw error
+        this.handleSubmitError(error)
       }
     },
 
@@ -365,9 +365,7 @@ export const useFinanceStore = defineStore('finance', {
         notifyFeedback('success', getTranslator()('messages.employeeRemoved'))
       }
       catch (error) {
-        this.submitStatus = 'error'
-        notifyFeedback('error', translateApiError(error, getTranslator()))
-        throw error
+        this.handleSubmitError(error)
       }
     },
 
@@ -400,9 +398,7 @@ export const useFinanceStore = defineStore('finance', {
         notifyFeedback('success', getTranslator()('messages.employeeExpenseUpdated'))
       }
       catch (error) {
-        this.submitStatus = 'error'
-        notifyFeedback('error', translateApiError(error, getTranslator()))
-        throw error
+        this.handleSubmitError(error)
       }
     },
 
@@ -417,9 +413,7 @@ export const useFinanceStore = defineStore('finance', {
         notifyFeedback('success', getTranslator()('messages.employeeExpenseRemoved'))
       }
       catch (error) {
-        this.submitStatus = 'error'
-        notifyFeedback('error', translateApiError(error, getTranslator()))
-        throw error
+        this.handleSubmitError(error)
       }
     },
   },

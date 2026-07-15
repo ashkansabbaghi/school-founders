@@ -235,3 +235,39 @@ export async function assertNoEmployeeDependents(employeeId: string): Promise<vo
     })
   }
 }
+
+export async function assertUniqueStudentNationalCode(
+  nationalCode: string,
+  excludeId?: string,
+): Promise<void> {
+  const students = await readCollection<Student>('students.json')
+  const duplicate = students.find(
+    student => student.nationalCode === nationalCode && student.id !== excludeId?.trim(),
+  )
+
+  if (duplicate) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'errors.conflict.duplicateStudentNationalCode',
+      data: { nationalCode },
+    })
+  }
+}
+
+export async function assertUniqueEmployeeNationalCode(
+  nationalCode: string,
+  excludeId?: string,
+): Promise<void> {
+  const employees = await readCollection<Employee>('employees.json')
+  const duplicate = employees.find(
+    employee => employee.nationalCode === nationalCode && employee.id !== excludeId?.trim(),
+  )
+
+  if (duplicate) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'errors.conflict.duplicateEmployeeNationalCode',
+      data: { nationalCode },
+    })
+  }
+}

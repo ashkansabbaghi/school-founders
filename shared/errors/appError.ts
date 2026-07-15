@@ -5,6 +5,7 @@ export type AppErrorParams = {
   schoolId?: string
   studentId?: string
   employeeId?: string
+  nationalCode?: string
   values?: string
 }
 

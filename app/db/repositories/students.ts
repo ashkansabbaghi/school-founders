@@ -11,6 +11,7 @@ import { db } from '../database'
 import {
   assertNoStudentDependents,
   assertSchoolExists,
+  assertUniqueStudentNationalCode,
 } from '../validation'
 
 export async function listStudents(schoolId?: string): Promise<Student[]> {
@@ -40,11 +41,15 @@ export async function saveStudent(input: {
   const schoolId = assertNonEmptyString(input.schoolId, 'schoolId')
   await assertSchoolExists(schoolId)
 
+  const id = input.id?.trim() || crypto.randomUUID()
+  const nationalCode = assertNationalCode(input.nationalCode)
+  await assertUniqueStudentNationalCode(nationalCode, id)
+
   const student: Student = {
-    id: input.id?.trim() || crypto.randomUUID(),
+    id,
     schoolId,
     fullName: assertNonEmptyString(input.fullName, 'fullName'),
-    nationalCode: assertNationalCode(input.nationalCode),
+    nationalCode,
     studentId: assertNonEmptyString(input.studentId, 'studentId'),
     grade: assertNonEmptyString(input.grade, 'grade'),
     fullPrice: assertPositiveInteger(input.fullPrice, 'fullPrice'),

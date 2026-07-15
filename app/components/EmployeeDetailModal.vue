@@ -18,7 +18,7 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 const financeStore = useFinanceStore()
-const { schools, termYear, isSubmitting } = storeToRefs(financeStore)
+const { schools, termYear, isSubmitting, submitError } = storeToRefs(financeStore)
 
 const transactions = ref<EmployeeTransaction[]>([])
 const transactionSearchQuery = ref('')
@@ -347,6 +347,13 @@ onUnmounted(() => {
           <h3 class="ui-section-header mb-4">
             {{ $t('employees.employeeInfo') }}
           </h3>
+          <div
+            v-if="submitError"
+            class="ui-alert-error mb-4"
+            role="alert"
+          >
+            {{ submitError }}
+          </div>
           <form class="grid gap-4 sm:grid-cols-2" @submit.prevent="saveEmployeeViaStore">
             <label class="block space-y-1 sm:col-span-2">
               <span class="ui-label">{{ $t('employees.fields.fullName') }}</span>
