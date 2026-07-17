@@ -1,4 +1,5 @@
 import { META_KEYS } from '#shared/types/meta'
+import { getDirectoryBackupStatus } from '~/services/directoryBackup'
 import { db } from './database'
 import {
   DEMO_OPERATOR,
@@ -53,13 +54,52 @@ export async function isOnboardingComplete(): Promise<boolean> {
   return initialized === 'true'
 }
 
-export async function shouldShowFirstPaymentCta(): Promise<boolean> {
+export interface GettingStartedProgress {
+  school: boolean
+  student: boolean
+  payment: boolean
+  backup: boolean
+  completedCount: number
+  totalCount: 4
+  allComplete: boolean
+}
+
+export async function shouldShowGettingStartedChecklist(): Promise<boolean> {
   const value = await getMetaValue(META_KEYS.showFirstPaymentCta)
   return value === 'true'
 }
 
-export async function dismissFirstPaymentCta(): Promise<void> {
+export async function dismissGettingStartedChecklist(): Promise<void> {
   await setMetaValue(META_KEYS.showFirstPaymentCta, 'false')
+}
+
+export async function getGettingStartedProgress(): Promise<GettingStartedProgress> {
+  const [schoolCount, studentCount, paymentCount, lastBackupAt, directoryStatus]
+    = await Promise.all([
+      db.schools.count(),
+      db.students.count(),
+      db.studentTransactions.count(),
+      getMetaValue(META_KEYS.lastBackupAt),
+      getDirectoryBackupStatus(),
+    ])
+
+  const school = schoolCount >= 1
+  const student = studentCount >= 1
+  const payment = paymentCount >= 1
+  const backup = Boolean(lastBackupAt)
+    || (directoryStatus.connected && directoryStatus.permission === 'granted')
+
+  const completedCount = [school, student, payment, backup].filter(Boolean).length
+
+  return {
+    school,
+    student,
+    payment,
+    backup,
+    completedCount,
+    totalCount: 4,
+    allComplete: completedCount === 4,
+  }
 }
 
 export async function seedDemoData(): Promise<void> {

@@ -4,11 +4,8 @@ import { loadProfileSettings, resetToDemoData } from '~/db/bootstrap'
 import { getMetaValue } from '~/db/repositories/meta'
 import {
   exportBackup,
-  getStoragePersistenceInfo,
   importBackup,
   parseBackupFile,
-  requestStoragePersistence,
-  type StoragePersistenceInfo,
 } from '~/services/backup'
 import {
   getDirectoryBackupStatus,
@@ -28,19 +25,11 @@ useHead({
   title: () => t('settings.title'),
 })
 
-const installId = ref('')
 const lastBackupAt = ref<string | null>(null)
-const storageInfo = ref<StoragePersistenceInfo>({
-  supported: false,
-  persisted: null,
-  usageBytes: null,
-  quotaBytes: null,
-})
 
 const { show: showToast } = useAppToast()
 
 const status = ref<'idle' | 'loading' | 'submitting'>('idle')
-const copyState = ref<'idle' | 'copied'>('idle')
 
 const importInput = ref<HTMLInputElement | null>(null)
 const pendingImportFile = ref<File | null>(null)
@@ -64,14 +53,8 @@ function showSuccess(messageKey: string) {
   showToast('success', t(messageKey))
 }
 
-async function refreshProfileMeta() {
-  const profile = await loadProfileSettings()
-  installId.value = profile.installId
+async function refreshLastBackupAt() {
   lastBackupAt.value = await getMetaValue(META_KEYS.lastBackupAt)
-}
-
-async function refreshStorageInfo() {
-  storageInfo.value = await getStoragePersistenceInfo()
 }
 
 async function refreshDirectoryBackupStatus() {
@@ -83,31 +66,13 @@ async function refreshAll() {
 
   try {
     await financeStore.reload()
-    await refreshProfileMeta()
-    await refreshStorageInfo()
+    await refreshLastBackupAt()
     await refreshDirectoryBackupStatus()
     status.value = 'idle'
   }
   catch (error) {
     status.value = 'idle'
     showError(error)
-  }
-}
-
-async function copyInstallId() {
-  if (!installId.value) {
-    return
-  }
-
-  try {
-    await navigator.clipboard.writeText(installId.value)
-    copyState.value = 'copied'
-    window.setTimeout(() => {
-      copyState.value = 'idle'
-    }, 2000)
-  }
-  catch {
-    showError(new Error(t('settings.profile.copyFailed')))
   }
 }
 
@@ -154,7 +119,8 @@ async function confirmImport() {
   try {
     const content = await file.text()
     const raw = parseBackupFile(content)
-    await importBackup(raw, { preserveInstallId: installId.value })
+    const profile = await loadProfileSettings()
+    await importBackup(raw, { preserveInstallId: profile.installId })
     pendingImportFile.value = null
     await refreshAll()
     await refreshFounders()
@@ -235,7 +201,6 @@ async function handleResetToDemo() {
 
   try {
     const profile = await resetToDemoData()
-    installId.value = profile.installId
     financeStore.setUserName(profile.userName)
     financeStore.setTermYear(profile.termYear, { immediate: true })
     await financeStore.reload()
@@ -249,44 +214,6 @@ async function handleResetToDemo() {
   }
 }
 
-async function handleRequestPersistence() {
-  status.value = 'submitting'
-
-  try {
-    const granted = await requestStoragePersistence()
-    await refreshStorageInfo()
-
-    if (granted || storageInfo.value.persisted) {
-      showSuccess('settings.storage.persistGranted')
-    }
-    else {
-      showSuccess('settings.storage.persistDenied')
-    }
-
-    status.value = 'idle'
-  }
-  catch (error) {
-    status.value = 'idle'
-    showError(error)
-  }
-}
-
-function formatBytes(bytes: number | null): string {
-  if (bytes === null) {
-    return '—'
-  }
-
-  if (bytes < 1024) {
-    return `${bytes} B`
-  }
-
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KB`
-  }
-
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
 function formatTimestamp(iso: string | null): string {
   if (!iso) {
     return t('settings.backup.never')
@@ -297,29 +224,6 @@ function formatTimestamp(iso: string | null): string {
     timeStyle: 'short',
   }).format(new Date(iso))
 }
-
-const storageUsageLabel = computed(() => {
-  if (!storageInfo.value.supported) {
-    return t('settings.storage.unsupported')
-  }
-
-  return t('settings.storage.usage', {
-    used: formatBytes(storageInfo.value.usageBytes),
-    quota: formatBytes(storageInfo.value.quotaBytes),
-  })
-})
-
-const persistenceStatusLabel = computed(() => {
-  if (!storageInfo.value.supported) {
-    return t('settings.storage.unsupported')
-  }
-
-  if (storageInfo.value.persisted) {
-    return t('settings.storage.persisted')
-  }
-
-  return t('settings.storage.notPersisted')
-})
 
 const isPwaInstalled = computed(() => Boolean($pwa?.isPWAInstalled))
 const canInstallPwa = computed(() => Boolean($pwa?.showInstallPrompt))
@@ -412,86 +316,6 @@ onMounted(() => {
         {{ $t('settings.subtitle') }}
       </p>
     </header>
-
-    <section class="ui-card space-y-4 p-6">
-      <div>
-        <h2 class="ui-section-header">
-          {{ $t('settings.profile.title') }}
-        </h2>
-        <p class="mt-1 text-sm ui-text-muted">
-          {{ $t('settings.profile.subtitle') }}
-        </p>
-      </div>
-
-      <div class="space-y-1">
-        <span class="ui-label">{{ $t('settings.profile.installId') }}</span>
-        <div class="flex gap-2">
-          <input
-            :value="installId"
-            type="text"
-            class="ui-input font-mono text-xs"
-            readonly
-          >
-          <button
-            type="button"
-            class="ui-btn-secondary shrink-0"
-            :disabled="!installId"
-            @click="copyInstallId"
-          >
-            {{ copyState === 'copied' ? $t('settings.profile.copied') : $t('settings.profile.copy') }}
-          </button>
-        </div>
-        <p class="text-xs text-zinc-500">
-          {{ $t('settings.profile.installIdHint') }}
-        </p>
-      </div>
-    </section>
-
-    <section class="ui-card space-y-4 p-6">
-      <div>
-        <h2 class="ui-section-header">
-          {{ $t('settings.storage.title') }}
-        </h2>
-        <p class="mt-1 text-sm ui-text-muted">
-          {{ $t('settings.storage.subtitle') }}
-        </p>
-      </div>
-
-      <div
-        class="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200"
-        role="note"
-      >
-        {{ $t('settings.storage.warning') }}
-      </div>
-
-      <dl class="grid gap-3 text-sm sm:grid-cols-2">
-        <div class="ui-inset-panel px-4 py-3">
-          <dt class="text-zinc-500">
-            {{ $t('settings.storage.persistenceStatus') }}
-          </dt>
-          <dd class="mt-1 font-medium text-zinc-200">
-            {{ persistenceStatusLabel }}
-          </dd>
-        </div>
-        <div class="ui-inset-panel px-4 py-3">
-          <dt class="text-zinc-500">
-            {{ $t('settings.storage.usageLabel') }}
-          </dt>
-          <dd class="mt-1 font-medium text-zinc-200">
-            {{ storageUsageLabel }}
-          </dd>
-        </div>
-      </dl>
-
-      <button
-        type="button"
-        class="ui-btn-secondary"
-        :disabled="!storageInfo.supported || storageInfo.persisted === true || status === 'submitting'"
-        @click="handleRequestPersistence"
-      >
-        {{ $t('settings.storage.requestPersist') }}
-      </button>
-    </section>
 
     <section class="ui-card space-y-4 p-6">
       <div>

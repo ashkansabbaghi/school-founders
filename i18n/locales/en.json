@@ -16,6 +16,8 @@
     "financeShort": "Finance",
     "studentsShort": "Students",
     "employeesShort": "Staff",
+    "help": "Help",
+    "helpShort": "Help",
     "settings": "Settings",
     "settingsShort": "Settings",
     "more": "More",
@@ -96,12 +98,6 @@
       "next": "Continue",
       "back": "Back",
       "start": "Get started"
-    },
-    "firstPaymentCta": {
-      "title": "Record your first payment",
-      "subtitle": "Use the finance dashboard to log student income or staff expenses.",
-      "action": "Go to Finance",
-      "dismiss": "Dismiss"
     }
   },
   "home": {
@@ -113,6 +109,30 @@
     "addFounder": "Add founder"
   },
   "dashboard": {
+    "gettingStarted": {
+      "title": "Getting started",
+      "subtitle": "Complete these four steps so the app is ready for daily use.",
+      "progress": "{done}/{total}",
+      "dismiss": "Later",
+      "items": {
+        "school": {
+          "title": "Add a school",
+          "action": "Go to Schools"
+        },
+        "student": {
+          "title": "Add a student",
+          "action": "Go to Students"
+        },
+        "payment": {
+          "title": "Record your first payment",
+          "action": "Go to Finance"
+        },
+        "backup": {
+          "title": "Make a backup",
+          "action": "Go to Settings"
+        }
+      }
+    },
     "stats": {
       "title": "Key Reports",
       "subtitle": "Summary for term {termYear}",
@@ -514,30 +534,7 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Manage local profile, backups, and data storage.",
-    "profile": {
-      "title": "Local Profile",
-      "subtitle": "This device's install ID. Operator name and term year can be set from the bar at the top of the page.",
-      "installId": "Install ID",
-      "installIdHint": "Unique ID for this app install — useful for support or recovery.",
-      "copy": "Copy",
-      "copied": "Copied",
-      "copyFailed": "Could not copy install ID."
-    },
-    "storage": {
-      "title": "Local Storage",
-      "subtitle": "Browser data retention status and space usage.",
-      "warning": "Clearing browser data or uninstalling the app may delete all information. Regular backups are essential.",
-      "persistenceStatus": "Persistent storage",
-      "usageLabel": "Space used",
-      "usage": "{used} of {quota}",
-      "unsupported": "Browser does not support the Storage API",
-      "persisted": "Enabled — browser is less likely to evict data",
-      "notPersisted": "Disabled — data may be cleared when storage is low",
-      "requestPersist": "Request persistent storage",
-      "persistGranted": "Persistent storage enabled.",
-      "persistDenied": "Request denied — browser may still evict data."
-    },
+    "subtitle": "Manage backups and app installation.",
     "backup": {
       "title": "Backup & Restore",
       "subtitle": "Full JSON export of all data, or complete replacement from a backup file.",
@@ -588,6 +585,122 @@
       "desktopTitle": "Desktop",
       "desktopStep1": "Use the install icon in the address bar, or the browser menu.",
       "desktopStep2": "Confirm installation to open the app in its own window."
+    }
+  },
+  "help": {
+    "title": "Help",
+    "subtitle": "A quick guide to Pardisan and everyday use.",
+    "overview": {
+      "title": "What is Pardisan?",
+      "body": "Pardisan is an offline app for school financial management. All data stays on this device only, so you can work day to day without an internet connection."
+    },
+    "pillars": {
+      "offline": {
+        "title": "Offline",
+        "body": "Works without internet — log payments and expenses anytime."
+      },
+      "local": {
+        "title": "Local data",
+        "body": "Data stays on your device and is never sent to a server."
+      },
+      "backup": {
+        "title": "Backup",
+        "body": "Export a JSON backup from Settings and restore it on another device."
+      }
+    },
+    "academicYear": {
+      "title": "Academic year",
+      "body": "The bar at the top of the page shows the active academic year. This choice applies to the dashboard, reports, and financial entries across every page—confirm the year is correct before adding new data."
+    },
+    "map": {
+      "title": "App map",
+      "groups": {
+        "daily": "Everyday",
+        "finance": "Finance",
+        "org": "Structure",
+        "system": "System"
+      }
+    },
+    "sections": {
+      "title": "Main sections",
+      "items": {
+        "dashboard": {
+          "title": "Dashboard",
+          "body": "Financial snapshot and recent activity.",
+          "link": "Go to dashboard"
+        },
+        "finance": {
+          "title": "Finance",
+          "body": "Income, expenses, and founder reports.",
+          "link": "Go to finance"
+        },
+        "financeReport": {
+          "title": "Founders report",
+          "body": "Analytical income and expense report.",
+          "link": "Open report"
+        },
+        "financeFixedCosts": {
+          "title": "Fixed costs",
+          "body": "Recurring costs such as rent or utilities.",
+          "link": "Open fixed costs"
+        },
+        "financeStudentPayments": {
+          "title": "Student payments",
+          "body": "Tuition and other student receipts.",
+          "link": "Open payments"
+        },
+        "financeEmployeeExpenses": {
+          "title": "Staff expenses",
+          "body": "Salaries and other staff-related costs.",
+          "link": "Open staff expenses"
+        },
+        "students": {
+          "title": "Students",
+          "body": "Student list, details, and transactions.",
+          "link": "Go to students"
+        },
+        "employees": {
+          "title": "Staff",
+          "body": "Register staff and track related expenses.",
+          "link": "Go to staff"
+        },
+        "schools": {
+          "title": "Schools",
+          "body": "Schools and branches—the foundation for your data.",
+          "link": "Go to schools"
+        },
+        "founders": {
+          "title": "Founders",
+          "body": "Contacts and shareholders for reports.",
+          "link": "Go to founders"
+        },
+        "settings": {
+          "title": "Settings",
+          "body": "Backup, restore, and home-screen install.",
+          "link": "Go to settings"
+        }
+      }
+    },
+    "gettingStarted": {
+      "title": "Getting started",
+      "body": "For a quick setup, we recommend this order:",
+      "steps": {
+        "school": "Register a school or branch.",
+        "people": "Add students and staff.",
+        "finance": "Record payments and expenses.",
+        "backup": "Take a backup from Settings."
+      }
+    },
+    "backup": {
+      "title": "Backup and data safety",
+      "body": "Because data lives only on this device, export JSON regularly or enable folder backup so you can restore if something goes wrong.",
+      "warning": "Clearing browser data, removing the site, or switching devices can wipe everything—without a backup there is no recovery.",
+      "link": "Go to backup"
+    },
+    "install": {
+      "title": "Install to home screen",
+      "body": "You can add Pardisan to your device home screen like an app for faster offline access. Installation guidance is in Settings.",
+      "link": "Go to install"
     }
   },
   "pwa": {

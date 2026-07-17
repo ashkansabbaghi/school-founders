@@ -2,6 +2,7 @@
 const props = defineProps<{
   placeholder?: string
   ariaLabel?: string
+  disabled?: boolean
 }>()
 
 const modelValue = defineModel<string>({ default: '' })
@@ -19,5 +20,6 @@ const ariaLabelText = computed(() => props.ariaLabel ?? t('common.search'))
     class="ui-input"
     :placeholder="placeholderText"
     :aria-label="ariaLabelText"
+    :disabled="disabled"
   >
 </template>

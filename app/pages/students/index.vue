@@ -157,6 +157,7 @@ onMounted(async () => {
           <ListSearchInput
             v-model="searchQuery"
             :placeholder="$t('students.searchPlaceholder')"
+            :disabled="students.length === 0"
           />
         </div>
 
@@ -166,6 +167,7 @@ onMounted(async () => {
           <select
             v-model="selectedSchoolId"
             class="ui-input"
+            :disabled="students.length === 0"
           >
             <option value="">
               {{ $t('students.allSchools') }}
@@ -180,6 +182,7 @@ onMounted(async () => {
           <select
             v-model="selectedGrade"
             class="ui-input"
+            :disabled="students.length === 0"
           >
             <option value="">
               {{ $t('students.allGrades') }}
@@ -194,6 +197,7 @@ onMounted(async () => {
           <select
             v-model="selectedStatus"
             class="ui-input"
+            :disabled="students.length === 0"
           >
             <option value="">
               {{ $t('students.allStatuses') }}

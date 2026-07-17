@@ -50,6 +50,7 @@ function getInitials(name: string): string {
     <ListSearchInput
       v-model="searchQuery"
       :placeholder="$t('founders.searchPlaceholder')"
+      :disabled="founders.length === 0"
     />
 
     <ul

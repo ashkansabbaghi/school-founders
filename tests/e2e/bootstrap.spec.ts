@@ -22,11 +22,15 @@ test('first run shows onboarding wizard and can start with demo data', async ({ 
   await expect(page.getByText('مدرسه نمونه')).toBeVisible()
 })
 
-test('onboarding empty start shows first payment CTA on dashboard', async ({ page }) => {
+test('onboarding empty start shows getting started checklist on dashboard', async ({ page }) => {
   await completeOnboardingWizard(page, { startWithDemo: false })
 
-  await expect(page.getByText('اولین پرداخت را ثبت کنید')).toBeVisible()
-  await expect(page.getByRole('link', { name: 'رفتن به مالی' })).toBeVisible()
+  const checklist = page.getByRole('status')
+  await expect(checklist.getByText('شروع کار', { exact: true })).toBeVisible()
+  await expect(checklist.getByRole('link', { name: 'رفتن به مدارس' })).toBeVisible()
+  await expect(checklist.getByRole('link', { name: 'رفتن به دانش‌آموزان' })).toBeVisible()
+  await expect(checklist.getByRole('link', { name: 'رفتن به مالی' })).toBeVisible()
+  await expect(checklist.getByRole('link', { name: 'رفتن به تنظیمات' })).toBeVisible()
 })
 
 test('direct navigation works for localized routes after onboarding', async ({ page }) => {

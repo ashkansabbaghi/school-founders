@@ -72,7 +72,7 @@ onMounted(async () => {
       {{ recentLogsError }}
     </div>
 
-    <FirstPaymentCta />
+    <GettingStartedChecklist />
 
     <DashboardStats />
     <FoundersReportTable />

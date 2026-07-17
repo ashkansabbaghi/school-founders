@@ -6,7 +6,7 @@ export type AppNavItem = {
 }
 
 const PRIMARY_NAV_KEYS = ['dashboard', 'finance', 'students'] as const
-const DRAWER_NAV_KEYS = ['employees', 'schools', 'founders', 'settings'] as const
+const DRAWER_NAV_KEYS = ['employees', 'schools', 'founders', 'help', 'settings'] as const
 
 export function useAppNav() {
   const { t } = useI18n()
@@ -20,6 +20,7 @@ export function useAppNav() {
     { key: 'employees', to: localePath('/employees'), label: t('nav.employees'), shortLabel: t('nav.employeesShort') },
     { key: 'schools', to: localePath('/schools'), label: t('nav.schools'), shortLabel: t('nav.schoolsShort') },
     { key: 'founders', to: localePath('/founders'), label: t('nav.founders'), shortLabel: t('nav.foundersShort') },
+    { key: 'help', to: localePath('/help'), label: t('nav.help'), shortLabel: t('nav.helpShort') },
     { key: 'settings', to: localePath('/settings'), label: t('nav.settings'), shortLabel: t('nav.settingsShort') },
   ])
 

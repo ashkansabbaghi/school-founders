@@ -38,6 +38,7 @@ const { paginatedItems, meta, goNext, goPrevious } = usePagination(filteredSchoo
     <ListSearchInput
       v-model="searchQuery"
       :placeholder="$t('schools.searchPlaceholder')"
+      :disabled="schools.length === 0"
     />
 
     <ul

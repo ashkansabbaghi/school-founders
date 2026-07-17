@@ -447,6 +447,7 @@ onUnmounted(() => {
             v-model="transactionSearchQuery"
             class="mb-4"
             :placeholder="$t('employees.expensesSearchPlaceholder')"
+            :disabled="transactions.length === 0"
           />
 
           <div

@@ -63,6 +63,7 @@ const { paginatedItems, meta, goNext, goPrevious } = usePagination(filteredFixed
     <ListSearchInput
       v-model="searchQuery"
       :placeholder="$t('fixedCosts.searchPlaceholder')"
+      :disabled="fixedCosts.length === 0"
     />
 
     <ul
