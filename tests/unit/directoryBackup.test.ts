@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AppError } from '#shared/errors/appError'
 import {
   DIRECTORY_BACKUP_ID,
   type DirectoryBackupRecord,
@@ -223,9 +222,52 @@ describe('directoryBackup', () => {
     saveMockDirectoryHandle(handle)
 
     expect(await writeDirectoryBackup({ silent: true })).toBe(false)
+    expect(handle.requestPermission).toHaveBeenCalledWith({ mode: 'readwrite' })
 
     const status = await getDirectoryBackupStatus()
-    expect(status.lastError).toBe('Permission denied')
+    expect(status.lastError).toBe('PermissionState: denied')
+  })
+
+  it('requests permission when current state is denied', async () => {
+    await seedTestData()
+    const handle = createMockDirectoryHandle({
+      permission: 'denied',
+      requestResult: 'granted',
+    })
+    saveMockDirectoryHandle(handle)
+
+    expect(await writeDirectoryBackup({ silent: true })).toBe(true)
+    expect(handle.requestPermission).toHaveBeenCalledWith({ mode: 'readwrite' })
+  })
+
+  it('still requests permission when queryPermission throws', async () => {
+    await seedTestData()
+    const handle = createMockDirectoryHandle({
+      requestResult: 'granted',
+    })
+    handle.queryPermission.mockRejectedValue(
+      new DOMException('Permission check failed', 'NotAllowedError'),
+    )
+    saveMockDirectoryHandle(handle)
+
+    expect(await writeDirectoryBackup({ silent: true })).toBe(true)
+    expect(handle.requestPermission).toHaveBeenCalledWith({ mode: 'readwrite' })
+  })
+
+  it('records permission throw details in lastError', async () => {
+    await seedTestData()
+    const handle = createMockDirectoryHandle({
+      permission: 'prompt',
+    })
+    handle.requestPermission.mockRejectedValue(
+      new DOMException('User denied permission', 'NotAllowedError'),
+    )
+    saveMockDirectoryHandle(handle)
+
+    expect(await writeDirectoryBackup({ silent: true })).toBe(false)
+
+    const status = await getDirectoryBackupStatus()
+    expect(status.lastError).toBe('NotAllowedError: User denied permission')
   })
 
   it('throws when permission is denied outside silent mode', async () => {
@@ -236,7 +278,35 @@ describe('directoryBackup', () => {
     })
     saveMockDirectoryHandle(handle)
 
-    await expect(writeDirectoryBackup()).rejects.toBeInstanceOf(AppError)
+    await expect(writeDirectoryBackup()).rejects.toMatchObject({
+      statusMessage: 'errors.directoryBackup.permissionDenied',
+    })
+  })
+
+  it('maps picker AbortError to a cancelled AppError', async () => {
+    window.showDirectoryPicker = vi.fn().mockRejectedValue(
+      new DOMException('The user aborted a request.', 'AbortError'),
+    )
+
+    await expect(selectBackupDirectory()).rejects.toMatchObject({
+      statusMessage: 'errors.directoryBackup.cancelled',
+    })
+  })
+
+  it('maps picker NotAllowedError to permissionDenied and stores lastError when connected', async () => {
+    const existing = createMockDirectoryHandle()
+    saveMockDirectoryHandle(existing)
+
+    window.showDirectoryPicker = vi.fn().mockRejectedValue(
+      new DOMException('Permission denied', 'NotAllowedError'),
+    )
+
+    await expect(selectBackupDirectory()).rejects.toMatchObject({
+      statusMessage: 'errors.directoryBackup.permissionDenied',
+    })
+
+    const status = await getDirectoryBackupStatus()
+    expect(status.lastError).toBe('NotAllowedError: Permission denied')
   })
 
   it('records write failures without throwing in silent mode', async () => {
@@ -249,7 +319,7 @@ describe('directoryBackup', () => {
     expect(await writeDirectoryBackup({ silent: true })).toBe(false)
 
     const status = await getDirectoryBackupStatus()
-    expect(status.lastError).toBe('Disk full')
+    expect(status.lastError).toBe('Error: Disk full')
   })
 
   it('reconnects and refreshes permission state', async () => {

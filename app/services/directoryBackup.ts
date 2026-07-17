@@ -1,4 +1,4 @@
-import { createAppError } from '#shared/errors/appError'
+import { AppError, createAppError } from '#shared/errors/appError'
 import {
   DIRECTORY_BACKUP_ID,
   type DirectoryBackupPermission,
@@ -34,6 +34,62 @@ export function formatDailyBackupFilename(date = new Date()): string {
   return `${BACKUP_FILE_PREFIX}${formatLocalDateKey(date)}${BACKUP_FILE_SUFFIX}`
 }
 
+function toTechnicalErrorDetail(error: unknown): string {
+  if (error instanceof Error) {
+    return `${error.name}: ${error.message}`
+  }
+
+  return String(error)
+}
+
+function getErrorName(error: unknown): string | null {
+  if (error instanceof DOMException || error instanceof Error) {
+    return error.name
+  }
+
+  return null
+}
+
+function toDirectoryBackupError(
+  error: unknown,
+  fallback: 'pickerFailed' | 'writeFailed' = 'pickerFailed',
+): AppError {
+  if (error instanceof AppError) {
+    return error
+  }
+
+  const name = getErrorName(error)
+
+  if (name === 'AbortError') {
+    return createAppError({
+      statusCode: 400,
+      statusMessage: 'errors.directoryBackup.cancelled',
+    })
+  }
+
+  if (name === 'NotAllowedError' || name === 'SecurityError') {
+    return createAppError({
+      statusCode: 403,
+      statusMessage: 'errors.directoryBackup.permissionDenied',
+    })
+  }
+
+  return createAppError({
+    statusCode: fallback === 'writeFailed' ? 500 : 400,
+    statusMessage: `errors.directoryBackup.${fallback}`,
+  })
+}
+
+async function recordLastError(detail: string): Promise<void> {
+  const record = await getDirectoryBackupRecord()
+
+  if (!record) {
+    return
+  }
+
+  await updateDirectoryBackupRecord({ lastError: detail })
+}
+
 async function queryDirectoryPermission(
   handle: FileSystemDirectoryHandle,
 ): Promise<DirectoryBackupPermission> {
@@ -42,12 +98,39 @@ async function queryDirectoryPermission(
 
 async function ensureDirectoryPermission(
   handle: FileSystemDirectoryHandle,
-): Promise<boolean> {
-  if (await queryDirectoryPermission(handle) === 'granted') {
-    return true
-  }
+): Promise<{ granted: boolean, errorDetail?: string }> {
+  try {
+    let permission: DirectoryBackupPermission
 
-  return (await handle.requestPermission({ mode: 'readwrite' })) === 'granted'
+    try {
+      permission = await queryDirectoryPermission(handle)
+    }
+    catch {
+      // queryPermission can throw; still attempt an explicit request.
+      permission = 'prompt'
+    }
+
+    if (permission === 'granted') {
+      return { granted: true }
+    }
+
+    const result = await handle.requestPermission({ mode: 'readwrite' })
+
+    if (result === 'granted') {
+      return { granted: true }
+    }
+
+    return {
+      granted: false,
+      errorDetail: `PermissionState: ${result}`,
+    }
+  }
+  catch (error) {
+    return {
+      granted: false,
+      errorDetail: toTechnicalErrorDetail(error),
+    }
+  }
 }
 
 async function writePayloadToDirectory(
@@ -70,14 +153,6 @@ async function writePayloadToDirectory(
   }
 
   return { filename, dateKey }
-}
-
-function toErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message
-  }
-
-  return String(error)
 }
 
 async function buildStatusFromRecord(
@@ -149,19 +224,28 @@ export async function selectBackupDirectory(): Promise<DirectoryBackupStatus> {
     })
   }
 
-  const handle = await window.showDirectoryPicker({ mode: 'readwrite' })
-  await persistDirectoryHandle(handle)
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite' })
+    await persistDirectoryHandle(handle)
 
-  const wrote = await writeDirectoryBackup()
+    const wrote = await writeDirectoryBackup()
 
-  if (!wrote) {
-    throw createAppError({
-      statusCode: 500,
-      statusMessage: 'errors.directoryBackup.writeFailed',
-    })
+    if (!wrote) {
+      throw createAppError({
+        statusCode: 500,
+        statusMessage: 'errors.directoryBackup.writeFailed',
+      })
+    }
+
+    return getDirectoryBackupStatus()
   }
+  catch (error) {
+    if (!(error instanceof AppError)) {
+      await recordLastError(toTechnicalErrorDetail(error))
+    }
 
-  return getDirectoryBackupStatus()
+    throw toDirectoryBackupError(error, 'pickerFailed')
+  }
 }
 
 export async function reconnectBackupDirectory(): Promise<DirectoryBackupStatus> {
@@ -181,11 +265,11 @@ export async function reconnectBackupDirectory(): Promise<DirectoryBackupStatus>
     })
   }
 
-  const granted = await ensureDirectoryPermission(record.directoryHandle)
+  const permission = await ensureDirectoryPermission(record.directoryHandle)
 
-  if (!granted) {
+  if (!permission.granted) {
     await updateDirectoryBackupRecord({
-      lastError: 'Permission denied',
+      lastError: permission.errorDetail ?? 'Permission denied',
     })
 
     throw createAppError({
@@ -226,11 +310,11 @@ export async function writeDirectoryBackup(options?: {
     })
   }
 
-  const granted = await ensureDirectoryPermission(record.directoryHandle)
+  const permission = await ensureDirectoryPermission(record.directoryHandle)
 
-  if (!granted) {
+  if (!permission.granted) {
     await updateDirectoryBackupRecord({
-      lastError: 'Permission denied',
+      lastError: permission.errorDetail ?? 'Permission denied',
     })
 
     if (options?.silent) {
@@ -261,20 +345,15 @@ export async function writeDirectoryBackup(options?: {
     return true
   }
   catch (error) {
-    const message = toErrorMessage(error)
-
     await updateDirectoryBackupRecord({
-      lastError: message,
+      lastError: toTechnicalErrorDetail(error),
     })
 
     if (options?.silent) {
       return false
     }
 
-    throw createAppError({
-      statusCode: 500,
-      statusMessage: 'errors.directoryBackup.writeFailed',
-    })
+    throw toDirectoryBackupError(error, 'writeFailed')
   }
 }
 

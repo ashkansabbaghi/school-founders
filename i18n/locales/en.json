@@ -369,7 +369,9 @@
     "directoryBackup": {
       "unsupported": "Folder backup is not supported in this browser",
       "notConnected": "No backup folder is connected",
-      "permissionDenied": "Write permission for the backup folder was denied",
+      "cancelled": "Folder selection was cancelled",
+      "pickerFailed": "Could not open the folder picker",
+      "permissionDenied": "Write permission for the backup folder was denied. Try reconnecting or changing the folder.",
       "writeFailed": "Could not write the backup file"
     }
   },

@@ -137,10 +137,6 @@ function cancelImport() {
   pendingImportFile.value = null
 }
 
-function isUserCancelledPicker(error: unknown): boolean {
-  return error instanceof DOMException && error.name === 'AbortError'
-}
-
 async function handleSelectFolder() {
   status.value = 'submitting'
 
@@ -152,11 +148,8 @@ async function handleSelectFolder() {
   }
   catch (error) {
     status.value = 'idle'
-
-    if (!isUserCancelledPicker(error)) {
-      await refreshDirectoryBackupStatus()
-      showError(error)
-    }
+    await refreshDirectoryBackupStatus()
+    showError(error)
   }
 }
 
