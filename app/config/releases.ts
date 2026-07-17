@@ -16,8 +16,8 @@ export const CURRENT_RELEASE = {
       en: 'Persian calendar and Rial currency fields for more accurate financial entries',
     },
     {
-      fa: 'راهنمای شروع کار برای کاربران تازه‌وارد با داده نمونه یا شروع خالی',
-      en: 'Onboarding wizard for new users with demo data or a blank start',
+      fa: 'راهنمای شروع کار برای کاربران تازه‌وارد',
+      en: 'Onboarding wizard and getting-started checklist for new users',
     },
     {
       fa: 'نصب به‌صورت PWA و کار آفلاین با به‌روزرسانی خودکار',

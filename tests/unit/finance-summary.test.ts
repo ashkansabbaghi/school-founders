@@ -1,17 +1,16 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { DEMO_TERM_YEAR } from '~/db/demoData'
-import { seedDemoData } from '~/db/bootstrap'
 import { calculateFinanceSummary } from '~/services/finance'
+import { FIXTURE_TERM_YEAR, seedTestData } from '../helpers/fixtures'
 import { resetTestDatabase } from '../helpers/db'
 
 describe('calculateFinanceSummary', () => {
   beforeEach(async () => {
     await resetTestDatabase()
-    await seedDemoData()
+    await seedTestData()
   })
 
-  it('aggregates demo data for the active term year', async () => {
-    const summary = await calculateFinanceSummary({ termYear: DEMO_TERM_YEAR })
+  it('aggregates fixture data for the active term year', async () => {
+    const summary = await calculateFinanceSummary({ termYear: FIXTURE_TERM_YEAR })
 
     expect(summary.totalRevenue).toBe(20_250_000)
     expect(summary.totalOperationalExpenses).toBe(45_000_000)

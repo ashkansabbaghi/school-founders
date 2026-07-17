@@ -5,7 +5,7 @@ import {
   type DirectoryBackupRecord,
 } from '#shared/types/directoryBackup'
 import { META_KEYS } from '#shared/types/meta'
-import { seedDemoData } from '~/db/bootstrap'
+import { seedTestData } from '../helpers/fixtures'
 import { getMetaValue } from '~/db/repositories/meta'
 import {
   disconnectBackupDirectory,
@@ -155,7 +155,7 @@ describe('directoryBackup', () => {
   })
 
   it('persists a selected directory handle and writes an initial backup', async () => {
-    await seedDemoData()
+    await seedTestData()
     const handle = createMockDirectoryHandle()
     window.showDirectoryPicker = vi.fn().mockResolvedValue(handle)
 
@@ -171,7 +171,7 @@ describe('directoryBackup', () => {
   })
 
   it('overwrites the same-day backup file on subsequent writes', async () => {
-    await seedDemoData()
+    await seedTestData()
     const handle = createMockDirectoryHandle()
     saveMockDirectoryHandle(handle)
 
@@ -194,7 +194,7 @@ describe('directoryBackup', () => {
   })
 
   it('creates a separate file on the next local day', async () => {
-    await seedDemoData()
+    await seedTestData()
     const handle = createMockDirectoryHandle()
     saveMockDirectoryHandle(handle)
 
@@ -215,7 +215,7 @@ describe('directoryBackup', () => {
   })
 
   it('records permission errors without throwing in silent mode', async () => {
-    await seedDemoData()
+    await seedTestData()
     const handle = createMockDirectoryHandle({
       permission: 'prompt',
       requestResult: 'denied',
@@ -229,7 +229,7 @@ describe('directoryBackup', () => {
   })
 
   it('throws when permission is denied outside silent mode', async () => {
-    await seedDemoData()
+    await seedTestData()
     const handle = createMockDirectoryHandle({
       permission: 'prompt',
       requestResult: 'denied',
@@ -240,7 +240,7 @@ describe('directoryBackup', () => {
   })
 
   it('records write failures without throwing in silent mode', async () => {
-    await seedDemoData()
+    await seedTestData()
     const handle = createMockDirectoryHandle({
       writeError: new Error('Disk full'),
     })

@@ -88,7 +88,7 @@ Ensure GitHub Pages is enabled for this repository (Settings → Pages → Sourc
 
 ## Project structure
 
-- `app/db/` — IndexedDB schema, repositories, bootstrap, demo data
+- `app/db/` — IndexedDB schema, repositories, bootstrap
 - `app/services/` — client-side business logic (finance, backup, founders)
 - `shared/` — shared types, validation, and pure utilities
 - `tests/unit/` — Vitest unit tests

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { META_KEYS } from '#shared/types/meta'
-import { loadProfileSettings, resetToDemoData } from '~/db/bootstrap'
+import { loadProfileSettings } from '~/db/bootstrap'
 import { getMetaValue } from '~/db/repositories/meta'
 import {
   exportBackup,
@@ -188,28 +188,6 @@ async function handleSaveToFolder() {
   catch (error) {
     status.value = 'idle'
     await refreshDirectoryBackupStatus()
-    showError(error)
-  }
-}
-
-async function handleResetToDemo() {
-  if (!window.confirm(t('settings.backup.resetConfirm'))) {
-    return
-  }
-
-  status.value = 'submitting'
-
-  try {
-    const profile = await resetToDemoData()
-    financeStore.setUserName(profile.userName)
-    financeStore.setTermYear(profile.termYear, { immediate: true })
-    await financeStore.reload()
-    await refreshFounders()
-    showSuccess('messages.demoReset')
-    status.value = 'idle'
-  }
-  catch (error) {
-    status.value = 'idle'
     showError(error)
   }
 }
@@ -553,22 +531,6 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="ui-divider-t-only pt-4">
-        <h3 class="mb-2 text-sm font-medium ui-text-secondary">
-          {{ $t('settings.backup.resetTitle') }}
-        </h3>
-        <p class="mb-3 text-sm ui-text-muted">
-          {{ $t('settings.backup.resetSubtitle') }}
-        </p>
-        <button
-          type="button"
-          class="ui-btn-danger"
-          :disabled="status === 'submitting'"
-          @click="handleResetToDemo"
-        >
-          {{ $t('settings.backup.reset') }}
-        </button>
-      </div>
     </section>
   </main>
 </template>

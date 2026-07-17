@@ -80,18 +80,6 @@
         "subtitle": "Your name and academic year for this session.",
         "userNameHint": "Your name appears on reports and transaction logs.",
         "termYearHint": "Example: 1404-1405 — you can change this later from the bar at the top."
-      },
-      "3": {
-        "title": "Starting data",
-        "subtitle": "Start with sample data or from scratch.",
-        "demo": {
-          "title": "Start with demo data",
-          "description": "Sample school, students, staff, and transactions to explore the app."
-        },
-        "empty": {
-          "title": "Start empty",
-          "description": "No preloaded data — best when you have real records to enter."
-        }
       }
     },
     "actions": {
@@ -300,8 +288,7 @@
     "backupExported": "Backup file downloaded successfully.",
     "backupImported": "Data restored successfully.",
     "directoryBackupSaved": "Backup saved to the selected folder.",
-    "directoryBackupReconnected": "Folder access restored.",
-    "demoReset": "Data reset to demo state."
+    "directoryBackupReconnected": "Folder access restored."
   },
   "fields": {
     "name": "Name",
@@ -545,10 +532,6 @@
       "importConfirm": "All current data will be replaced with \"{filename}\". This cannot be undone.",
       "importConfirmAction": "Replace all data",
       "importCancel": "Cancel",
-      "resetTitle": "Reset to demo data",
-      "resetSubtitle": "Remove all real data and replace with anonymous demo data.",
-      "reset": "Reset",
-      "resetConfirm": "Are you sure? All current data will be deleted and replaced with demo data.",
       "folder": {
         "title": "Automatic folder backup",
         "subtitle": "Save a daily JSON file to a folder on this device. Changes are saved automatically after each edit.",

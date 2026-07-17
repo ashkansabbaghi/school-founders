@@ -12,7 +12,6 @@ const error = ref('')
 const form = reactive({
   userName: '',
   termYear: '1404-1405',
-  startWithDemo: true as boolean | null,
 })
 
 const canProceedStep2 = computed(() =>
@@ -20,7 +19,7 @@ const canProceedStep2 = computed(() =>
 )
 
 const canFinish = computed(() =>
-  form.startWithDemo !== null && !isSubmitting.value,
+  canProceedStep2.value && !isSubmitting.value,
 )
 
 function nextStep() {
@@ -33,12 +32,8 @@ function previousStep() {
   step.value -= 1
 }
 
-function selectDataOption(startWithDemo: boolean) {
-  form.startWithDemo = startWithDemo
-}
-
 async function finish() {
-  if (!canFinish.value || form.startWithDemo === null) {
+  if (!canFinish.value) {
     return
   }
 
@@ -49,7 +44,6 @@ async function finish() {
     await completeOnboarding({
       userName: form.userName.trim(),
       termYear: form.termYear.trim(),
-      startWithDemo: form.startWithDemo,
     })
 
     financeStore.setOnboardingComplete(true)
@@ -91,7 +85,7 @@ onUnmounted(() => {
     >
       <header class="ui-card-header py-5">
         <p class="text-xs font-medium uppercase tracking-wide text-violet-400">
-          {{ t('onboarding.stepIndicator', { current: step, total: 3 }) }}
+          {{ t('onboarding.stepIndicator', { current: step, total: 2 }) }}
         </p>
         <h1 class="mt-1 text-xl font-bold">
           {{ t(`onboarding.steps.${step}.title`) }}
@@ -128,9 +122,9 @@ onUnmounted(() => {
         </div>
 
         <form
-          v-else-if="step === 2"
+          v-else
           class="space-y-4"
-          @submit.prevent="canProceedStep2 && nextStep()"
+          @submit.prevent="finish"
         >
           <div>
             <label class="ui-label" for="onboarding-user-name">
@@ -165,40 +159,6 @@ onUnmounted(() => {
             </p>
           </div>
         </form>
-
-        <div v-else class="space-y-3">
-          <button
-            type="button"
-            class="w-full rounded-xl border p-4 text-start transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
-            :class="form.startWithDemo === true
-              ? 'border-violet-500/60 bg-violet-500/10'
-              : 'border-zinc-200 bg-zinc-50 hover:border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/40 dark:hover:border-zinc-600'"
-            @click="selectDataOption(true)"
-          >
-            <p class="font-medium">
-              {{ t('onboarding.steps.3.demo.title') }}
-            </p>
-            <p class="mt-1 text-sm ui-text-muted">
-              {{ t('onboarding.steps.3.demo.description') }}
-            </p>
-          </button>
-
-          <button
-            type="button"
-            class="w-full rounded-xl border p-4 text-start transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50"
-            :class="form.startWithDemo === false
-              ? 'border-violet-500/60 bg-violet-500/10'
-              : 'border-zinc-200 bg-zinc-50 hover:border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/40 dark:hover:border-zinc-600'"
-            @click="selectDataOption(false)"
-          >
-            <p class="font-medium">
-              {{ t('onboarding.steps.3.empty.title') }}
-            </p>
-            <p class="mt-1 text-sm ui-text-muted">
-              {{ t('onboarding.steps.3.empty.description') }}
-            </p>
-          </button>
-        </div>
       </div>
 
       <footer class="ui-divider-t-only flex items-center justify-between gap-3 px-4 py-4 sm:px-6">
@@ -214,10 +174,9 @@ onUnmounted(() => {
         <span v-else />
 
         <button
-          v-if="step < 3"
+          v-if="step < 2"
           type="button"
           class="ui-btn-primary"
-          :disabled="step === 2 && !canProceedStep2"
           @click="nextStep"
         >
           {{ t('onboarding.actions.next') }}

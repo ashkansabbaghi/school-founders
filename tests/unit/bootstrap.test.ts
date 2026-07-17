@@ -18,7 +18,7 @@ describe('bootstrap onboarding', () => {
     await resetTestDatabase()
   })
 
-  it('creates install profile without seeding demo data on first run', async () => {
+  it('creates install profile without seeding data on first run', async () => {
     await ensureInitialized()
 
     expect(await isOnboardingComplete()).toBe(false)
@@ -33,30 +33,12 @@ describe('bootstrap onboarding', () => {
     expect(installId).toBeTruthy()
   })
 
-  it('completes onboarding with demo data', async () => {
-    await ensureInitialized()
-
-    const profile = await completeOnboarding({
-      userName: 'Test Operator',
-      termYear: '1404-1405',
-      startWithDemo: true,
-    })
-
-    expect(profile.userName).toBe('Test Operator')
-    expect(await isOnboardingComplete()).toBe(true)
-    expect(await shouldShowGettingStartedChecklist()).toBe(false)
-
-    const founders = await db.founders.toArray()
-    expect(founders.length).toBeGreaterThan(0)
-  })
-
   it('completes onboarding with empty data and shows getting started checklist', async () => {
     await ensureInitialized()
 
     await completeOnboarding({
       userName: 'Empty Operator',
       termYear: '1403-1404',
-      startWithDemo: false,
     })
 
     expect(await isOnboardingComplete()).toBe(true)
@@ -76,7 +58,6 @@ describe('bootstrap onboarding', () => {
     const profile = await completeOnboarding({
       operatorName: 'Legacy Operator',
       termYear: '1404-1405',
-      startWithDemo: false,
     })
 
     expect(profile.userName).toBe('Legacy Operator')
@@ -87,7 +68,6 @@ describe('bootstrap onboarding', () => {
     await completeOnboarding({
       userName: 'Empty Operator',
       termYear: '1403-1404',
-      startWithDemo: false,
     })
 
     expect(await shouldShowGettingStartedChecklist()).toBe(true)
@@ -106,7 +86,6 @@ describe('getGettingStartedProgress', () => {
     await completeOnboarding({
       userName: 'Empty Operator',
       termYear: '1403-1404',
-      startWithDemo: false,
     })
 
     await expect(getGettingStartedProgress()).resolves.toEqual({
@@ -125,7 +104,6 @@ describe('getGettingStartedProgress', () => {
     await completeOnboarding({
       userName: 'Empty Operator',
       termYear: '1403-1404',
-      startWithDemo: false,
     })
 
     await db.schools.put({

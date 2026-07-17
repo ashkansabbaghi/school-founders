@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
-import { DEMO_IDS, getDemoData } from '../../app/db/demoData'
+import { FIXTURE_IDS, getTestData } from '../helpers/fixtures'
 import { clearIndexedDb, completeOnboardingWizard } from './helpers'
 
 test.beforeEach(async ({ page }) => {
@@ -11,7 +11,6 @@ test.beforeEach(async ({ page }) => {
 test('creates a founder while offline and keeps it after reload', async ({ page, context }) => {
   await completeOnboardingWizard(page)
   await page.goto('/founders')
-  await expect(page.getByText('مؤسس اول')).toBeVisible()
 
   await context.setOffline(true)
 
@@ -29,16 +28,14 @@ test('creates a founder while offline and keeps it after reload', async ({ page,
 
 test('imports a backup file from settings', async ({ page }) => {
   await completeOnboardingWizard(page)
-  await page.goto('/founders')
-  await expect(page.getByText('مؤسس اول')).toBeVisible()
 
-  const demo = getDemoData()
+  const fixture = getTestData()
   const backup = {
     schemaVersion: 1,
     dbVersion: 1,
     exportedAt: new Date().toISOString(),
     collections: {
-      ...demo,
+      ...fixture,
       founders: [
         {
           id: 'imported-founder-id',
@@ -73,6 +70,13 @@ test('imports a backup file from settings', async ({ page }) => {
 
 test('exports backup from settings without errors', async ({ page }) => {
   await completeOnboardingWizard(page)
+  await page.goto('/founders')
+
+  await page.getByRole('button', { name: 'افزودن بنیان‌گذار' }).click()
+  await page.getByRole('dialog', { name: 'افزودن بنیان‌گذار' }).getByLabel('نام').fill('بنیان‌گذار خروجی')
+  await page.getByRole('button', { name: 'افزودن بنیان‌گذار' }).last().click()
+  await expect(page.getByText('بنیان‌گذار خروجی')).toBeVisible()
+
   await page.goto('/settings')
 
   const downloadPromise = page.waitForEvent('download')
@@ -90,5 +94,10 @@ test('exports backup from settings without errors', async ({ page }) => {
   })
 
   expect(content.schemaVersion).toBe(1)
-  expect(content.collections.founders.some((founder: { id: string }) => founder.id === DEMO_IDS.founderA)).toBe(true)
+  expect(content.collections.founders.some(
+    (founder: { name: string }) => founder.name === 'بنیان‌گذار خروجی',
+  )).toBe(true)
+  expect(content.collections.founders.some(
+    (founder: { id: string }) => founder.id === FIXTURE_IDS.founderA,
+  )).toBe(false)
 })

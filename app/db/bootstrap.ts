@@ -1,14 +1,10 @@
 import { META_KEYS } from '#shared/types/meta'
 import { getDirectoryBackupStatus } from '~/services/directoryBackup'
 import { db } from './database'
-import {
-  DEMO_OPERATOR,
-  DEMO_TERM_YEAR,
-  getDemoData,
-} from './demoData'
 import { getMetaValue, setMetaValue, setMetaValues } from './repositories/meta'
 
 const LEGACY_OPERATOR_STORAGE_KEY = 'finance:operatorName'
+const DEFAULT_TERM_YEAR = '1404-1405'
 
 export interface ProfileSettings {
   installId: string
@@ -21,7 +17,6 @@ export interface CompleteOnboardingOptions {
   /** @deprecated Use `userName` instead. Kept for backward compatibility. */
   operatorName?: string
   termYear: string
-  startWithDemo: boolean
 }
 
 function resolveUserName(options: CompleteOnboardingOptions): string {
@@ -102,60 +97,6 @@ export async function getGettingStartedProgress(): Promise<GettingStartedProgres
   }
 }
 
-export async function seedDemoData(): Promise<void> {
-  const demo = getDemoData()
-
-  await db.transaction(
-    'rw',
-    [
-      db.schools,
-      db.students,
-      db.employees,
-      db.studentTransactions,
-      db.employeeTransactions,
-      db.fixedCosts,
-      db.founders,
-    ],
-    async () => {
-      await Promise.all([
-        db.schools.bulkPut(demo.schools),
-        db.students.bulkPut(demo.students),
-        db.employees.bulkPut(demo.employees),
-        db.studentTransactions.bulkPut(demo.studentTransactions),
-        db.employeeTransactions.bulkPut(demo.employeeTransactions),
-        db.fixedCosts.bulkPut(demo.fixedCosts),
-        db.founders.bulkPut(demo.founders),
-      ])
-    },
-  )
-}
-
-async function clearBusinessData(): Promise<void> {
-  await db.transaction(
-    'rw',
-    [
-      db.schools,
-      db.students,
-      db.employees,
-      db.studentTransactions,
-      db.employeeTransactions,
-      db.fixedCosts,
-      db.founders,
-    ],
-    async () => {
-      await Promise.all([
-        db.schools.clear(),
-        db.students.clear(),
-        db.employees.clear(),
-        db.studentTransactions.clear(),
-        db.employeeTransactions.clear(),
-        db.fixedCosts.clear(),
-        db.founders.clear(),
-      ])
-    },
-  )
-}
-
 async function ensureInstallId(): Promise<string> {
   const existing = await getMetaValue(META_KEYS.installId)
 
@@ -184,7 +125,7 @@ export async function loadProfileSettings(): Promise<ProfileSettings> {
   return {
     installId,
     userName: storedUserName ?? '',
-    termYear: termYear ?? DEMO_TERM_YEAR,
+    termYear: termYear ?? DEFAULT_TERM_YEAR,
   }
 }
 
@@ -214,14 +155,10 @@ export async function completeOnboarding(
 ): Promise<ProfileSettings> {
   const installId = await ensureInstallId()
   const userName = resolveUserName(options)
-  const termYear = options.termYear.trim() || DEMO_TERM_YEAR
+  const termYear = options.termYear.trim() || DEFAULT_TERM_YEAR
 
   if (!userName) {
     throw new Error('User name is required to complete onboarding.')
-  }
-
-  if (options.startWithDemo) {
-    await seedDemoData()
   }
 
   await setMetaValues({
@@ -229,34 +166,12 @@ export async function completeOnboarding(
     [META_KEYS.operatorName]: userName,
     [META_KEYS.termYear]: termYear,
     [META_KEYS.initialized]: 'true',
-    [META_KEYS.showFirstPaymentCta]: options.startWithDemo ? 'false' : 'true',
+    [META_KEYS.showFirstPaymentCta]: 'true',
   })
 
   return {
     installId,
     userName,
     termYear,
-  }
-}
-
-export async function resetToDemoData(): Promise<ProfileSettings> {
-  await clearBusinessData()
-  await seedDemoData()
-
-  const existingInstallId = await getMetaValue(META_KEYS.installId)
-  const installId = existingInstallId ?? crypto.randomUUID()
-
-  await setMetaValues({
-    [META_KEYS.installId]: installId,
-    [META_KEYS.operatorName]: DEMO_OPERATOR,
-    [META_KEYS.termYear]: DEMO_TERM_YEAR,
-    [META_KEYS.initialized]: 'true',
-    [META_KEYS.showFirstPaymentCta]: 'false',
-  })
-
-  return {
-    installId,
-    userName: DEMO_OPERATOR,
-    termYear: DEMO_TERM_YEAR,
   }
 }

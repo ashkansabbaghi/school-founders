@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { AppError } from '#shared/errors/appError'
 import { META_KEYS } from '#shared/types/meta'
-import { seedDemoData } from '~/db/bootstrap'
 import { getMetaValue, setMetaValue } from '~/db/repositories/meta'
 import {
   BACKUP_SCHEMA_VERSION,
@@ -10,6 +9,7 @@ import {
   parseBackupFile,
   validateBackupPayload,
 } from '~/services/backup'
+import { seedTestData } from '../helpers/fixtures'
 import { resetTestDatabase } from '../helpers/db'
 
 describe('backup', () => {
@@ -26,8 +26,8 @@ describe('backup', () => {
     expect(() => parseBackupFile('{not-json')).toThrow(AppError)
   })
 
-  it('round-trips demo data through export and import', async () => {
-    await seedDemoData()
+  it('round-trips data through export and import', async () => {
+    await seedTestData()
     await setMetaValue(META_KEYS.installId, 'install-test-123')
     await setMetaValue(META_KEYS.initialized, 'true')
 
@@ -48,7 +48,7 @@ describe('backup', () => {
   })
 
   it('rejects backups with broken foreign keys', async () => {
-    await seedDemoData()
+    await seedTestData()
     const exported = await createBackupPayload()
     const broken = structuredClone(exported)
     broken.collections.students[0]!.schoolId = 'missing-school'

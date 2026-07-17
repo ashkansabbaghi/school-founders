@@ -37,7 +37,6 @@ async function selectAcademicYear(
 interface CompleteOnboardingOptions {
   userName?: string
   termYear?: string
-  startWithDemo?: boolean
 }
 
 export async function completeOnboardingWizard(
@@ -47,7 +46,6 @@ export async function completeOnboardingWizard(
   const {
     userName = 'کاربر تست',
     termYear = '1404-1405',
-    startWithDemo = true,
   } = options
 
   await page.goto('/')
@@ -59,15 +57,6 @@ export async function completeOnboardingWizard(
 
   await dialog.getByLabel('نام شما').fill(userName)
   await selectAcademicYear(page, dialog, termYear)
-  await page.getByRole('button', { name: 'ادامه' }).click()
-
-  if (startWithDemo) {
-    await dialog.getByRole('button', { name: 'شروع با داده نمایشی' }).click()
-  }
-  else {
-    await dialog.getByRole('button', { name: 'شروع خالی' }).click()
-  }
-
   await dialog.getByRole('button', { name: 'شروع', exact: true }).click()
   await expect(dialog).not.toBeVisible()
 }
