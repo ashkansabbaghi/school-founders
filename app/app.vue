@@ -37,6 +37,7 @@ useHead({
           </div>
           <div class="flex shrink-0 items-center gap-2 md:hidden">
             <OfflineIndicator />
+            <HelpLink />
             <ThemeSwitcher />
             <LocaleSwitcher />
           </div>
@@ -45,6 +46,7 @@ useHead({
           <ContextBar class="min-w-0 flex-1 md:flex-none" />
           <div class="hidden items-center gap-2 md:flex md:gap-3">
             <OfflineIndicator />
+            <HelpLink />
             <ThemeSwitcher />
             <LocaleSwitcher />
           </div>
