@@ -4,12 +4,24 @@ import { expect } from '@playwright/test'
 export async function clearIndexedDb(page: Page): Promise<void> {
   await page.goto('/')
   await page.evaluate(async () => {
-    await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.deleteDatabase('pardisan')
+    const deleteDb = (name: string) => new Promise<void>((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(name)
       request.onsuccess = () => resolve()
       request.onerror = () => reject(request.error ?? new Error('Failed to delete IndexedDB'))
       request.onblocked = () => resolve()
     })
+
+    const databases = await indexedDB.databases?.() ?? []
+    const names = databases
+      .map(entry => entry.name)
+      .filter((name): name is string => Boolean(name?.startsWith('pardisan')))
+
+    // Legacy DB may exist without showing up in databases() on some engines.
+    if (!names.includes('pardisan')) {
+      names.push('pardisan')
+    }
+
+    await Promise.all(names.map(deleteDb))
   })
   await page.reload()
 }

@@ -12,6 +12,12 @@ test('creates a founder while offline and keeps it after reload', async ({ page,
   await completeOnboardingWizard(page)
   await page.goto('/founders')
 
+  // Workbox activates the service worker only after precaching completes,
+  // so waiting for `ready` guarantees offline navigation is fully cached.
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready
+  })
+
   await context.setOffline(true)
 
   await page.getByRole('button', { name: 'افزودن بنیان‌گذار' }).click()
@@ -68,6 +74,60 @@ test('imports a backup file from settings', async ({ page }) => {
   await expect(page.getByText('مؤسس اول')).toHaveCount(0)
 })
 
+test('keeps data isolated between two accounts across repeated switches', async ({ page }) => {
+  await completeOnboardingWizard(page, { userName: 'اکانت اول' })
+
+  // Seed a founder in the first account.
+  await page.goto('/founders')
+  await page.getByRole('button', { name: 'افزودن بنیان‌گذار' }).click()
+  await page.getByRole('dialog', { name: 'افزودن بنیان‌گذار' }).getByLabel('نام').fill('بنیان‌گذار اول')
+  await page.getByRole('button', { name: 'افزودن بنیان‌گذار' }).last().click()
+  await expect(page.getByText('بنیان‌گذار اول')).toBeVisible()
+
+  // Create and activate a second account from settings.
+  await page.goto('/settings')
+  await page.getByLabel('اکانت جدید').fill('اکانت دوم')
+  await page.getByRole('button', { name: 'ساخت اکانت' }).click()
+  await expect(page.getByText('اکانت جدید ساخته شد.')).toBeVisible()
+
+  const secondAccountRow = page.locator('li').filter({ hasText: 'اکانت دوم' })
+  await secondAccountRow.getByRole('button', { name: 'فعال‌سازی این اکانت' }).click()
+  await expect(page.getByText('اکانت «اکانت دوم» فعال شد.')).toBeVisible()
+
+  // The second account starts empty and gets its own founder.
+  await page.goto('/founders')
+  await expect(page.getByText('بنیان‌گذار اول')).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'افزودن بنیان‌گذار' }).click()
+  await page.getByRole('dialog', { name: 'افزودن بنیان‌گذار' }).getByLabel('نام').fill('بنیان‌گذار دوم')
+  await page.getByRole('button', { name: 'افزودن بنیان‌گذار' }).last().click()
+  await expect(page.getByText('بنیان‌گذار دوم')).toBeVisible()
+
+  // Switch back to the first account.
+  await page.goto('/settings')
+  const firstAccountRow = page.locator('li').filter({ hasText: 'اکانت اول' })
+  await firstAccountRow.getByRole('button', { name: 'فعال‌سازی این اکانت' }).click()
+  await expect(page.getByText('اکانت «اکانت اول» فعال شد.')).toBeVisible()
+
+  await page.goto('/founders')
+  await expect(page.getByText('بنیان‌گذار اول')).toBeVisible()
+  await expect(page.getByText('بنیان‌گذار دوم')).toHaveCount(0)
+
+  // Switch once more and confirm the second account still only has its own data.
+  await page.goto('/settings')
+  await secondAccountRow.getByRole('button', { name: 'فعال‌سازی این اکانت' }).click()
+  await expect(page.getByText('اکانت «اکانت دوم» فعال شد.')).toBeVisible()
+
+  await page.goto('/founders')
+  await expect(page.getByText('بنیان‌گذار دوم')).toBeVisible()
+  await expect(page.getByText('بنیان‌گذار اول')).toHaveCount(0)
+
+  // Data survives a full reload with the second account still active.
+  await page.reload()
+  await expect(page.getByText('بنیان‌گذار دوم')).toBeVisible()
+  await expect(page.getByText('بنیان‌گذار اول')).toHaveCount(0)
+})
+
 test('exports backup from settings without errors', async ({ page }) => {
   await completeOnboardingWizard(page)
   await page.goto('/founders')
@@ -93,7 +153,11 @@ test('exports backup from settings without errors', async ({ page }) => {
     return JSON.parse(Buffer.concat(chunks).toString('utf8'))
   })
 
-  expect(content.schemaVersion).toBe(1)
+  expect(content.schemaVersion).toBe(2)
+  expect(content.account).toMatchObject({
+    name: expect.any(String),
+    folderName: expect.any(String),
+  })
   expect(content.collections.founders.some(
     (founder: { name: string }) => founder.name === 'بنیان‌گذار خروجی',
   )).toBe(true)

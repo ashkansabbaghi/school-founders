@@ -38,6 +38,7 @@ const directoryStatus = ref<DirectoryBackupStatus>({
   supported: false,
   connected: false,
   directoryName: null,
+  accountFolderName: null,
   permission: null,
   lastWrittenAt: null,
   lastWrittenDate: null,
@@ -287,6 +288,8 @@ onMounted(() => {
         {{ $t('settings.subtitle') }}
       </p>
     </header>
+
+    <SettingsAccountManager @switched="refreshAll" />
 
     <section class="ui-card space-y-4 p-6">
       <div>

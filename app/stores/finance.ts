@@ -143,9 +143,33 @@ export const useFinanceStore = defineStore('finance', {
 
     async reload() {
       cancelDebouncedSummaryFetch()
+      this.profileHydrated = false
       this.initialized = false
       initPromise = null
       return this.ensureReady()
+    },
+
+    async resetForAccountSwitch() {
+      cancelDebouncedSummaryFetch()
+      this.profileHydrated = false
+      this.initialized = false
+      this.schools = []
+      this.students = []
+      this.employees = []
+      this.summary = null
+      this.status = 'idle'
+      this.error = null
+      this.submitStatus = 'idle'
+      this.submitError = null
+      initPromise = null
+
+      const { isOnboardingComplete } = await import('~/db/bootstrap')
+      const onboardingComplete = await isOnboardingComplete()
+      this.setOnboardingComplete(onboardingComplete)
+
+      if (onboardingComplete) {
+        return this.ensureReady()
+      }
     },
 
     async performInit() {

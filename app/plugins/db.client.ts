@@ -1,8 +1,10 @@
 import { ensureInitialized, isOnboardingComplete } from '~/db/bootstrap'
+import { initializeAccountContext } from '~/services/accountContext'
 
 export default defineNuxtPlugin({
   name: 'db',
   async setup() {
+    await initializeAccountContext()
     await ensureInitialized()
 
     const financeStore = useFinanceStore()

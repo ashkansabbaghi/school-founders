@@ -288,6 +288,10 @@
     "backupExported": "Backup file downloaded successfully.",
     "backupImported": "Data restored successfully.",
     "directoryBackupSaved": "Backup saved to the selected folder.",
+    "accountCreated": "Account created successfully.",
+    "accountSwitched": "Switched to account \"{name}\".",
+    "accountRenamed": "Account renamed successfully.",
+    "accountDeleted": "Account deleted successfully.",
     "directoryBackupReconnected": "Folder access restored."
   },
   "fields": {
@@ -373,6 +377,12 @@
       "pickerFailed": "Could not open the folder picker",
       "permissionDenied": "Write permission for the backup folder was denied. Try reconnecting or changing the folder.",
       "writeFailed": "Could not write the backup file"
+    },
+    "account": {
+      "nameRequired": "Account name is required",
+      "duplicateName": "An account named \"{values}\" already exists",
+      "notFound": "Account not found",
+      "cannotDeleteLast": "Cannot delete the last remaining account"
     }
   },
   "students": {
@@ -523,7 +533,24 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Manage backups and app installation.",
+    "subtitle": "Manage accounts, backups, and app installation.",
+    "accounts": {
+      "title": "Accounts",
+      "subtitle": "Each account keeps its own data and backup folder on this device.",
+      "activeBadge": "Active",
+      "lastBackup": "Last backup: {date}",
+      "never": "Never",
+      "switchAction": "Switch to this account",
+      "renameAction": "Rename",
+      "renameLabel": "New account name",
+      "namePlaceholder": "Account name",
+      "cancel": "Cancel",
+      "deleteConfirm": "Account \"{name}\" and all of its data on this device will be deleted. Backup files already saved in its folder are kept. This cannot be undone.",
+      "deleteConfirmAction": "Delete account",
+      "createLabel": "New account",
+      "createAction": "Create account",
+      "createHint": "The new account starts empty. Use \"Switch to this account\" to start working in it."
+    },
     "backup": {
       "title": "Backup & Restore",
       "subtitle": "Full JSON export of all data, or complete replacement from a backup file.",

@@ -1,10 +1,15 @@
 import Dexie from 'dexie'
-import { DB_NAME } from '~/db/database'
+import {
+  ACCOUNT_DB_NAME_PREFIX,
+  LEGACY_DB_NAME,
+  getActiveDatabaseOrNull,
+} from '~/db/database'
 import { writeDirectoryBackup } from '~/services/directoryBackup'
 
 export const DIRECTORY_BACKUP_DEBOUNCE_MS = 300
 
-const MUTATION_PART_PREFIX = `idb://${DB_NAME}/`
+const LEGACY_MUTATION_PART_PREFIX = `idb://${LEGACY_DB_NAME}/`
+const ACCOUNT_MUTATION_PART_PREFIX = `idb://${ACCOUNT_DB_NAME_PREFIX}`
 
 const BACKUP_BUSINESS_TABLES = new Set([
   'schools',
@@ -21,12 +26,12 @@ type StorageMutationParts = Record<string, unknown>
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 let storageListener: ((parts: StorageMutationParts) => void) | null = null
 
-export function parseTableNameFromMutationPart(part: string): string | null {
-  if (!part.startsWith(MUTATION_PART_PREFIX)) {
+export function parseDatabaseNameFromMutationPart(part: string): string | null {
+  if (!part.startsWith('idb://')) {
     return null
   }
 
-  const rest = part.slice(MUTATION_PART_PREFIX.length)
+  const rest = part.slice('idb://'.length)
   const slashIndex = rest.indexOf('/')
 
   if (slashIndex === -1) {
@@ -36,8 +41,53 @@ export function parseTableNameFromMutationPart(part: string): string | null {
   return rest.slice(0, slashIndex)
 }
 
+export function parseTableNameFromMutationPart(part: string): string | null {
+  let rest: string | null = null
+
+  if (part.startsWith(LEGACY_MUTATION_PART_PREFIX)) {
+    rest = part.slice(LEGACY_MUTATION_PART_PREFIX.length)
+  }
+  else if (part.startsWith(ACCOUNT_MUTATION_PART_PREFIX)) {
+    const afterPrefix = part.slice('idb://'.length)
+    const firstSlash = afterPrefix.indexOf('/')
+
+    if (firstSlash === -1) {
+      return null
+    }
+
+    rest = afterPrefix.slice(firstSlash + 1)
+  }
+
+  if (rest === null) {
+    return null
+  }
+
+  const slashIndex = rest.indexOf('/')
+
+  if (slashIndex === -1) {
+    return null
+  }
+
+  return rest.slice(0, slashIndex)
+}
+
+/**
+ * Schedule only for business-table mutations on the currently bound active account DB.
+ */
 export function shouldScheduleDirectoryBackup(parts: StorageMutationParts): boolean {
+  const active = getActiveDatabaseOrNull()
+
+  if (!active) {
+    return false
+  }
+
   for (const part of Object.keys(parts)) {
+    const dbName = parseDatabaseNameFromMutationPart(part)
+
+    if (dbName !== active.name) {
+      continue
+    }
+
     const tableName = parseTableNameFromMutationPart(part)
 
     if (tableName && BACKUP_BUSINESS_TABLES.has(tableName)) {

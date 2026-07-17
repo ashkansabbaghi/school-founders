@@ -11,9 +11,19 @@ import type { Founder } from '#shared/types/founder'
 import { META_KEYS } from '#shared/types/meta'
 import { DB_VERSION } from '~/db/database'
 import { db } from '~/db/database'
+import { getAccountById, getActiveAccountId } from '~/db/registry'
 import { listMeta, setMetaValue } from '~/db/repositories/meta'
 
-export const BACKUP_SCHEMA_VERSION = 1
+/** Current export schema. Imports also accept {@link LEGACY_BACKUP_SCHEMA_VERSION}. */
+export const BACKUP_SCHEMA_VERSION = 2
+
+/** Pre-multi-account backup files remain importable into the active account. */
+export const LEGACY_BACKUP_SCHEMA_VERSION = 1
+
+const SUPPORTED_BACKUP_SCHEMA_VERSIONS = new Set([
+  LEGACY_BACKUP_SCHEMA_VERSION,
+  BACKUP_SCHEMA_VERSION,
+])
 
 const BACKUP_COLLECTION_NAMES = [
   'schools',
@@ -38,10 +48,18 @@ export interface BackupCollections {
   meta: Record<string, string>
 }
 
+export interface BackupAccountInfo {
+  id: string
+  name: string
+  folderName: string
+}
+
 export interface BackupPayload {
   schemaVersion: number
   dbVersion: number
   exportedAt: string
+  /** Present on schema v2 exports; ignored on import (data always replaces the active account). */
+  account?: BackupAccountInfo
   collections: BackupCollections
 }
 
@@ -53,14 +71,18 @@ export interface StoragePersistenceInfo {
 }
 
 const BUSINESS_TABLES = [
-  db.schools,
-  db.students,
-  db.employees,
-  db.studentTransactions,
-  db.employeeTransactions,
-  db.fixedCosts,
-  db.founders,
+  'schools',
+  'students',
+  'employees',
+  'studentTransactions',
+  'employeeTransactions',
+  'fixedCosts',
+  'founders',
 ] as const
+
+function businessTables() {
+  return BUSINESS_TABLES.map(name => db.table(name))
+}
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -143,7 +165,10 @@ export function validateBackupPayload(raw: unknown): BackupPayload {
 
   const schemaVersion = raw.schemaVersion
 
-  if (typeof schemaVersion !== 'number' || schemaVersion !== BACKUP_SCHEMA_VERSION) {
+  if (
+    typeof schemaVersion !== 'number'
+    || !SUPPORTED_BACKUP_SCHEMA_VERSIONS.has(schemaVersion)
+  ) {
     throw createAppError({
       statusCode: 400,
       statusMessage: 'errors.backup.unsupportedSchemaVersion',
@@ -156,6 +181,32 @@ export function validateBackupPayload(raw: unknown): BackupPayload {
       statusCode: 400,
       statusMessage: 'errors.backup.invalidFormat',
     })
+  }
+
+  let account: BackupAccountInfo | undefined
+
+  if (schemaVersion >= BACKUP_SCHEMA_VERSION && raw.account !== undefined) {
+    if (!isPlainObject(raw.account)) {
+      throw createAppError({
+        statusCode: 400,
+        statusMessage: 'errors.backup.invalidFormat',
+      })
+    }
+
+    const { id, name, folderName } = raw.account
+
+    if (
+      typeof id !== 'string' || !id.trim()
+      || typeof name !== 'string' || !name.trim()
+      || typeof folderName !== 'string' || !folderName.trim()
+    ) {
+      throw createAppError({
+        statusCode: 400,
+        statusMessage: 'errors.backup.invalidFormat',
+      })
+    }
+
+    account = { id, name, folderName }
   }
 
   if (!isPlainObject(raw.collections)) {
@@ -277,6 +328,7 @@ export function validateBackupPayload(raw: unknown): BackupPayload {
     schemaVersion,
     dbVersion: typeof raw.dbVersion === 'number' ? raw.dbVersion : DB_VERSION,
     exportedAt: raw.exportedAt,
+    ...(account ? { account } : {}),
     collections: {
       schools,
       students,
@@ -300,6 +352,7 @@ export async function createBackupPayload(): Promise<BackupPayload> {
     fixedCosts,
     founders,
     meta,
+    activeAccountId,
   ] = await Promise.all([
     db.schools.toArray(),
     db.students.toArray(),
@@ -309,12 +362,26 @@ export async function createBackupPayload(): Promise<BackupPayload> {
     db.fixedCosts.toArray(),
     db.founders.toArray(),
     listMeta(),
+    getActiveAccountId(),
   ])
+
+  const activeAccount = activeAccountId
+    ? await getAccountById(activeAccountId)
+    : undefined
 
   return {
     schemaVersion: BACKUP_SCHEMA_VERSION,
     dbVersion: DB_VERSION,
     exportedAt: new Date().toISOString(),
+    ...(activeAccount
+      ? {
+          account: {
+            id: activeAccount.id,
+            name: activeAccount.name,
+            folderName: activeAccount.folderName,
+          },
+        }
+      : {}),
     collections: {
       schools,
       students,
@@ -359,7 +426,7 @@ export async function importBackup(
 
   await db.transaction(
     'rw',
-    [...BUSINESS_TABLES, db.meta],
+    [...businessTables(), db.meta],
     async () => {
       await Promise.all([
         db.schools.clear(),

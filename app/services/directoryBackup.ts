@@ -1,15 +1,30 @@
 import { AppError, createAppError } from '#shared/errors/appError'
 import {
-  DIRECTORY_BACKUP_ID,
+  ACCOUNT_JSON_SCHEMA_VERSION,
+  type Account,
+  type AccountJsonMeta,
+} from '#shared/types/account'
+import {
+  isLegacyDirectoryBackupRecord,
   type DirectoryBackupPermission,
   type DirectoryBackupRecord,
   type DirectoryBackupStatus,
+  type LegacyDirectoryBackupRecord,
 } from '#shared/types/directoryBackup'
 import { META_KEYS } from '#shared/types/meta'
 import {
+  clearBackupRootRecord,
+  getAccountById,
+  getActiveAccountId,
+  getBackupRootRecord,
+  saveBackupRootRecord,
+  type BackupRootRecord,
+} from '~/db/registry'
+import { isActiveDatabaseBound } from '~/db/database'
+import {
   clearDirectoryBackupRecord,
   getDirectoryBackupRecord,
-  saveDirectoryBackupRecord,
+  getRawDirectoryBackupRecord,
   updateDirectoryBackupRecord,
 } from '~/db/repositories/directoryBackup'
 import { setMetaValue } from '~/db/repositories/meta'
@@ -17,6 +32,7 @@ import { createBackupPayload } from '~/services/backup'
 
 const BACKUP_FILE_PREFIX = 'pardisan-backup-'
 const BACKUP_FILE_SUFFIX = '.json'
+const ACCOUNT_JSON_FILENAME = 'account.json'
 
 export function isDirectoryBackupSupported(): boolean {
   return typeof window !== 'undefined'
@@ -81,12 +97,6 @@ function toDirectoryBackupError(
 }
 
 async function recordLastError(detail: string): Promise<void> {
-  const record = await getDirectoryBackupRecord()
-
-  if (!record) {
-    return
-  }
-
   await updateDirectoryBackupRecord({ lastError: detail })
 }
 
@@ -133,42 +143,183 @@ async function ensureDirectoryPermission(
   }
 }
 
-async function writePayloadToDirectory(
-  handle: FileSystemDirectoryHandle,
-  payload: Awaited<ReturnType<typeof createBackupPayload>>,
-  date = new Date(),
-): Promise<{ filename: string, dateKey: string }> {
-  const dateKey = formatLocalDateKey(date)
-  const filename = formatDailyBackupFilename(date)
-  const fileHandle = await handle.getFileHandle(filename, { create: true })
+async function resolveActiveAccount(): Promise<Account | null> {
+  const activeId = await getActiveAccountId()
+
+  if (!activeId) {
+    return null
+  }
+
+  return (await getAccountById(activeId)) ?? null
+}
+
+/**
+ * One-time migration: move a legacy per-account directory handle into the registry.
+ */
+async function migrateLegacyBackupRootIfNeeded(): Promise<BackupRootRecord | undefined> {
+  const existing = await getBackupRootRecord()
+
+  if (existing) {
+    return existing
+  }
+
+  // A legacy record can only live inside a bound account database.
+  if (!isActiveDatabaseBound()) {
+    return undefined
+  }
+
+  const raw = await getRawDirectoryBackupRecord()
+
+  if (!raw || !isLegacyDirectoryBackupRecord(raw as DirectoryBackupRecord)) {
+    return undefined
+  }
+
+  const legacy = raw as unknown as LegacyDirectoryBackupRecord
+
+  await saveBackupRootRecord({
+    directoryHandle: legacy.directoryHandle,
+    directoryName: legacy.directoryName || legacy.directoryHandle.name,
+    connectedAt: legacy.connectedAt || new Date().toISOString(),
+  })
+
+  await updateDirectoryBackupRecord({
+    lastWrittenAt: legacy.lastWrittenAt ?? null,
+    lastWrittenDate: legacy.lastWrittenDate ?? null,
+    lastError: legacy.lastError ?? null,
+  })
+
+  return getBackupRootRecord()
+}
+
+async function resolveBackupRoot(): Promise<BackupRootRecord | undefined> {
+  return (await getBackupRootRecord()) ?? migrateLegacyBackupRootIfNeeded()
+}
+
+async function writeJsonFile(
+  folderHandle: FileSystemDirectoryHandle,
+  filename: string,
+  data: unknown,
+): Promise<void> {
+  const fileHandle = await folderHandle.getFileHandle(filename, { create: true })
   const writable = await fileHandle.createWritable()
 
   try {
-    await writable.write(JSON.stringify(payload, null, 2))
+    await writable.write(JSON.stringify(data, null, 2))
     await writable.close()
   }
   catch (error) {
     await writable.abort().catch(() => undefined)
     throw error
   }
+}
 
+export async function writeAccountJson(
+  folderHandle: FileSystemDirectoryHandle,
+  account: Account,
+): Promise<void> {
+  const meta: AccountJsonMeta = {
+    id: account.id,
+    name: account.name,
+    schemaVersion: ACCOUNT_JSON_SCHEMA_VERSION,
+  }
+
+  await writeJsonFile(folderHandle, ACCOUNT_JSON_FILENAME, meta)
+}
+
+/**
+ * Ensure `BackupRoot/{folderName}/` exists and `account.json` is up to date.
+ * Returns null when the backup root is missing or permission is unavailable.
+ */
+export async function ensureAccountBackupFolder(options?: {
+  account?: Account
+  silent?: boolean
+}): Promise<FileSystemDirectoryHandle | null> {
+  const root = await resolveBackupRoot()
+
+  if (!root) {
+    return null
+  }
+
+  if (!isDirectoryBackupSupported()) {
+    return null
+  }
+
+  const permission = await ensureDirectoryPermission(root.directoryHandle)
+
+  if (!permission.granted) {
+    if (!options?.silent) {
+      await recordLastError(permission.errorDetail ?? 'Permission denied')
+    }
+
+    return null
+  }
+
+  const account = options?.account ?? await resolveActiveAccount()
+
+  if (!account) {
+    return null
+  }
+
+  try {
+    const folderHandle = await root.directoryHandle.getDirectoryHandle(
+      account.folderName,
+      { create: true },
+    )
+    await writeAccountJson(folderHandle, account)
+    return folderHandle
+  }
+  catch (error) {
+    if (!options?.silent) {
+      await recordLastError(toTechnicalErrorDetail(error))
+    }
+
+    return null
+  }
+}
+
+/**
+ * Best-effort: create the account subdirectory after account creation when
+ * the backup root is already connected with permission.
+ */
+export async function tryEnsureAccountBackupFolder(account: Account): Promise<void> {
+  await ensureAccountBackupFolder({ account, silent: true })
+}
+
+/**
+ * Refresh `account.json` after a display-name rename (folderName stays fixed).
+ */
+export async function syncAccountJson(account: Account): Promise<void> {
+  await ensureAccountBackupFolder({ account, silent: true })
+}
+
+async function writePayloadToAccountFolder(
+  folderHandle: FileSystemDirectoryHandle,
+  payload: Awaited<ReturnType<typeof createBackupPayload>>,
+  date = new Date(),
+): Promise<{ filename: string, dateKey: string }> {
+  const dateKey = formatLocalDateKey(date)
+  const filename = formatDailyBackupFilename(date)
+  await writeJsonFile(folderHandle, filename, payload)
   return { filename, dateKey }
 }
 
-async function buildStatusFromRecord(
-  record: DirectoryBackupRecord | undefined,
+async function buildStatus(
+  root: BackupRootRecord | undefined,
+  accountStatus: DirectoryBackupRecord | undefined,
+  account: Account | null,
 ): Promise<DirectoryBackupStatus> {
   const supported = isDirectoryBackupSupported()
 
-  if (!record) {
+  if (!root) {
     return {
       supported,
       connected: false,
       directoryName: null,
+      accountFolderName: account?.folderName ?? null,
       permission: null,
-      lastWrittenAt: null,
-      lastWrittenDate: null,
-      lastError: null,
+      lastWrittenAt: accountStatus?.lastWrittenAt ?? null,
+      lastWrittenDate: accountStatus?.lastWrittenDate ?? null,
+      lastError: accountStatus?.lastError ?? null,
       connectedAt: null,
     }
   }
@@ -177,7 +328,7 @@ async function buildStatusFromRecord(
 
   if (supported) {
     try {
-      permission = await queryDirectoryPermission(record.directoryHandle)
+      permission = await queryDirectoryPermission(root.directoryHandle)
     }
     catch {
       permission = 'denied'
@@ -187,32 +338,34 @@ async function buildStatusFromRecord(
   return {
     supported,
     connected: true,
-    directoryName: record.directoryName,
+    directoryName: root.directoryName,
+    accountFolderName: account?.folderName ?? null,
     permission,
-    lastWrittenAt: record.lastWrittenAt,
-    lastWrittenDate: record.lastWrittenDate,
-    lastError: record.lastError,
-    connectedAt: record.connectedAt,
+    lastWrittenAt: accountStatus?.lastWrittenAt ?? null,
+    lastWrittenDate: accountStatus?.lastWrittenDate ?? null,
+    lastError: accountStatus?.lastError ?? null,
+    connectedAt: root.connectedAt,
   }
 }
 
 export async function getDirectoryBackupStatus(): Promise<DirectoryBackupStatus> {
-  const record = await getDirectoryBackupRecord()
-  return buildStatusFromRecord(record)
+  const [root, accountStatus, account] = await Promise.all([
+    resolveBackupRoot(),
+    getDirectoryBackupRecord(),
+    resolveActiveAccount(),
+  ])
+
+  return buildStatus(root, accountStatus, account)
 }
 
-async function persistDirectoryHandle(handle: FileSystemDirectoryHandle): Promise<void> {
+async function persistBackupRoot(handle: FileSystemDirectoryHandle): Promise<void> {
   const now = new Date().toISOString()
-  const existing = await getDirectoryBackupRecord()
+  const existing = await getBackupRootRecord()
 
-  await saveDirectoryBackupRecord({
-    id: DIRECTORY_BACKUP_ID,
+  await saveBackupRootRecord({
     directoryHandle: handle,
     directoryName: handle.name,
     connectedAt: existing?.connectedAt ?? now,
-    lastWrittenAt: existing?.lastWrittenAt ?? null,
-    lastWrittenDate: existing?.lastWrittenDate ?? null,
-    lastError: null,
   })
 }
 
@@ -226,7 +379,7 @@ export async function selectBackupDirectory(): Promise<DirectoryBackupStatus> {
 
   try {
     const handle = await window.showDirectoryPicker({ mode: 'readwrite' })
-    await persistDirectoryHandle(handle)
+    await persistBackupRoot(handle)
 
     const wrote = await writeDirectoryBackup()
 
@@ -249,9 +402,9 @@ export async function selectBackupDirectory(): Promise<DirectoryBackupStatus> {
 }
 
 export async function reconnectBackupDirectory(): Promise<DirectoryBackupStatus> {
-  const record = await getDirectoryBackupRecord()
+  const root = await resolveBackupRoot()
 
-  if (!record) {
+  if (!root) {
     throw createAppError({
       statusCode: 400,
       statusMessage: 'errors.directoryBackup.notConnected',
@@ -265,7 +418,7 @@ export async function reconnectBackupDirectory(): Promise<DirectoryBackupStatus>
     })
   }
 
-  const permission = await ensureDirectoryPermission(record.directoryHandle)
+  const permission = await ensureDirectoryPermission(root.directoryHandle)
 
   if (!permission.granted) {
     await updateDirectoryBackupRecord({
@@ -276,6 +429,12 @@ export async function reconnectBackupDirectory(): Promise<DirectoryBackupStatus>
       statusCode: 403,
       statusMessage: 'errors.directoryBackup.permissionDenied',
     })
+  }
+
+  const account = await resolveActiveAccount()
+
+  if (account) {
+    await ensureAccountBackupFolder({ account, silent: true })
   }
 
   await updateDirectoryBackupRecord({ lastError: null })
@@ -286,9 +445,9 @@ export async function writeDirectoryBackup(options?: {
   silent?: boolean
   date?: Date
 }): Promise<boolean> {
-  const record = await getDirectoryBackupRecord()
+  const root = await resolveBackupRoot()
 
-  if (!record) {
+  if (!root) {
     if (options?.silent) {
       return false
     }
@@ -310,7 +469,7 @@ export async function writeDirectoryBackup(options?: {
     })
   }
 
-  const permission = await ensureDirectoryPermission(record.directoryHandle)
+  const permission = await ensureDirectoryPermission(root.directoryHandle)
 
   if (!permission.granted) {
     await updateDirectoryBackupRecord({
@@ -327,10 +486,29 @@ export async function writeDirectoryBackup(options?: {
     })
   }
 
+  const account = await resolveActiveAccount()
+
+  if (!account) {
+    if (options?.silent) {
+      return false
+    }
+
+    throw createAppError({
+      statusCode: 400,
+      statusMessage: 'errors.directoryBackup.notConnected',
+    })
+  }
+
   try {
+    const folderHandle = await root.directoryHandle.getDirectoryHandle(
+      account.folderName,
+      { create: true },
+    )
+    await writeAccountJson(folderHandle, account)
+
     const payload = await createBackupPayload()
-    const { dateKey } = await writePayloadToDirectory(
-      record.directoryHandle,
+    const { dateKey } = await writePayloadToAccountFolder(
+      folderHandle,
       payload,
       options?.date,
     )
@@ -358,6 +536,7 @@ export async function writeDirectoryBackup(options?: {
 }
 
 export async function disconnectBackupDirectory(): Promise<void> {
+  await clearBackupRootRecord()
   await clearDirectoryBackupRecord()
 }
 

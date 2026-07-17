@@ -1,6 +1,14 @@
 import { META_KEYS } from '#shared/types/meta'
 import { getDirectoryBackupStatus } from '~/services/directoryBackup'
-import { db } from './database'
+import {
+  getActiveDatabaseOrNull,
+  isActiveDatabaseBound,
+} from './database'
+import {
+  getRegistryInstallId,
+  listAccounts,
+  setRegistryInstallId,
+} from './registry'
 import { getMetaValue, setMetaValue, setMetaValues } from './repositories/meta'
 
 const LEGACY_OPERATOR_STORAGE_KEY = 'finance:operatorName'
@@ -28,6 +36,10 @@ async function migrateLegacyOperatorName(): Promise<string | null> {
     return null
   }
 
+  if (!isActiveDatabaseBound()) {
+    return null
+  }
+
   const legacyOperator = sessionStorage.getItem(LEGACY_OPERATOR_STORAGE_KEY)
 
   if (!legacyOperator) {
@@ -45,6 +57,10 @@ async function migrateLegacyOperatorName(): Promise<string | null> {
 }
 
 export async function isOnboardingComplete(): Promise<boolean> {
+  if (!isActiveDatabaseBound()) {
+    return false
+  }
+
   const initialized = await getMetaValue(META_KEYS.initialized)
   return initialized === 'true'
 }
@@ -60,6 +76,10 @@ export interface GettingStartedProgress {
 }
 
 export async function shouldShowGettingStartedChecklist(): Promise<boolean> {
+  if (!isActiveDatabaseBound()) {
+    return false
+  }
+
   const value = await getMetaValue(META_KEYS.showFirstPaymentCta)
   return value === 'true'
 }
@@ -69,11 +89,25 @@ export async function dismissGettingStartedChecklist(): Promise<void> {
 }
 
 export async function getGettingStartedProgress(): Promise<GettingStartedProgress> {
+  const database = getActiveDatabaseOrNull()
+
+  if (!database) {
+    return {
+      school: false,
+      student: false,
+      payment: false,
+      backup: false,
+      completedCount: 0,
+      totalCount: 4,
+      allComplete: false,
+    }
+  }
+
   const [schoolCount, studentCount, paymentCount, lastBackupAt, directoryStatus]
     = await Promise.all([
-      db.schools.count(),
-      db.students.count(),
-      db.studentTransactions.count(),
+      database.schools.count(),
+      database.students.count(),
+      database.studentTransactions.count(),
       getMetaValue(META_KEYS.lastBackupAt),
       getDirectoryBackupStatus(),
     ])
@@ -98,29 +132,56 @@ export async function getGettingStartedProgress(): Promise<GettingStartedProgres
 }
 
 async function ensureInstallId(): Promise<string> {
-  const existing = await getMetaValue(META_KEYS.installId)
+  const fromRegistry = await getRegistryInstallId()
 
-  if (existing) {
-    return existing
+  if (fromRegistry) {
+    if (isActiveDatabaseBound()) {
+      const inAccount = await getMetaValue(META_KEYS.installId)
+
+      if (!inAccount) {
+        await setMetaValue(META_KEYS.installId, fromRegistry)
+      }
+    }
+
+    return fromRegistry
+  }
+
+  if (isActiveDatabaseBound()) {
+    const fromAccount = await getMetaValue(META_KEYS.installId)
+
+    if (fromAccount) {
+      await setRegistryInstallId(fromAccount)
+      return fromAccount
+    }
   }
 
   const installId = crypto.randomUUID()
-  await setMetaValue(META_KEYS.installId, installId)
+  await setRegistryInstallId(installId)
+
+  if (isActiveDatabaseBound()) {
+    await setMetaValue(META_KEYS.installId, installId)
+  }
+
   return installId
 }
 
 export async function loadProfileSettings(): Promise<ProfileSettings> {
   await migrateLegacyOperatorName()
 
-  const [installId, storedUserName, termYear] = await Promise.all([
-    getMetaValue(META_KEYS.installId),
+  const installId = await ensureInstallId()
+
+  if (!isActiveDatabaseBound()) {
+    return {
+      installId,
+      userName: '',
+      termYear: DEFAULT_TERM_YEAR,
+    }
+  }
+
+  const [storedUserName, termYear] = await Promise.all([
     getMetaValue(META_KEYS.operatorName),
     getMetaValue(META_KEYS.termYear),
   ])
-
-  if (!installId) {
-    throw new Error('Install profile is missing. Run ensureInitialized() first.')
-  }
 
   return {
     installId,
@@ -142,24 +203,32 @@ export async function saveTermYear(termYear: string): Promise<void> {
 
 export async function ensureInitialized(): Promise<ProfileSettings> {
   await ensureInstallId()
-
-  if (await isOnboardingComplete()) {
-    return loadProfileSettings()
-  }
-
   return loadProfileSettings()
 }
 
 export async function completeOnboarding(
   options: CompleteOnboardingOptions,
 ): Promise<ProfileSettings> {
-  const installId = await ensureInstallId()
   const userName = resolveUserName(options)
   const termYear = options.termYear.trim() || DEFAULT_TERM_YEAR
 
   if (!userName) {
     throw new Error('User name is required to complete onboarding.')
   }
+
+  const accounts = await listAccounts()
+
+  if (accounts.length === 0) {
+    const { createAndActivateAccount } = await import('~/services/accountContext')
+    await createAndActivateAccount(userName, { activate: true })
+  }
+  else if (!isActiveDatabaseBound()) {
+    const { switchActiveAccount } = await import('~/services/accountContext')
+    const active = accounts[0]!
+    await switchActiveAccount(active.id, { skipBackup: true, skipCacheReset: true })
+  }
+
+  const installId = await ensureInstallId()
 
   await setMetaValues({
     [META_KEYS.installId]: installId,
