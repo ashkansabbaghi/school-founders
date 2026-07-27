@@ -1,10 +1,17 @@
 export type PaymentMethod = 'cash' | 'card' | 'bankTransfer' | 'cheque'
 export type EmployeeTransactionType = 'salary' | 'bonus' | 'deduction'
 
+export interface SchoolClass {
+  id: string
+  grade: string
+  classNumber: number
+}
+
 export interface School {
   id: string
   name: string
   branch: string
+  classes: SchoolClass[]
 }
 
 export interface Student {
@@ -14,6 +21,7 @@ export interface Student {
   nationalCode: string
   studentId: string
   grade: string
+  classId: string
   fullPrice: number
   dynamicDiscountRate: number
   parentName: string

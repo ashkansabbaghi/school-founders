@@ -14,6 +14,7 @@ export const FIXTURE_TERM_YEAR = '1404-1405'
 
 export const FIXTURE_IDS = {
   school: '11111111-1111-4111-8111-111111111111',
+  schoolClass: '11111111-1111-4111-8111-111111111112',
   student: '22222222-2222-4222-8222-222222222222',
   employee: '33333333-3333-4333-8333-333333333333',
   studentTransaction: '44444444-4444-4444-8444-444444444444',
@@ -32,6 +33,13 @@ const fixtureSchools: School[] = [
     id: FIXTURE_IDS.school,
     name: 'مدرسه نمونه',
     branch: 'شعبه مرکزی',
+    classes: [
+      {
+        id: FIXTURE_IDS.schoolClass,
+        grade: '7',
+        classNumber: 1,
+      },
+    ],
   },
 ]
 
@@ -43,6 +51,7 @@ const fixtureStudents: Student[] = [
     nationalCode: '0000000001',
     studentId: 'ST-TEST-001',
     grade: '7',
+    classId: FIXTURE_IDS.schoolClass,
     fullPrice: 45_000_000,
     dynamicDiscountRate: 0.10,
     parentName: 'حسین نوری',

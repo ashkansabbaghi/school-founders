@@ -185,7 +185,16 @@
     "searchPlaceholder": "School name or branch",
     "confirmDelete": "Are you sure you want to delete this school?",
     "selectOptional": "No school (optional)",
-    "namePlaceholder": "School name"
+    "namePlaceholder": "School name",
+    "classesTitle": "Classes",
+    "classesEmpty": "No classes defined for this school yet.",
+    "addClass": "Add class",
+    "editClass": "Edit class number",
+    "saveClass": "Save class",
+    "cancelEditClass": "Cancel",
+    "selectGrade": "Select a grade",
+    "nextClassNumber": "Next number: {number}",
+    "duplicateClassNumber": "Class \"{label}\" already exists for this grade."
   },
   "fixedCosts": {
     "title": "Fixed Costs",
@@ -318,7 +327,9 @@
     "label": "Label",
     "fullName": "Full name",
     "parentName": "Parent name",
-    "parentPhone": "Phone number"
+    "parentPhone": "Phone number",
+    "classId": "Class",
+    "classNumber": "Class number"
   },
   "errors": {
     "validation": {
@@ -341,6 +352,7 @@
       "employeeTransaction": "Employee transaction not found",
       "founder": "Founder not found",
       "fixedCost": "Fixed cost not found",
+      "schoolClass": "Class \"{id}\" was not found",
       "schoolId": "School \"{schoolId}\" does not exist",
       "studentId": "Student \"{studentId}\" does not exist",
       "employeeId": "Employee \"{employeeId}\" does not exist"
@@ -353,11 +365,13 @@
       "studentHasTransactions": "Cannot delete student with existing transactions",
       "employeeHasTransactions": "Cannot delete employee with existing transactions",
       "duplicateStudentNationalCode": "National code \"{nationalCode}\" is already registered for another student",
-      "duplicateEmployeeNationalCode": "National code \"{nationalCode}\" is already registered for another employee"
+      "duplicateEmployeeNationalCode": "National code \"{nationalCode}\" is already registered for another employee",
+      "duplicateSchoolClassNumber": "Class \"{values}\" already exists for this grade"
     },
     "relation": {
       "studentNotInSchool": "Student does not belong to the provided school",
-      "employeeNotInSchool": "Employee does not belong to the provided school"
+      "employeeNotInSchool": "Employee does not belong to the provided school",
+      "classNotInSchool": "Class does not belong to the provided school"
     },
     "internal": {
       "invalidJsonArray": "{filename} must contain a JSON array"
@@ -391,7 +405,10 @@
     "backToFinance": "← Back to Finance Dashboard",
     "allSchools": "All schools",
     "allGrades": "All grades",
+    "allClasses": "All classes",
     "selectGrade": "Select a grade",
+    "selectClass": "Select a class",
+    "noClassesForGrade": "No classes are defined for this grade. Add a class in the school settings first.",
     "allStatuses": "All statuses",
     "addStudent": "Add Student",
     "addButtonLabel": "Add student",
@@ -423,6 +440,7 @@
       "nationalCode": "National code",
       "studentId": "Student ID",
       "grade": "Grade",
+      "class": "Class",
       "school": "School",
       "fullPrice": "Full price",
       "discountRate": "Discount rate (0–1)",
@@ -446,6 +464,7 @@
       "fullName": "Name",
       "studentId": "ID",
       "grade": "Grade",
+      "class": "Class",
       "school": "School",
       "payment": "Paid / Target",
       "status": "Status",

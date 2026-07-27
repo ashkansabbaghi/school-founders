@@ -4,9 +4,11 @@ import type {
   EmployeeTransactionType,
   PaymentMethod,
   School,
+  SchoolClass,
   Student,
   StudentTransaction,
 } from '../types/financial'
+import { findSchoolClass, normalizeSchoolClasses } from '../../shared/utils/schoolClass'
 
 const NATIONAL_CODE_PATTERN = /^\d{10}$/
 const PHONE_PATTERN = /^0\d{9,10}$/
@@ -137,7 +139,7 @@ export function assertEmployeeTransactionType(value: unknown): EmployeeTransacti
   return transactionType
 }
 
-export async function assertSchoolExists(schoolId: string): Promise<void> {
+export async function assertSchoolExists(schoolId: string): Promise<School> {
   const school = await getById<School>('schools.json', schoolId)
 
   if (!school) {
@@ -147,6 +149,29 @@ export async function assertSchoolExists(schoolId: string): Promise<void> {
       data: { schoolId },
     })
   }
+
+  return {
+    ...school,
+    classes: normalizeSchoolClasses(school.classes),
+  }
+}
+
+export async function assertSchoolClassExists(
+  schoolId: string,
+  classId: string,
+): Promise<SchoolClass> {
+  const school = await assertSchoolExists(schoolId)
+  const schoolClass = findSchoolClass(school.classes, classId)
+
+  if (!schoolClass) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'errors.relation.classNotInSchool',
+      data: { schoolId, id: classId },
+    })
+  }
+
+  return schoolClass
 }
 
 export async function assertStudentExists(studentId: string): Promise<Student> {

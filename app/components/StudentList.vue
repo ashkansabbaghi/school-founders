@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import type { Student, StudentTransaction } from '#shared/types/financial'
+import { findSchoolClass, formatClassLabel } from '#shared/utils/schoolClass'
 
 const props = defineProps<{
   students: Student[]
@@ -32,6 +33,20 @@ const transactionsByStudentId = computed(() => {
 
 const schoolById = computed(() => new Map(schools.value.map(school => [school.id, school])))
 
+function studentClassLabel(student: Student): string {
+  const classId = student.classId?.trim()
+  if (!classId) {
+    return '—'
+  }
+
+  const schoolClass = findSchoolClass(schoolById.value.get(student.schoolId)?.classes, classId)
+  if (!schoolClass) {
+    return '—'
+  }
+
+  return formatClassLabel(schoolClass.grade, schoolClass.classNumber)
+}
+
 const rows = computed(() =>
   props.students.map((student) => {
     const studentTransactions = transactionsByStudentId.value.get(student.id) ?? []
@@ -42,6 +57,7 @@ const rows = computed(() =>
       student,
       summary,
       schoolLabel: school ? `${school.name} — ${school.branch}` : student.schoolId,
+      classLabel: studentClassLabel(student),
     }
   }),
 )
@@ -90,7 +106,7 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
                   {{ $t('students.columns.studentId') }}
                 </th>
                 <th class="ui-table-th">
-                  {{ $t('students.columns.grade') }}
+                  {{ $t('students.columns.class') }}
                 </th>
                 <th class="ui-table-th">
                   {{ $t('students.columns.school') }}
@@ -146,7 +162,7 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
                 />
               </div>
               <div class="mt-0.5 truncate text-sm ui-text-muted">
-                {{ row.schoolLabel }}
+                {{ row.schoolLabel }} · {{ row.classLabel }}
               </div>
               <div class="mt-1.5">
                 <ListPaymentProgress
@@ -177,7 +193,7 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
                   {{ $t('students.columns.studentId') }}
                 </th>
                 <th class="ui-table-th">
-                  {{ $t('students.columns.grade') }}
+                  {{ $t('students.columns.class') }}
                 </th>
                 <th class="ui-table-th">
                   {{ $t('students.columns.school') }}
@@ -217,7 +233,7 @@ function statusClasses(status: 'paid' | 'partial' | 'unpaid'): string {
                   />
                 </td>
                 <td class="px-4 py-3 ui-text-secondary">
-                  {{ row.student.grade }}
+                  {{ row.classLabel }}
                 </td>
                 <td class="px-4 py-3 ui-text-muted">
                   {{ row.schoolLabel }}

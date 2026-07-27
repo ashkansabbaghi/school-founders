@@ -9,6 +9,7 @@ import type {
 } from '#shared/types/financial'
 import type { Founder } from '#shared/types/founder'
 import { META_KEYS } from '#shared/types/meta'
+import { normalizeSchoolClasses } from '#shared/utils/schoolClass'
 import { DB_VERSION } from '~/db/database'
 import { db } from '~/db/database'
 import { getAccountById, getActiveAccountId } from '~/db/registry'
@@ -236,7 +237,10 @@ export function validateBackupPayload(raw: unknown): BackupPayload {
 
   const collections = raw.collections as Record<string, unknown>
 
-  const schools = assertArray(collections.schools, 'schools') as School[]
+  const schools = (assertArray(collections.schools, 'schools') as School[]).map(school => ({
+    ...school,
+    classes: normalizeSchoolClasses(school.classes),
+  }))
   const students = assertArray(collections.students, 'students') as Student[]
   const employees = assertArray(collections.employees, 'employees') as Employee[]
   const studentTransactions = assertArray(
@@ -383,7 +387,10 @@ export async function createBackupPayload(): Promise<BackupPayload> {
         }
       : {}),
     collections: {
-      schools,
+      schools: schools.map(school => ({
+        ...school,
+        classes: normalizeSchoolClasses(school.classes),
+      })),
       students,
       employees,
       studentTransactions,

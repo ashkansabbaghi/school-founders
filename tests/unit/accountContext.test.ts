@@ -98,6 +98,7 @@ describe('legacy account migration', () => {
       id: 'school-1',
       name: 'مدرسه نمونه',
       branch: 'مرکزی',
+      classes: [],
     })
     legacy.close()
 
@@ -115,7 +116,7 @@ describe('legacy account migration', () => {
     const accountDb = openAccountDatabase(migrated!.id)
     await accountDb.open()
     expect(await accountDb.schools.toArray()).toEqual([
-      { id: 'school-1', name: 'مدرسه نمونه', branch: 'مرکزی' },
+      { id: 'school-1', name: 'مدرسه نمونه', branch: 'مرکزی', classes: [] },
     ])
 
     const secondPass = await migrateLegacyDatabaseIfNeeded()
@@ -155,7 +156,7 @@ describe('legacy account migration', () => {
       { key: META_KEYS.operatorName, value: 'Operator' },
       { key: META_KEYS.initialized, value: 'true' },
     ])
-    await legacy.schools.put({ id: 'school-1', name: 'School', branch: 'Main' })
+    await legacy.schools.put({ id: 'school-1', name: 'School', branch: 'Main', classes: [] })
     await legacy.students.put({
       id: 'student-1',
       schoolId: 'school-1',
@@ -163,6 +164,7 @@ describe('legacy account migration', () => {
       nationalCode: '001',
       studentId: 'ST-1',
       grade: '7',
+      classId: '',
       fullPrice: 1_000,
       dynamicDiscountRate: 0,
       parentName: 'Parent',
@@ -233,11 +235,11 @@ describe('switchActiveAccount isolation', () => {
     const { getActiveDatabase } = await import('~/db/database')
 
     await switchActiveAccount(first.id, { skipBackup: true, skipCacheReset: true })
-    await getActiveDatabase().schools.put({ id: 'a-school', name: 'School A', branch: 'A' })
+    await getActiveDatabase().schools.put({ id: 'a-school', name: 'School A', branch: 'A', classes: [] })
 
     await switchActiveAccount(second.id, { skipBackup: true, skipCacheReset: true })
     expect(await getActiveDatabase().schools.toArray()).toHaveLength(0)
-    await getActiveDatabase().schools.put({ id: 'b-school', name: 'School B', branch: 'B' })
+    await getActiveDatabase().schools.put({ id: 'b-school', name: 'School B', branch: 'B', classes: [] })
 
     await switchActiveAccount(first.id, { skipBackup: true, skipCacheReset: true })
     const schools = await getActiveDatabase().schools.toArray()
@@ -258,7 +260,7 @@ describe('switchActiveAccount isolation', () => {
     expect(await getActiveDatabase().founders.count()).toBe(0)
     expect(await getActiveDatabase().meta.get(META_KEYS.operatorName)).toBeUndefined()
     await getActiveDatabase().founders.put({ id: 'f-b', name: 'Founder B', school: 'B' })
-    await getActiveDatabase().schools.put({ id: 's-b', name: 'School B', branch: 'B' })
+    await getActiveDatabase().schools.put({ id: 's-b', name: 'School B', branch: 'B', classes: [] })
     await getActiveDatabase().studentTransactions.put({
       id: 'tx-b',
       studentId: 'student-b',
@@ -295,10 +297,10 @@ describe('switchActiveAccount isolation', () => {
     const { getActiveDatabase, getAccountDatabaseName: dbName } = await import('~/db/database')
 
     await switchActiveAccount(keep.id, { skipBackup: true, skipCacheReset: true })
-    await getActiveDatabase().schools.put({ id: 'keep-school', name: 'Keep', branch: 'K' })
+    await getActiveDatabase().schools.put({ id: 'keep-school', name: 'Keep', branch: 'K', classes: [] })
 
     await switchActiveAccount(drop.id, { skipBackup: true, skipCacheReset: true })
-    await getActiveDatabase().schools.put({ id: 'drop-school', name: 'Drop', branch: 'D' })
+    await getActiveDatabase().schools.put({ id: 'drop-school', name: 'Drop', branch: 'D', classes: [] })
 
     await switchActiveAccount(keep.id, { skipBackup: true, skipCacheReset: true })
     await deleteAccount(drop.id)

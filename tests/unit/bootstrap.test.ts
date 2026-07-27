@@ -110,6 +110,7 @@ describe('getGettingStartedProgress', () => {
       id: 'school-1',
       name: 'School One',
       branch: 'Main',
+      classes: [],
     })
     expect((await getGettingStartedProgress()).completedCount).toBe(1)
     expect((await getGettingStartedProgress()).school).toBe(true)
@@ -121,6 +122,7 @@ describe('getGettingStartedProgress', () => {
       nationalCode: '001',
       studentId: 'ST-1',
       grade: '1',
+      classId: '',
       fullPrice: 1_000_000,
       dynamicDiscountRate: 0,
       parentName: 'Parent',

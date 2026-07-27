@@ -1,8 +1,9 @@
 import { createAppError } from '#shared/errors/appError'
-import type { Employee, Student } from '#shared/types/financial'
+import type { Employee, School, SchoolClass, Student } from '#shared/types/financial'
+import { findSchoolClass, normalizeSchoolClasses } from '#shared/utils/schoolClass'
 import { db } from './database'
 
-export async function assertSchoolExists(schoolId: string): Promise<void> {
+export async function assertSchoolExists(schoolId: string): Promise<School> {
   const school = await db.schools.get(schoolId)
 
   if (!school) {
@@ -12,6 +13,29 @@ export async function assertSchoolExists(schoolId: string): Promise<void> {
       data: { schoolId },
     })
   }
+
+  return {
+    ...school,
+    classes: normalizeSchoolClasses(school.classes),
+  }
+}
+
+export async function assertSchoolClassExists(
+  schoolId: string,
+  classId: string,
+): Promise<SchoolClass> {
+  const school = await assertSchoolExists(schoolId)
+  const schoolClass = findSchoolClass(school.classes, classId)
+
+  if (!schoolClass) {
+    throw createAppError({
+      statusCode: 400,
+      statusMessage: 'errors.relation.classNotInSchool',
+      data: { schoolId, id: classId },
+    })
+  }
+
+  return schoolClass
 }
 
 export async function assertStudentExists(studentId: string): Promise<Student> {

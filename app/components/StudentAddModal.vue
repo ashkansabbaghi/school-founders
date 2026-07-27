@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import type { Student } from '#shared/types/financial'
+import {
+  formatClassLabel,
+  normalizeSchoolClasses,
+} from '#shared/utils/schoolClass'
 
 const props = defineProps<{
   defaultSchoolId?: string
@@ -21,6 +25,7 @@ const form = reactive({
   nationalCode: '',
   studentId: '',
   grade: '',
+  classId: '',
   schoolId: '',
   fullPrice: '' as number | '',
   dynamicDiscountRatePercent: '' as number | '',
@@ -28,20 +33,44 @@ const form = reactive({
   parentPhone: '',
 })
 
+const selectedSchool = computed(() =>
+  schools.value.find(school => school.id === form.schoolId),
+)
+
+const availableClasses = computed(() => {
+  if (!form.schoolId || !form.grade) {
+    return []
+  }
+
+  return normalizeSchoolClasses(selectedSchool.value?.classes)
+    .filter(schoolClass => schoolClass.grade === form.grade)
+    .sort((a, b) => a.classNumber - b.classNumber)
+})
+
+const showNoClassesHint = computed(() =>
+  Boolean(form.schoolId && form.grade && availableClasses.value.length === 0),
+)
+
 const canSubmit = computed(() =>
   Boolean(
     form.fullName.trim()
     && form.nationalCode.trim()
     && form.studentId.trim()
     && form.grade
+    && form.classId
     && form.schoolId
     && form.fullPrice !== ''
     && Number(form.fullPrice) > 0
     && form.parentName.trim()
     && form.parentPhone.trim()
+    && availableClasses.value.some(schoolClass => schoolClass.id === form.classId)
     && !isSubmitting.value,
   ),
 )
+
+function classOptionLabel(grade: string, classNumber: number) {
+  return formatClassLabel(grade, classNumber)
+}
 
 function defaultSchoolIdValue(): string {
   return props.defaultSchoolId || schools.value[0]?.id || ''
@@ -52,6 +81,7 @@ function resetForm() {
   form.nationalCode = ''
   form.studentId = ''
   form.grade = ''
+  form.classId = ''
   form.schoolId = defaultSchoolIdValue()
   form.fullPrice = ''
   form.dynamicDiscountRatePercent = ''
@@ -72,6 +102,7 @@ async function submit() {
       nationalCode: form.nationalCode.trim(),
       studentId: form.studentId.trim(),
       grade: form.grade.trim(),
+      classId: form.classId,
       schoolId: form.schoolId,
       fullPrice: Number(form.fullPrice),
       dynamicDiscountRate: (Number(form.dynamicDiscountRatePercent) || 0) / 100,
@@ -79,9 +110,11 @@ async function submit() {
       parentPhone: form.parentPhone.trim(),
     })
 
-    resetForm()
-    emit('created', student)
-    emit('close')
+    if (student) {
+      resetForm()
+      emit('created', student)
+      emit('close')
+    }
   }
   catch {
     // Error handled by store
@@ -99,6 +132,15 @@ watch(
   (schoolId) => {
     if (schoolId) {
       form.schoolId = schoolId
+    }
+  },
+)
+
+watch(
+  [() => form.schoolId, () => form.grade],
+  () => {
+    if (!availableClasses.value.some(schoolClass => schoolClass.id === form.classId)) {
+      form.classId = ''
     }
   },
 )
@@ -182,6 +224,21 @@ onUnmounted(() => {
             >
           </label>
           <label class="block space-y-1">
+            <span class="ui-label">{{ $t('students.fields.school') }}</span>
+            <select
+              v-model="form.schoolId"
+              required
+              class="ui-input"
+            >
+              <option value="" disabled>
+                {{ $t('operator.placeholders.selectSchool') }}
+              </option>
+              <option v-for="school in schools" :key="school.id" :value="school.id">
+                {{ school.name }} — {{ school.branch }}
+              </option>
+            </select>
+          </label>
+          <label class="block space-y-1">
             <span class="ui-label">{{ $t('students.fields.grade') }}</span>
             <select
               v-model="form.grade"
@@ -197,19 +254,30 @@ onUnmounted(() => {
             </select>
           </label>
           <label class="block space-y-1">
-            <span class="ui-label">{{ $t('students.fields.school') }}</span>
+            <span class="ui-label">{{ $t('students.fields.class') }}</span>
             <select
-              v-model="form.schoolId"
+              v-model="form.classId"
               required
               class="ui-input"
+              :disabled="availableClasses.length === 0"
             >
               <option value="" disabled>
-                {{ $t('operator.placeholders.selectSchool') }}
+                {{ $t('students.selectClass') }}
               </option>
-              <option v-for="school in schools" :key="school.id" :value="school.id">
-                {{ school.name }} — {{ school.branch }}
+              <option
+                v-for="schoolClass in availableClasses"
+                :key="schoolClass.id"
+                :value="schoolClass.id"
+              >
+                {{ classOptionLabel(schoolClass.grade, schoolClass.classNumber) }}
               </option>
             </select>
+            <p
+              v-if="showNoClassesHint"
+              class="text-sm text-amber-600 dark:text-amber-400"
+            >
+              {{ $t('students.noClassesForGrade') }}
+            </p>
           </label>
           <label class="block space-y-1">
             <span class="ui-label">{{ $t('students.fields.fullPrice') }}</span>

@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import type { Student, StudentTransaction } from '#shared/types/financial'
 import {
   collectUniqueGrades,
+  collectUniqueStudentClasses,
   indexTransactionsByPersonId,
   matchesSelectFilter,
   PAYMENT_STATUSES,
@@ -19,6 +20,7 @@ useHead({
 
 const selectedSchoolId = ref('')
 const selectedGrade = ref('')
+const selectedClassId = ref('')
 const selectedStatus = ref('')
 const searchQuery = ref('')
 const transactions = ref<StudentTransaction[]>([])
@@ -34,6 +36,14 @@ const schoolFilteredStudents = computed(() =>
 
 const availableGrades = computed(() => collectUniqueGrades(schoolFilteredStudents.value))
 
+const availableClasses = computed(() =>
+  collectUniqueStudentClasses(
+    schoolFilteredStudents.value,
+    schools.value,
+    selectedGrade.value,
+  ),
+)
+
 const transactionsByStudentId = computed(() =>
   indexTransactionsByPersonId(transactions.value, 'studentId'),
 )
@@ -41,6 +51,10 @@ const transactionsByStudentId = computed(() =>
 const filteredStudents = computed(() =>
   schoolFilteredStudents.value.filter((student) => {
     if (!matchesSelectFilter(student.grade.trim(), selectedGrade.value)) {
+      return false
+    }
+
+    if (!matchesSelectFilter(student.classId?.trim() ?? '', selectedClassId.value)) {
       return false
     }
 
@@ -64,6 +78,7 @@ const filteredStudents = computed(() =>
 const hasActiveFilters = computed(() =>
   searchQuery.value.trim().length > 0
   || selectedGrade.value !== ''
+  || selectedClassId.value !== ''
   || selectedStatus.value !== '',
 )
 
@@ -76,6 +91,21 @@ const isSearchEmpty = computed(() =>
 watch(selectedSchoolId, () => {
   if (selectedGrade.value && !availableGrades.value.includes(selectedGrade.value)) {
     selectedGrade.value = ''
+  }
+  if (
+    selectedClassId.value
+    && !availableClasses.value.some(schoolClass => schoolClass.id === selectedClassId.value)
+  ) {
+    selectedClassId.value = ''
+  }
+})
+
+watch(selectedGrade, () => {
+  if (
+    selectedClassId.value
+    && !availableClasses.value.some(schoolClass => schoolClass.id === selectedClassId.value)
+  ) {
+    selectedClassId.value = ''
   }
 })
 
@@ -193,6 +223,25 @@ onMounted(async () => {
           </select>
         </label>
         <label class="block max-w-md flex-1 space-y-1">
+          <span class="ui-label">{{ $t('students.fields.class') }}</span>
+          <select
+            v-model="selectedClassId"
+            class="ui-input"
+            :disabled="students.length === 0"
+          >
+            <option value="">
+              {{ $t('students.allClasses') }}
+            </option>
+            <option
+              v-for="schoolClass in availableClasses"
+              :key="schoolClass.id"
+              :value="schoolClass.id"
+            >
+              {{ schoolClass.label }}
+            </option>
+          </select>
+        </label>
+        <label class="block max-w-md flex-1 space-y-1">
           <span class="ui-label">{{ $t('students.columns.status') }}</span>
           <select
             v-model="selectedStatus"
@@ -207,7 +256,6 @@ onMounted(async () => {
             </option>
           </select>
         </label>
-    
       </div>
     </section>
 

@@ -10,6 +10,7 @@ import {
 import { db } from '../database'
 import {
   assertNoStudentDependents,
+  assertSchoolClassExists,
   assertSchoolExists,
   assertUniqueStudentNationalCode,
 } from '../validation'
@@ -33,6 +34,7 @@ export async function saveStudent(input: {
   nationalCode?: string
   studentId?: string
   grade?: string
+  classId?: string
   fullPrice?: number
   dynamicDiscountRate?: number
   parentName?: string
@@ -45,6 +47,9 @@ export async function saveStudent(input: {
   const nationalCode = assertNationalCode(input.nationalCode)
   await assertUniqueStudentNationalCode(nationalCode, id)
 
+  const classId = assertNonEmptyString(input.classId, 'classId')
+  await assertSchoolClassExists(schoolId, classId)
+
   const student: Student = {
     id,
     schoolId,
@@ -52,6 +57,7 @@ export async function saveStudent(input: {
     nationalCode,
     studentId: assertNonEmptyString(input.studentId, 'studentId'),
     grade: assertNonEmptyString(input.grade, 'grade'),
+    classId,
     fullPrice: assertPositiveInteger(input.fullPrice, 'fullPrice'),
     dynamicDiscountRate: assertDiscountRate(input.dynamicDiscountRate),
     parentName: assertNonEmptyString(input.parentName, 'parentName'),

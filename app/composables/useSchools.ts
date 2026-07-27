@@ -1,9 +1,11 @@
-import type { School } from '#shared/types/financial'
+import type { School, SchoolClass } from '#shared/types/financial'
 import {
+  addSchoolClass as addSchoolClassRecord,
   createSchool as createSchoolRecord,
   deleteSchool as deleteSchoolRecord,
   fetchSchools,
   updateSchool as updateSchoolRecord,
+  updateSchoolClass as updateSchoolClassRecord,
 } from '~/services/schools'
 import type { AppToastKind } from '~/composables/useAppToast'
 import { translateApiError } from '~/utils/translateApiError'
@@ -46,7 +48,9 @@ export function useSchools() {
     }
   }
 
-  async function createSchool(payload: Pick<School, 'name' | 'branch'>) {
+  async function createSchool(
+    payload: Pick<School, 'name' | 'branch'> & { classes?: SchoolClass[] },
+  ) {
     try {
       const school = await createSchoolRecord(payload)
       await refresh()
@@ -61,9 +65,49 @@ export function useSchools() {
     }
   }
 
-  async function updateSchool(id: string, payload: Pick<School, 'name' | 'branch'>) {
+  async function updateSchool(
+    id: string,
+    payload: Pick<School, 'name' | 'branch'> & { classes?: SchoolClass[] },
+  ) {
     try {
       const school = await updateSchoolRecord(id, payload)
+      await refresh()
+      await syncFinanceStore()
+      notifyFeedback('success', getTranslator()('messages.schoolSaved'))
+      return school
+    }
+    catch (updateError) {
+      const message = translateApiError(updateError, getTranslator())
+      notifyFeedback('error', message)
+      throw updateError
+    }
+  }
+
+  async function addSchoolClass(
+    schoolId: string,
+    payload: { grade: string; classNumber?: number },
+  ) {
+    try {
+      const school = await addSchoolClassRecord(schoolId, payload)
+      await refresh()
+      await syncFinanceStore()
+      notifyFeedback('success', getTranslator()('messages.schoolSaved'))
+      return school
+    }
+    catch (addError) {
+      const message = translateApiError(addError, getTranslator())
+      notifyFeedback('error', message)
+      throw addError
+    }
+  }
+
+  async function updateSchoolClass(
+    schoolId: string,
+    classId: string,
+    payload: { classNumber: number },
+  ) {
+    try {
+      const school = await updateSchoolClassRecord(schoolId, classId, payload)
       await refresh()
       await syncFinanceStore()
       notifyFeedback('success', getTranslator()('messages.schoolSaved'))
@@ -103,6 +147,8 @@ export function useSchools() {
     refresh,
     createSchool,
     updateSchool,
+    addSchoolClass,
+    updateSchoolClass,
     deleteSchool,
   }
 }

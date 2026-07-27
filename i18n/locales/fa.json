@@ -185,7 +185,16 @@
     "searchPlaceholder": "نام مدرسه یا شعبه",
     "confirmDelete": "آیا از حذف این مدرسه مطمئن هستید؟",
     "selectOptional": "بدون مدرسه (اختیاری)",
-    "namePlaceholder": "نام مدرسه"
+    "namePlaceholder": "نام مدرسه",
+    "classesTitle": "کلاس‌ها",
+    "classesEmpty": "هنوز کلاسی برای این مدرسه تعریف نشده است.",
+    "addClass": "افزودن کلاس",
+    "editClass": "ویرایش شماره کلاس",
+    "saveClass": "ذخیره کلاس",
+    "cancelEditClass": "لغو",
+    "selectGrade": "یک پایه انتخاب کنید",
+    "nextClassNumber": "شماره بعدی: {number}",
+    "duplicateClassNumber": "کلاس «{label}» برای این پایه از قبل وجود دارد."
   },
   "fixedCosts": {
     "title": "هزینه‌های ثابت",
@@ -318,7 +327,9 @@
     "label": "عنوان",
     "fullName": "نام کامل",
     "parentName": "نام والد",
-    "parentPhone": "تلفن تماس"
+    "parentPhone": "تلفن تماس",
+    "classId": "کلاس",
+    "classNumber": "شماره کلاس"
   },
   "errors": {
     "validation": {
@@ -341,6 +352,7 @@
       "employeeTransaction": "تراکنش پرسنل یافت نشد",
       "founder": "بنیان‌گذار یافت نشد",
       "fixedCost": "هزینه ثابت یافت نشد",
+      "schoolClass": "کلاس «{id}» یافت نشد",
       "schoolId": "مدرسه «{schoolId}» وجود ندارد",
       "studentId": "دانش‌آموز «{studentId}» وجود ندارد",
       "employeeId": "پرسنل «{employeeId}» وجود ندارد"
@@ -353,11 +365,13 @@
       "studentHasTransactions": "امکان حذف دانش‌آموز با تراکنش موجود وجود ندارد",
       "employeeHasTransactions": "امکان حذف پرسنل با تراکنش موجود وجود ندارد",
       "duplicateStudentNationalCode": "کد ملی «{nationalCode}» قبلاً برای دانش‌آموز دیگری ثبت شده است",
-      "duplicateEmployeeNationalCode": "کد ملی «{nationalCode}» قبلاً برای پرسنل دیگری ثبت شده است"
+      "duplicateEmployeeNationalCode": "کد ملی «{nationalCode}» قبلاً برای پرسنل دیگری ثبت شده است",
+      "duplicateSchoolClassNumber": "کلاس «{values}» برای این پایه از قبل وجود دارد"
     },
     "relation": {
       "studentNotInSchool": "دانش‌آموز به مدرسه انتخاب‌شده تعلق ندارد",
-      "employeeNotInSchool": "پرسنل به مدرسه انتخاب‌شده تعلق ندارد"
+      "employeeNotInSchool": "پرسنل به مدرسه انتخاب‌شده تعلق ندارد",
+      "classNotInSchool": "کلاس به مدرسه انتخاب‌شده تعلق ندارد"
     },
     "internal": {
       "invalidJsonArray": "{filename} باید یک آرایه JSON باشد"
@@ -391,7 +405,10 @@
     "backToFinance": "بازگشت به داشبورد مالی →",
     "allSchools": "همه مدارس",
     "allGrades": "همه پایه‌ها",
+    "allClasses": "همه کلاس‌ها",
     "selectGrade": "یک پایه انتخاب کنید",
+    "selectClass": "یک کلاس انتخاب کنید",
+    "noClassesForGrade": "برای این پایه کلاسی تعریف نشده است. ابتدا در تنظیمات مدرسه یک کلاس اضافه کنید.",
     "allStatuses": "همه وضعیت‌ها",
     "addStudent": "افزودن دانش‌آموز",
     "addButtonLabel": "افزودن دانش‌آموز",
@@ -423,6 +440,7 @@
       "nationalCode": "کد ملی",
       "studentId": "شماره دانش‌آموزی",
       "grade": "پایه",
+      "class": "کلاس",
       "school": "مدرسه",
       "fullPrice": "قیمت کامل (ریال)",
       "discountRate": "نرخ تخفیف (۰ تا ۱)",
@@ -446,6 +464,7 @@
       "fullName": "نام",
       "studentId": "شماره",
       "grade": "پایه",
+      "class": "کلاس",
       "school": "مدرسه",
       "payment": "پرداخت‌شده / هدف",
       "status": "وضعیت",
